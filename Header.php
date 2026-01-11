@@ -1,9 +1,4 @@
-<?php 
 
-$result = $con->query("SELECT * FROM notifications WHERE status = 'unread' ORDER BY created_at DESC ");
-$notifications = mysqli_fetch_all($result, MYSQLI_ASSOC);
-
-?>
 <header id="page-topbar">
             <div class="navbar-header">
                 <div class="d-flex">
@@ -23,23 +18,8 @@ $notifications = mysqli_fetch_all($result, MYSQLI_ASSOC);
                                 <img src="http://103.146.16.154/assets/images/it-fast.png" class="img-fluid" alt="" height="22">
                             </span>
                             <span class="logo-lg">
-                                <?php 
-$settings = $con->query("SELECT * FROM app_settings LIMIT 1")->fetch_assoc();
 
-$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' 
-             || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
-
-$host = $_SERVER['HTTP_HOST']; 
-$baseUrl = $protocol . $host . "/"; 
-
-$logoPath = !empty($settings['logo']) 
-    ? $baseUrl . "" . $settings['logo'] 
-    : $baseUrl . "assets/images/it-fast.png";
-?>
-
-<img src="<?php echo $logoPath; ?>" class="img-fluid" alt="Logo" height="36">
-
-                                <!-- <img src="http://103.146.16.154/assets/images/it-fast.png" class="img-fluid" alt="" height="36"> -->
+                                <img src="assets/images/it-fast.png" class="img-fluid" alt="" height="36">
                             </span>
                         </a>
                     </div>
@@ -103,35 +83,19 @@ $logoPath = !empty($settings['logo'])
                     <div class="dropdown d-inline-block me-2">
                         <button type="button" class="btn header-item noti-icon waves-effect" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="ion ion-md-notifications"></i>
-                            <span class="badge bg-danger rounded-pill"><?= count($notifications);?></span>
+                            <span class="badge bg-danger rounded-pill">0></span>
                         </button>
                         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" aria-labelledby="page-header-notifications-dropdown">
                             <div class="p-3">
                                 <div class="row align-items-center">
                                     <div class="col">
-                                        <h5 class="m-0 font-size-16"> Notification (<?= count($notifications);?>) </h5>
+                                        <h5 class="m-0 font-size-16"> Notification0 </h5>
                                     </div>
                                 </div>
                             </div>
                             <div data-simplebar style="max-height: 230px;">
 
-                            <?php foreach ($notifications as $notification): ?>
-    <a href="<?= htmlspecialchars($notification['url']) ?>" class="text-reset notification-item">
-        <div class="d-flex">
-            <div class="avatar-xs me-3">
-                <span class="avatar-title bg-success rounded-circle font-size-16">
-                   <?php echo $notification['icon']; ?>
-                </span>
-            </div>
-            <div class="flex-1">
-                <h6 class="mt-0 font-size-15 mb-1"><?= htmlspecialchars($notification['message']) ?></h6>
-                <div class="font-size-12 text-muted">
-                    <p class="mb-1"><?= htmlspecialchars($notification['created_at']) ?></p>
-                </div>
-            </div>
-        </div>
-    </a>
-<?php endforeach; ?>
+                           
 
                             </div>
                             <!-- <div class="p-2 border-top">

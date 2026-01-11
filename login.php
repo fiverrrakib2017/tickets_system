@@ -3,58 +3,59 @@
 if(!isset($_SESSION)){
     session_start();
 }
-include "include/db_connect.php";
 
+
+include "include/db_connect.php";
 if (isset($_POST["login"])) {
     $username = trim($_POST["username"]);
     $password = trim($_POST["password"]);
 
-    // if (!empty($username) && !empty($password)) {
-    //     /* Fetch user securely using prepared statement*/
-    //     $stmt = $con->prepare("SELECT id, username, fullname, role, status , password FROM users WHERE username = ? AND password = ? LIMIT 1");
-    //     $stmt->bind_param("ss", $username,$password);
-    //     $stmt->execute();
-    //     $result = $stmt->get_result();
+    if (!empty($username) && !empty($password)) {
+        /* Fetch user securely using prepared statement*/
+        $stmt = $con->prepare("SELECT id, username, fullname, role, status , password FROM users WHERE username = ? AND password = ? LIMIT 1");
+        $stmt->bind_param("ss", $username,$password);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-    //     if ($result->num_rows === 1) {
-    //         $row = $result->fetch_assoc();
-    //         if ($row["status"] == 0) {
-    //             $wrong_info = "Your account is disabled. Please contact admin.";
-    //         }else{
-    //             /*--Account is active, proceed with login-----*/ 
+        if ($result->num_rows === 1) {
+            $row = $result->fetch_assoc();
+            if ($row["status"] == 0) {
+                $wrong_info = "Your account is disabled. Please contact admin.";
+            }else{
+                /*--Account is active, proceed with login-----*/ 
                 
-    //             /*Set session variables*/ 
-    //             $_SESSION["uid"] = $row["id"];
-    //             $_SESSION["username"] = $row["username"];
-    //             $_SESSION["fullname"] = $row["fullname"];
-    //             $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
+                /*Set session variables*/ 
+                $_SESSION["uid"] = $row["id"];
+                $_SESSION["username"] = $row["username"];
+                $_SESSION["fullname"] = $row["fullname"];
+                $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
 
-    //             /*Log user's IP*/ 
-    //             $loggeIP = $_SERVER['REMOTE_ADDR'];
-    //             $stmt = $con->prepare("INSERT INTO user_login_log(username, time, ip, status) VALUES (?, NOW(), ?, 'Success')");
-    //             $stmt->bind_param("ss", $username, $loggeIP);
-    //             $stmt->execute();
+                /*Log user's IP*/ 
+                $loggeIP = $_SERVER['REMOTE_ADDR'];
+                $stmt = $con->prepare("INSERT INTO user_login_log(username, time, ip, status) VALUES (?, NOW(), ?, 'Success')");
+                $stmt->bind_param("ss", $username, $loggeIP);
+                $stmt->execute();
 
-    //             /*Update last login time & store CSRF token*/ 
-    //             $stmt = $con->prepare("UPDATE users SET lastlogin = NOW(), csrf_token = ? WHERE username = ?");
-    //             $stmt->bind_param("ss", $_SESSION['csrf_token'], $username);
-    //             $stmt->execute();
+                /*Update last login time & store CSRF token*/ 
+                $stmt = $con->prepare("UPDATE users SET lastlogin = NOW(), csrf_token = ? WHERE username = ?");
+                $stmt->bind_param("ss", $_SESSION['csrf_token'], $username);
+                $stmt->execute();
 
-    //             header("Location: index.php");
-    //             exit();
-    //         }
+                header("Location: index.php");
+                exit();
+            }
            
-    //     } else {
-    //         $wrong_info = "Username or Password is incorrect!";
-    //     }
+        } else {
+            $wrong_info = "Username or Password is incorrect!";
+        }
 
-    //     /* Log failed login attempt*/
-    //     $stmt = $con->prepare("INSERT INTO user_login_log(username, time, ip, status) VALUES (?, NOW(), ?, 'Failed')");
-    //     $stmt->bind_param("ss", $username, $_SERVER['REMOTE_ADDR']);
-    //     $stmt->execute();
-    // } else {
-    //     $wrong_info = "Please enter both username and password!";
-    // }
+        /* Log failed login attempt*/
+        $stmt = $con->prepare("INSERT INTO user_login_log(username, time, ip, status) VALUES (?, NOW(), ?, 'Failed')");
+        $stmt->bind_param("ss", $username, $_SERVER['REMOTE_ADDR']);
+        $stmt->execute();
+    } else {
+        $wrong_info = "Please enter both username and password!";
+    }
 }
 
 if (isset($_SESSION["uid"])) {

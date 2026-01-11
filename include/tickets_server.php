@@ -552,24 +552,10 @@ if (isset($_GET['get_all_customer']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
         session_start();
     }
 
-    /* Set default condition */
-    $condition = 'WHERE pop = ?';
-
-    /* Set default pop_id value*/
-    $pop_id = 0;
-
-    if (isset($_SESSION['user_pop']) && !empty($_SESSION['user_pop'])) {
-        $pop_id = $_SESSION['user_pop'];
-    }
-
-    if ($pop_id == 0) {
-        $condition = '';
-    }
+    
     /*Prepare the SQL query */
-    $stmt = $con->prepare("SELECT id, username, fullname, mobile FROM customers $condition");
-    if (!empty($condition)) {
-        $stmt->bind_param('i', $pop_id);
-    }
+    $stmt = $con->prepare("SELECT id, username, fullname, mobile FROM customers");
+    
 
     /* Execute the query*/
     if ($stmt->execute()) {

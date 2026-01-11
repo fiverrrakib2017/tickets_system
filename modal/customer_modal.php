@@ -45,6 +45,26 @@
                                             ?>
                                         </select>
                                     </div>
+                                    <div class="form-group mb-2">
+                                        <label>V-LAN</label>
+                                        <input type="text" name="customer_vlan" class="form-control" placeholder="Enter Customer VLAN">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label>IP Address</label>
+                                        <input type="text" name="customer_ip" class="form-control" placeholder="Enter Customer IP Address">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label>Bandwidth</label>
+                                        <input type="text" name="customer_bandwidth" class="form-control" placeholder="Enter Customer Bandwidth">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label>Status</label>
+                                        <select type="text" name="customer_status" class="form-control" placeholder="Enter Customer Status">
+                                            <option value="">Select Status</option>
+                                            <option value="1">Active</option>
+                                            <option value="0">Inactive</option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>

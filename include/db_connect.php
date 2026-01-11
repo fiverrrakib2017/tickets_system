@@ -14,9 +14,6 @@ $sql_details = array(
     'user' => 'root',
     'pass' => '',
     'db'   => 'ticket_system',
-    'host' => 'localhost'
+    'host' => 'localhost',
 );
-
-/* Company Database Connection */
-// Add here if needed
 ?>

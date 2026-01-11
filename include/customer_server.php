@@ -10,17 +10,52 @@ require 'datatable.php';
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
 
+if(isset($_GET['get_customers_data']) && $_SERVER['REQUEST_METHOD']=='GET'){
 
+    $table = 'customers';
+    $primaryKey = 'id';
+
+    $columns = array(
+        array( 'db' => 'id',                'dt' => 0 ),
+        array( 'db' => 'customer_name',     'dt' => 1 ),
+        array( 'db' => 'customer_email',    'dt' => 2 ),
+        array( 'db' => 'customer_phone',    'dt' => 3 ),
+        array( 'db' => 'customer_location', 'dt' => 4 ),
+        array( 'db' => 'customer_type_id',  'dt' => 5 ),
+        array( 'db' => 'customer_ip',        'dt' => 6 ),
+        array( 'db' => 'customer_bandwidth','dt' => 7 ),
+        array( 'db' => 'status',             'dt' => 8,
+            'formatter' => function ($d) {
+                return $d == 1 ? 'Active' : 'Inactive';
+            }
+        ),
+    );
+   
+    
+    /* Output JSON for DataTables to handle*/
+    echo json_encode(SSP::complex($_GET, $sql_details, $table, $primaryKey, $columns));
+    exit; 
+}
 /******** Add Customer  Script ******************/
 if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-    $customer_name = trim($_POST['name']);
+    
+    $customer_name = trim($_POST['customer_name']);
+    $customer_email = trim($_POST['customer_email']);
+    $customer_phone = trim($_POST['customer_phone']);
+    $customer_type = trim($_POST['customer_type']);
+    $customer_location = trim($_POST['customer_location']);
+    $customer_vlan = trim($_POST['customer_vlan']);
+    $customer_ip = trim($_POST['customer_ip']);
+    $customer_bandwidth = trim($_POST['customer_bandwidth']);
+    $customer_status = trim($_POST['customer_status']);
+
 
     /* Validate Customer Name */
     __validate_input($customer_name, 'Customer Name');
 
 
     /* Insert into  table */
-    $result = $con->query("INSERT INTO ticket_assign(name) VALUES('$customer_name')");
+    $result = $con->query("INSERT INTO customers(`customer_name`,`customer_email`,`customer_phone`,`customer_location`,`customer_type_id`,`customer_vlan`,`customer_ip`,`customer_bandwidth`,`status`) VALUES('$customer_name','$customer_email','$customer_phone','$customer_location','$customer_type','$customer_vlan','$customer_ip','$customer_bandwidth','$customer_status')");
 
     if ($result) {
         echo json_encode([
@@ -36,24 +71,31 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 }
-/******** Update ticket assign  Script ******************/
-if (isset($_GET['update_ticket_assign_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+/******** Update customer data Script ******************/
+if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    $assign_name = trim($_POST['name']);
+    $customer_name = trim($_POST['customer_name']);
+    $customer_email = trim($_POST['customer_email']);
+    $customer_phone = trim($_POST['customer_phone']);
+    $customer_location = trim($_POST['customer_location']);
+    $customer_type = trim($_POST['customer_type']);
+    $customer_vlan = trim($_POST['customer_vlan']);
+    $customer_ip = trim($_POST['customer_ip']);
+    $customer_bandwidth = trim($_POST['customer_bandwidth']);
     $id = trim($_POST['id']);
-    /* Validate Assign Name  name */
-    __validate_input($assign_name, 'Assign Name');
-    /* Check if assign name already exists */
-    $check_assign_name = $con->query("SELECT * FROM ticket_assign WHERE name='$assign_name' AND id != '$id'");
-    if ($check_assign_name->num_rows > 0) {
+    /* Validate Customer Name */
+    __validate_input($customer_name, 'Customer Name');
+    /* Check if customer name already exists */
+    $check_customer_name = $con->query("SELECT * FROM customers WHERE customer_name='$customer_name' AND id != '$id'");
+    if ($check_customer_name->num_rows > 0) {
         echo json_encode([
             'success' => false,
-            'message' => 'Assign Name Already exists!',
+            'message' => 'Customer Name Already exists!',
         ]);
         exit();
     }
-    /* Update the assign in the database */
-    $result = $con->query("UPDATE ticket_assign SET name='$assign_name' WHERE id='$id'");
+    /* Update the customer in the database */
+    $result = $con->query("UPDATE customers SET customer_name='$customer_name',customer_email='$customer_email',customer_phone='$customer_phone',customer_location='$customer_location',customer_type_id='$customer_type',customer_vlan='$customer_vlan',customer_ip='$customer_ip',customer_bandwidth='$customer_bandwidth' WHERE id='$id'");
     if ($result) {
         echo json_encode([
             'success' => true,
@@ -69,13 +111,13 @@ if (isset($_GET['update_ticket_assign_data']) && $_SERVER['REQUEST_METHOD'] == '
     }
 }
 
-if (isset($_GET['get_ticket_assign_data']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
+if (isset($_GET['get_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
     $id = isset($_GET['id']) ? trim($_GET['id']) : '';
     $data = [];
     if (isset($id) && is_numeric($id)) {
-        $result = $con->query("SELECT * FROM ticket_assign WHERE id='$id'");
+        $result = $con->query("SELECT * FROM customers WHERE id='$id'");
     }else{
-        $result = $con->query("SELECT * FROM ticket_assign");
+        $result = $con->query("SELECT * FROM customers");
     }
 
     while ($row = $result->fetch_assoc()) {
@@ -88,8 +130,8 @@ if (isset($_GET['get_ticket_assign_data']) && $_SERVER['REQUEST_METHOD'] == 'GET
     ]);
     exit();
 }
-/*Delete ticket assign Script*/
-if (isset($_GET['delete_ticket_assign_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+/*Delete customer Script*/
+if (isset($_GET['delete_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = trim($_POST['id']);
     if (empty($id)) {
         echo json_encode([
@@ -98,7 +140,7 @@ if (isset($_GET['delete_ticket_assign_data']) && $_SERVER['REQUEST_METHOD'] == '
         ]);
         exit();
     }
-    $result = $con->query("DELETE FROM ticket_assign WHERE id='$id'");
+    $result = $con->query("DELETE FROM customers WHERE id='$id'");
     $con->close();
     if ($result) {
         echo json_encode([

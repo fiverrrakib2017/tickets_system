@@ -16,6 +16,7 @@
                 </a>
                 <ul class="sub-menu" aria-expanded="false">
                     <li><a href="customers.php">Customer List</a></li>                   
+                    <li><a href="customer_type.php">Customer Type</a></li>                   
                     
                 </ul>
             </li>

@@ -29,6 +29,22 @@
                                         <label>Area/Location</label>
                                         <input type="text" name="customer_location" class="form-control" placeholder="Enter Customer Area/Location">
                                     </div>
+                                    <div class="form-group mb-2">
+                                        <label>Type</label>
+                                        <select type="text" name="customer_type" class="form-select" placeholder="Enter Customer Type">
+                                            <option value="">Select Type</option>
+                                           
+                                            <?php 
+                                            if($con->query("SELECT * FROM customer_type")){
+                                                $types = $con->query("SELECT * FROM customer_type");
+                                                while($row = $types->fetch_array()){
+                                                    echo '<option value="'.$row['id'].'">'.$row['name'].'</option>';
+                                                }
+                                            }
+                                            
+                                            ?>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                         </div>

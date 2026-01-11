@@ -18,8 +18,8 @@
                  <li><a href="ticket_reports.php">Tickets Report</a></li>
                  <li><a href="ticketsTopic.php"> Ticket Topics </a></li>
                  <li><a href="pending_issues.php"> Pending Issues </a></li>
-                 <li><a href="member_group.php"> Member Group </a></li>
-                 <li><a href="members.php"> Members </a></li>
+                 <!-- <li><a href="member_group.php"> Member Group </a></li> -->
+                 <li><a href="assign_members.php"> Assigned Members </a></li>
              </ul>
          </li>
          <?php endif; ?>

@@ -63,19 +63,6 @@
                             <img class="rounded-circle header-profile-user" src="http://103.146.16.154/profileImages/avatar.png" alt="Header Avatar">
                         </button>
                         <div class="dropdown-menu dropdown-menu-end">
-                            <!-- item-->
-                             <?php 
-                             if(!empty($page_title=="POP/Branch")){
-                                echo '<div class="profile-info">';
-                                echo '<p class="profile-item"><i class="mdi mdi-marker-check"></i><strong>Fullname:</strong> '.$fullname.'</p>';
-                                echo '<p class="profile-item"><i class="mdi mdi-account-circle"></i> <strong>Username:</strong> '.$username.'</p>';
-                                echo '<p class="profile-item"><i class="fas fa-dollar-sign"></i> <strong>Opening Balance:</strong> '.$opening_bal.'</p>';
-                                echo '<p class="profile-item"><i class="mdi mdi-phone"></i> <strong>Mobile:</strong> '.$mobile_num1.'</p>';
-                                echo '<p class="profile-item"><i class="fas fa-envelope"></i> <strong>Email:</strong>'.$email_address.'</p>';
-                                echo ' </div>';
-                             }
-                             
-                             ?>
                             <a class="dropdown-item text-danger" href="logout.php"><i class="mdi mdi-power"></i> Logout</a>
                         </div>
                     </div>
@@ -83,13 +70,13 @@
                     <div class="dropdown d-inline-block me-2">
                         <button type="button" class="btn header-item noti-icon waves-effect" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="ion ion-md-notifications"></i>
-                            <span class="badge bg-danger rounded-pill">0></span>
+                            <span class="badge bg-danger rounded-pill">0</span>
                         </button>
                         <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" aria-labelledby="page-header-notifications-dropdown">
                             <div class="p-3">
                                 <div class="row align-items-center">
                                     <div class="col">
-                                        <h5 class="m-0 font-size-16"> Notification0 </h5>
+                                        <h5 class="m-0 font-size-16"> Notification 0 </h5>
                                     </div>
                                 </div>
                             </div>

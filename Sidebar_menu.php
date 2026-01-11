@@ -1,14 +1,24 @@
  <div id="sidebar-menu">
      <!-- Left Menu Start -->
      <ul class="metismenu list-unstyled" id="side-menu">
+            
 
-
-         <li>
+            <li>
              <a href="index.php" class="waves-effect">
                  <i class="mdi mdi-view-dashboard"></i>
                  <span> Dashboard </span>
              </a>
-         </li>
+            </li>
+            <li>
+                <a href="javascript: void(0);" class="has-arrow waves-effect">
+                    <i class="mdi mdi-account-check"></i>
+                    <span>Customer </span>
+                </a>
+                <ul class="sub-menu" aria-expanded="false">
+                    <li><a href="customers.php">Customer List</a></li>                   
+                    
+                </ul>
+            </li>
 
          <?php if (isset($_SESSION['details']['role']) && $_SESSION['details']['role'] == 'Super Admin' || $_SESSION['details']['role']=='Staff' || $_SESSION['details']['role']=='Supports'): ?>
          <li>

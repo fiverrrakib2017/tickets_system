@@ -92,7 +92,7 @@ require 'Head.php';
     <div class="rightbar-overlay"></div>
 
 
-
+<?php include 'modal/customer_modal.php';?>
 <?php include 'script.php'; ?>
 <script type="text/javascript">
 

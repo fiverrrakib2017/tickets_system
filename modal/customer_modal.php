@@ -1,0 +1,43 @@
+ <!--Add Modal -->
+    <div class="modal fade " tabindex="-1" aria-labelledby="myLargeModalLabel" aria-hidden="true" id="addCustomerModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel"><span
+                            class="mdi mdi-account-check mdi-18px"></span> &nbsp;Create Customer</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <form action="include/customer_server.php?add_customer_data=true" method="POST" enctype="multipart/form-data">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group mb-2">
+                                        <label>Customer Name</label>
+                                        <input type="text" name="customer_name" class="form-control" placeholder="Enter Customer Name">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label>Email</label>
+                                        <input type="text" name="customer_email" class="form-control" placeholder="Enter Customer Email">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label>Phone Number</label>
+                                        <input type="text" name="customer_phone" class="form-control" placeholder="Enter Customer Phone Number">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label>Area/Location</label>
+                                        <input type="text" name="customer_location" class="form-control" placeholder="Enter Customer Area/Location">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Create Customer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div> 

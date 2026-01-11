@@ -93,36 +93,41 @@ require 'Head.php';
                                                 </tr>
                                             </thead>
                                             <tbody id="customer-list">
-                                            <?php
-                                                $sql = "SELECT * FROM customers ORDER BY id DESC";
+                                                <?php
+                                                $sql = "SELECT c.*, ct.name AS type_name
+                                                        FROM customers c
+                                                        LEFT JOIN customer_type ct ON c.customer_type_id = ct.id
+                                                        ORDER BY c.id DESC";
                                                 $result = mysqli_query($con, $sql);
 
                                                 while ($rows = mysqli_fetch_assoc($result)) {
-
                                                 ?>
-
-                                                    <tr>
-                                                        <td><?php echo $rows['id']; ?></td>
-                                                        <td><?php echo $rows["customer_name"]; ?></td>
-                                                        <td><?php echo $rows["customer_email"]; ?></td>
-                                                        <td><?php echo $rows["customer_phone"]; ?></td>
-                                                        <td><?php echo $rows["customer_location"]; ?></td>
-                                                        <td><?php echo $rows["customer_type_id"]; ?></td>
-                                                        <td><?php echo $rows["customer_ip"]; ?></td>
-                                                        <td><?php echo $rows["customer_bandwidth"]; ?></td>
-                                                        <td><?php echo $rows["status"]; ?></td>
-
-                                                        <td style="text-align:right">
-
-                                                            <button type="button" name="edit_button" data-id="<?php echo $rows['id']; ?>" class="btn-sm btn btn-info"><i class="fas fa-edit"></i></button>
-                                                            <button type="button" name="delete_button" data-id="<?php echo $rows['id']; ?>" class="btn-sm btn btn-danger"><i class="fas fa-trash"></i></button>
-                                                         
-
-                                                        </td>
-                                                    </tr>
+                                                <tr>
+                                                    <td><?php echo $rows['id']; ?></td>
+                                                    <td><?php echo htmlspecialchars($rows["customer_name"]); ?></td>
+                                                    <td><?php echo htmlspecialchars($rows["customer_email"]); ?></td>
+                                                    <td><?php echo htmlspecialchars($rows["customer_phone"]); ?></td>
+                                                    <td><?php echo htmlspecialchars($rows["customer_location"]); ?></td>
+                                                    <td><?php echo htmlspecialchars($rows["type_name"]); ?></td>
+                                                    <td><?php echo htmlspecialchars($rows["customer_ip"]); ?></td>
+                                                    <td><?php echo htmlspecialchars($rows["customer_bandwidth"]); ?></td>
+                                                    <td>
+                                                        <?php echo ($rows["status"] == 1) ? '<span class="badge bg-success">Active</span>' 
+                                                                                            : '<span class="badge bg-danger">Inactive</span>'; ?>
+                                                    </td>
+                                                    <td style="text-align:right">
+                                                        <button type="button" name="edit_button" data-id="<?php echo $rows['id']; ?>" class="btn-sm btn btn-info">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <button type="button" name="delete_button" data-id="<?php echo $rows['id']; ?>" class="btn-sm btn btn-danger">
+                                                            <i class="fas fa-trash"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
                                                 <?php } ?>
                                             </tbody>
                                         </table>
+
                                     </div>
                                 </div>
 
@@ -139,7 +144,28 @@ require 'Head.php';
 
     </div>
     <!-- END layout-wrapper -->
-
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="modal fade">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <div class="icon-box">
+                        <i class="fa fa-trash"></i>
+                    </div>
+                    <h4 class="modal-title w-100">Are you sure?</h4>
+                    <h4 class="modal-title w-100 d-none" id="DeleteId"></h4>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="True">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Do you really want to delete these records? This process cannot be undone.</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="DeleteConfirm">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Modal for Send Message -->
      <?php include 'modal/message_modal.php'; ?>
    
@@ -154,13 +180,185 @@ require 'Head.php';
     
 
     <script type="text/javascript">
-        
-
         $(document).ready(function() {
-            $('#customers_table').DataTable();
+            $('#customers_table').DataTable({
+                "order": [
+                    [0, "desc"]
+                ],
+                "columnDefs": [{
+                    "targets": [2],
+                    "orderable": false,
+                }],
+            });
         });
+        $('#addCustomerModal form').submit(function(e) {
+                e.preventDefault();
+                /*Get the submit button*/
+                var submitBtn = $('#addCustomerModal form').find('button[type="submit"]');
+
+                /* Save the original button text*/
+                var originalBtnText = submitBtn.html();
+
+                /*Change button text to loading state*/
+                submitBtn.html(
+                    `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden">Loading...</span>`
+                );
+                var form = $(this);
+                var url = form.attr('action');
+                var formData = form.serialize();
+                $.ajax({
+                    type: 'POST',
+                    'url': url,
+                    data: formData,
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            $('#addCustomerModal').modal('hide');
+                            toastr.success(response.message);
+                            setTimeout(() => {
+                                location.reload();
+                            }, 500);
+                        } else {
+                            toastr.error(response.message);
+                        }
+                    },
 
 
+                    error: function(xhr, status, error) {
+                        /** Handle  errors **/
+                        if (xhr.status === 422) {
+                            var errors = xhr.responseJSON.errors;
+                            $.each(errors, function(key, value) {
+                                toastr.error(value[0]);
+                            });
+                        }
+                    },
+                    complete: function() {
+                        submitBtn.html(originalBtnText);
+                    }
+                });
+            });
+             /** Edit Area Script **/
+            $(document).on('click', "button[name='edit_button']", function() {
+                var id = $(this).data('id');
+                $.ajax({
+                    url: "include/customer_server.php?get_customer_data=true",
+                    type: "GET",
+                    data: {
+                        id: id
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            $('#editCustomerModal').modal('show');
+                            $('#editCustomerModal input[name="id"]').val(response.data.id);
+                            $('#editCustomerModal input[name="customer_name"]').val(response.data.customer_name);
+                            $('#editCustomerModal input[name="customer_email"]').val(response.data.customer_email);
+                            $('#editCustomerModal input[name="customer_phone"]').val(response.data.customer_phone);
+                            $('#editCustomerModal input[name="customer_location"]').val(response.data.customer_location);
+                            $('#editCustomerModal select[name="customer_type"]').val(response.data.customer_type_id);
+                            $('#editCustomerModal input[name="customer_ip"]').val(response.data.customer_ip);
+                            $('#editCustomerModal input[name="customer_bandwidth"]').val(response.data.customer_bandwidth);
+                            $('#editCustomerModal select[name="customer_status"]').val(response.data.status);
+
+                        } else {
+                            toastr.error("Error fetching data for edit: " + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        toastr.error('Failed to fetch  details');
+                    }
+                });
+            });
+            /** Update **/
+            $('#editCustomerModal form').submit(function(e) {
+                e.preventDefault();
+
+                var form = $(this);
+                var url = form.attr('action');
+                var formData = form.serialize();
+
+                /*Get the submit button*/
+                var submitBtn = form.find('button[type="submit"]');
+
+                /*Save the original button text*/
+                var originalBtnText = submitBtn.html();
+
+                /*Change button text to loading state*/
+
+
+                var form = $(this);
+                var url = form.attr('action');
+                var formData = form.serialize();
+                /** Use Ajax to send the delete request **/
+                $.ajax({
+                    type: 'POST',
+                    'url': url,
+                    data: formData,
+                    dataType: 'json',
+                    beforeSend: function() {
+                        form.find(':input').prop('disabled', true);
+                    },
+                    success: function(response) {
+                        if (response.success) {
+                             $('#editCustomerModal').modal('hide');
+                            toastr.success(response.message);
+                            setTimeout(() => {
+                                location.reload();
+                            }, 500);
+
+                        }
+                        if (response.success == false) {
+                            toastr.error(response.message);
+                        }
+                    },
+
+                    error: function(xhr, status, error) {
+                        if (xhr.status === 422) {
+                            var errors = xhr.responseJSON.errors;
+                            $.each(errors, function(key, value) {
+                                toastr.error(value[0]);
+                            });
+                        } else {
+                            toastr.error("An error occurred. Please try again.");
+                        }
+                    },
+                    complete: function() {
+                        form.find(':input').prop('disabled', false);
+                    }
+                });
+            });
+            /** Delete Script **/
+            $(document).on('click', "button[name='delete_button']", function() {
+                var id = $(this).data('id');
+                $('#DeleteId').text(id);
+                $('#deleteModal').modal('show');
+
+                $('#DeleteConfirm').off('click').on('click', function() {
+                    $.ajax({
+                        url: "include/customer_server.php?delete_customer_data=true",
+                        type: "POST",
+                        data: {
+                            id: id
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                toastr.success(response.message);
+                                $('#deleteModal').modal('hide');
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 500);
+                            } else {
+                                toastr.error(response.message);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            toastr.error("Error deleting NAS: " + xhr.responseText);
+                        }
+                    });
+                });
+            });
     </script>
 </body>
 

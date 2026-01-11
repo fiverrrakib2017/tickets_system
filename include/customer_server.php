@@ -73,7 +73,6 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 /******** Update customer data Script ******************/
 if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-
     $customer_name = trim($_POST['customer_name']);
     $customer_email = trim($_POST['customer_email']);
     $customer_phone = trim($_POST['customer_phone']);

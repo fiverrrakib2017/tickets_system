@@ -69,9 +69,9 @@ require 'Head.php';
                             <div class="card">
                                <div class="card-header customer_card_header border-bottom d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3" style="background-color: white;">
                                 <!-- Add Customer Button -->
-                                <button data-bs-toggle="modal" data-bs-target="#addCustomerModal" type="button" class="btn btn-success">
+                                <a href="create_customer.php" class="btn btn-success">
                                     <i class="fas fa-user-plus me-1"></i> Add New Customer
-                                </button>
+                                </a>
                             </div>
 
                                 <div class="card-body">
@@ -97,13 +97,17 @@ require 'Head.php';
                                                 $sql = "SELECT 
                                                             c.*, 
                                                             COALESCE(ct.name, 'N/A') AS type_name,
-                                                            COALESCE(pb.name, 'N/A') AS pop_branch_name
+                                                            COALESCE(pb.name, 'N/A') AS pop_branch_name,
+                                                            COALESCE(cs.name, 'N/A') AS service_name
                                                         FROM customers c
                                                         LEFT JOIN customer_type ct 
                                                             ON c.customer_type_id = ct.id
                                                         LEFT JOIN pop_branch pb 
                                                             ON c.pop_id = pb.id
+                                                        LEFT JOIN customer_service cs
+                                                            ON c.service_id = cs.id
                                                         ORDER BY c.id DESC";
+
                                                 $result = mysqli_query($con, $sql);
 
                                                 while ($rows = mysqli_fetch_assoc($result)) {
@@ -120,15 +124,15 @@ require 'Head.php';
                                                     <td><?php echo htmlspecialchars($rows["pop_branch_name"]); ?></td>
                                                     <td><?php echo htmlspecialchars($rows["type_name"]); ?></td>
                                                     <td><?php echo htmlspecialchars($rows["customer_ip"]); ?></td>
-                                                    <td><?php echo htmlspecialchars($rows["customer_bandwidth"]); ?></td>
+                                                    <td><?php echo htmlspecialchars($rows['service_name']); ?></td>
                                                     <td>
                                                         <?php echo ($rows["status"] == 1) ? '<span class="badge bg-success">Active</span>' 
                                                                                             : '<span class="badge bg-danger">Inactive</span>'; ?>
                                                     </td>
                                                     <td style="text-align:right">
-                                                        <button type="button" name="edit_button" data-id="<?php echo $rows['id']; ?>" class="btn-sm btn btn-info">
+                                                        <a type="button" href="customer_profile_edit.php?clid=<?php echo $rows['id']; ?>" class="btn-sm btn btn-info">
                                                             <i class="fas fa-edit"></i>
-                                                        </button>
+                                                        </a>
                                                         <button type="button" name="delete_button" data-id="<?php echo $rows['id']; ?>" class="btn-sm btn btn-danger">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
@@ -181,9 +185,6 @@ require 'Head.php';
     </div>
     <!-- Modal for Send Message -->
      <?php include 'modal/message_modal.php'; ?>
-   
-    <!------------------  Customer Modal ------------------>
-    <?php require 'modal/customer_modal.php'; ?>
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
     <?php include 'script.php'; ?>
@@ -192,6 +193,7 @@ require 'Head.php';
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         $(document).ready(function() {
+           
             $('#customers_table').DataTable({
                 "order": [
                     [0, "desc"]
@@ -200,6 +202,37 @@ require 'Head.php';
                     "targets": [2],
                     "orderable": false,
                 }],
+            });
+            /** Delete Script **/
+            $(document).on('click', "button[name='delete_button']", function() {
+                var id = $(this).data('id');
+                $('#DeleteId').text(id);
+                $('#deleteModal').modal('show');
+
+                $('#DeleteConfirm').off('click').on('click', function() {
+                    $.ajax({
+                        url: "include/customer_server.php?delete_customer_data=true",
+                        type: "POST",
+                        data: {
+                            id: id
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                toastr.success(response.message);
+                                $('#deleteModal').modal('hide');
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 500);
+                            } else {
+                                toastr.error(response.message);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            toastr.error("Error deleting NAS: " + xhr.responseText);
+                        }
+                    });
+                });
             });
         });
     </script>

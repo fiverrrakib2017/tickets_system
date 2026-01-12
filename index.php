@@ -63,21 +63,7 @@ require 'Head.php';
 
             <div class="page-content">
                 <div class="container-fluid">
-                    <div class="row mb-2">
-                        <div class="col-md-6 col-sm-12">
-                            <!-- New Request -->
-                            <a href="con_request.php" class="btn btn-warning  mb-1"> <i class="fas fa-user-clock"></i>
-                                New Request
-                                <?php
-                                
-                                ?>
-                            </a>
-                            <!-- Add Customer -->
-                            <button type="button" data-bs-toggle="modal" data-bs-target="#addCustomerModal"
-                                class=" btn btn-success mb-1"> <i class="fas fa-user-plus"></i> Add
-                                Customer</button>
-                        </div>
-                    </div>
+                    
 
                     <?php include 'Component/dashboard_card.php'; ?>
                     <?php include 'Component/chart.php'; ?>

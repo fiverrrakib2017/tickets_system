@@ -46,7 +46,7 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $customer_pop_branch = trim($_POST['customer_pop_branch']);
     $customer_vlan = trim($_POST['customer_vlan']);
     $customer_ip = trim($_POST['customer_ip']);
-    $customer_bandwidth = trim($_POST['customer_bandwidth']);
+    $service_id = trim($_POST['service_id']);
     $customer_status = trim($_POST['customer_status']);
 
 
@@ -55,7 +55,7 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
     /* Insert into  table */
-    $result = $con->query("INSERT INTO customers(`customer_name`,`customer_email`,`customer_phone`,`pop_id`,`customer_type_id`,`customer_vlan`,`customer_ip`,`customer_bandwidth`,`status`) VALUES('$customer_name','$customer_email','$customer_phone','$customer_pop_branch','$customer_type','$customer_vlan','$customer_ip','$customer_bandwidth','$customer_status')");
+    $result = $con->query("INSERT INTO customers(`customer_name`,`customer_email`,`customer_phone`,`pop_id`,`customer_type_id`,`customer_vlan`,`customer_ip`,`service_id`,`status`) VALUES('$customer_name','$customer_email','$customer_phone','$customer_pop_branch','$customer_type','$customer_vlan','$customer_ip','$service_id','$customer_status')");
 
     if ($result) {
         echo json_encode([
@@ -80,7 +80,7 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     $customer_type = trim($_POST['customer_type']);
     $customer_vlan = trim($_POST['customer_vlan']);
     $customer_ip = trim($_POST['customer_ip']);
-    $customer_bandwidth = trim($_POST['customer_bandwidth']);
+    $service_id = trim($_POST['service_id']);
     $id = trim($_POST['id']);
     /* Validate Customer Name */
     __validate_input($customer_name, 'Customer Name');
@@ -94,7 +94,7 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
         exit();
     }
     /* Update the customer in the database */
-    $result = $con->query("UPDATE customers SET customer_name='$customer_name',customer_email='$customer_email',customer_phone='$customer_phone',pop_id='$customer_pop_branch',customer_type_id='$customer_type',customer_vlan='$customer_vlan',customer_ip='$customer_ip',customer_bandwidth='$customer_bandwidth' WHERE id='$id'");
+    $result = $con->query("UPDATE customers SET customer_name='$customer_name',customer_email='$customer_email',customer_phone='$customer_phone',pop_id='$customer_pop_branch',customer_type_id='$customer_type',customer_vlan='$customer_vlan',customer_ip='$customer_ip',service_id='$service_id' WHERE id='$id'");
     if ($result) {
         echo json_encode([
             'success' => true,

@@ -27,7 +27,7 @@
                                     </div>
                                     <div class="form-group mb-2">
                                         <label>POP/Area</label>
-                                        <select type="text" name="customer_pop_branch" class="form-select">
+                                        <select type="text" name="customer_pop_branch" id="customer_pop_branch" class="form-select" style="width: 100%;">
                                             <option value="">---Select---</option>
                                             <?php 
                                             if($con->query("SELECT * FROM pop_branch")){
@@ -41,7 +41,7 @@
                                     </div>
                                     <div class="form-group mb-2">
                                         <label>Connection Via</label>
-                                        <select type="text" name="customer_type" class="form-select" placeholder="Enter Customer Type">
+                                        <select type="text" name="customer_type" id="customer_type" class="form-select" style="width: 100%;">
                                             <option value="">Select Type</option>
                                            
                                             <?php 
@@ -63,13 +63,24 @@
                                         <label>IP Address</label>
                                         <input type="text" name="customer_ip" class="form-control" placeholder="Enter Customer IP Address">
                                     </div>
-                                    <div class="form-group mb-2">
+                                    <!-- <div class="form-group mb-2">
                                         <label>Bandwidth</label>
                                         <input type="text" name="customer_bandwidth" class="form-control" placeholder="Enter Customer Bandwidth"  value="IIG 200Mbps | GGC 500Mbps FNA 500Mbps | CDN 500Mbps">
-                                    </div>
+                                    </div> -->
+                                   
                                     <div class="form-group mb-2">
-                                        <label>IIG</label>
-                                        <input type="number" name="customer_bandwidth" class="form-control" placeholder="Enter Customer Bandwidth"  value="200">
+                                        <label>Services</label>
+                                        <select type="text" name="service_id" class="form-select">
+                                            <option value="">---Select---</option>
+                                            <?php 
+                                                if($con->query("SELECT * FROM customer_service")){
+                                                    $services = $con->query("SELECT * FROM customer_service");
+                                                    while($row = $services->fetch_array()){
+                                                        echo '<option value="'.$row['id'].'">'.$row['name'].'</option>';
+                                                    }
+                                                }
+                                            ?>
+                                        </select>
                                     </div>
                                     <div class="form-group mb-2">
                                         <label>Status</label>
@@ -121,7 +132,7 @@
                                     </div>
                                     <div class="form-group mb-2">
                                         <label>POP/Area</label>
-                                        <select type="text" name="customer_pop_branch" class="form-select">
+                                        <select type="text" name="customer_pop_branch" class="form-select" style="width: 100%;">
                                             <option value="">---Select---</option>
                                             <?php 
                                             if($con->query("SELECT * FROM pop_branch")){
@@ -135,7 +146,7 @@
                                     </div>
                                     <div class="form-group mb-2">
                                         <label>Connection Via</label>
-                                        <select type="text" name="customer_type" class="form-select" placeholder="Enter Customer Type">
+                                       <select type="text" name="customer_type" id="customer_type" class="form-select" style="width: 100%;">
                                             <option value="">---Select---</option>
                                            
                                             <?php 
@@ -322,35 +333,5 @@
                     }
                 });
             });
-            /** Delete Script **/
-            $(document).on('click', "button[name='delete_button']", function() {
-                var id = $(this).data('id');
-                $('#DeleteId').text(id);
-                $('#deleteModal').modal('show');
-
-                $('#DeleteConfirm').off('click').on('click', function() {
-                    $.ajax({
-                        url: "include/customer_server.php?delete_customer_data=true",
-                        type: "POST",
-                        data: {
-                            id: id
-                        },
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.success) {
-                                toastr.success(response.message);
-                                $('#deleteModal').modal('hide');
-                                setTimeout(() => {
-                                    location.reload();
-                                }, 500);
-                            } else {
-                                toastr.error(response.message);
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            toastr.error("Error deleting NAS: " + xhr.responseText);
-                        }
-                    });
-                });
-            });
+            
     </script>

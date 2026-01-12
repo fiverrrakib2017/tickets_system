@@ -13,29 +13,27 @@ error_reporting(E_ALL);
 <!doctype html>
 <html lang="en">
 
-<?php 
+<?php
 
 require 'Head.php';
 
-
-
 ?>
 <style>
+    .stat-eye {
+        display: none;
+        color: #6c757d;
+        transition: color 0.3s ease;
+    }
 
-.stat-eye {
-    display: none;
-    color: #6c757d;
-    transition: color 0.3s ease;
-}
-.stat-item:hover .stat-eye {
-    display: inline;
-}
-.stat-eye:hover {
-    color: #0d6efd; 
-}
+    .stat-item:hover .stat-eye {
+        display: inline;
+    }
 
-
+    .stat-eye:hover {
+        color: #0d6efd;
+    }
 </style>
+
 <body data-sidebar="dark">
 
     <!-- Begin page -->
@@ -68,39 +66,110 @@ require 'Head.php';
                     <div class="row mb-2">
                         <div class="col-md-6 col-sm-12">
                             <!-- New Request -->
-                            <a href="con_request.php" class="btn btn-warning  mb-1">   <i class="fas fa-user-clock"></i> New Request
+                            <a href="con_request.php" class="btn btn-warning  mb-1"> <i class="fas fa-user-clock"></i>
+                                New Request
                                 <?php
-                               
                                 
                                 ?>
                             </a>
                             <!-- Add Customer -->
                             <button type="button" data-bs-toggle="modal" data-bs-target="#addCustomerModal"
-                                class=" btn btn-success mb-1">  <i class="fas fa-user-plus"></i> Add
+                                class=" btn btn-success mb-1"> <i class="fas fa-user-plus"></i> Add
                                 Customer</button>
                         </div>
-                    </div>       
+                    </div>
+                    <div class="row">
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card mini-stats-wid">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <div class="flex-grow-1">
+                                            <p class="text-muted fw-medium">Total Tickets</p>
+                                            <h4 class="mb-0">120</h4>
+                                        </div>
+                                        <div class="mini-stat-icon avatar-sm rounded-circle bg-primary">
+                                            <span class="avatar-title">
+                                                <i class="fas fa-ticket-alt font-size-24"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card mini-stats-wid">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <div class="flex-grow-1">
+                                            <p class="text-muted fw-medium">Open Tickets</p>
+                                            <h4 class="mb-0">32</h4>
+                                        </div>
+                                        <div class="mini-stat-icon avatar-sm rounded-circle bg-warning">
+                                            <span class="avatar-title">
+                                                <i class="fas fa-folder-open font-size-24"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card mini-stats-wid">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <div class="flex-grow-1">
+                                            <p class="text-muted fw-medium">Pending Tickets</p>
+                                            <h4 class="mb-0">18</h4>
+                                        </div>
+                                        <div class="mini-stat-icon avatar-sm rounded-circle bg-danger">
+                                            <span class="avatar-title">
+                                                <i class="fas fa-hourglass-half font-size-24"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-xl-3 col-md-6">
+                            <div class="card mini-stats-wid">
+                                <div class="card-body">
+                                    <div class="d-flex">
+                                        <div class="flex-grow-1">
+                                            <p class="text-muted fw-medium">Resolved Tickets</p>
+                                            <h4 class="mb-0">70</h4>
+                                        </div>
+                                        <div class="mini-stat-icon avatar-sm rounded-circle bg-success">
+                                            <span class="avatar-title">
+                                                <i class="fas fa-check-circle font-size-24"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <?php include 'Component/chart.php'; ?>
+                    <?php include 'Component/recent_ticket.php'; ?>
+
+                    
                 </div> <!-- container-fluid -->
             </div>
             <!-- End Page-content -->
-            <?php include 'Footer.php';?>
+            <?php include 'Footer.php'; ?>
         </div>
         <!-- end main content-->
     </div>
-    <!-- END layout-wrapper -->                  
+    <!-- END layout-wrapper -->
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
 
 
-<?php include 'modal/customer_modal.php';?>
-<?php include 'script.php'; ?>
-<script type="text/javascript">
-
-
-
-    
-    
-</script>
+    <?php include 'modal/customer_modal.php'; ?>
+    <?php include 'script.php'; ?>
+    <script type="text/javascript"></script>
 
 </body>
 

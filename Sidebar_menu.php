@@ -18,6 +18,7 @@
                     <li><a href="customers.php">Customer List</a></li>                   
                     <li><a href="customer_type.php">Customer Type</a></li>                   
                     <li><a href="services.php">Customer Services</a></li>                   
+                    <li><a href="pop_branch.php">POP Branch</a></li>                   
                     
                 </ul>
             </li>

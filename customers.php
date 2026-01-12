@@ -84,7 +84,7 @@ require 'Head.php';
                                                     <th>Name</th>
                                                     <th>Email</th>
                                                     <th>Phone</th>
-                                                    <th>Location</th>
+                                                    <th>POP/Area</th>
                                                     <th>Type</th>
                                                     <th>IP</th>
                                                     <th>Bandwidth</th>
@@ -94,9 +94,15 @@ require 'Head.php';
                                             </thead>
                                             <tbody id="customer-list">
                                                 <?php
-                                                $sql = "SELECT c.*, ct.name AS type_name
+                                                $sql = "SELECT 
+                                                            c.*, 
+                                                            COALESCE(ct.name, 'N/A') AS type_name,
+                                                            COALESCE(pb.name, 'N/A') AS pop_branch_name
                                                         FROM customers c
-                                                        LEFT JOIN customer_type ct ON c.customer_type_id = ct.id
+                                                        LEFT JOIN customer_type ct 
+                                                            ON c.customer_type_id = ct.id
+                                                        LEFT JOIN pop_branch pb 
+                                                            ON c.pop_id = pb.id
                                                         ORDER BY c.id DESC";
                                                 $result = mysqli_query($con, $sql);
 
@@ -107,7 +113,7 @@ require 'Head.php';
                                                     <td><?php echo htmlspecialchars($rows["customer_name"]); ?></td>
                                                     <td><?php echo htmlspecialchars($rows["customer_email"]); ?></td>
                                                     <td><?php echo htmlspecialchars($rows["customer_phone"]); ?></td>
-                                                    <td><?php echo htmlspecialchars($rows["customer_location"]); ?></td>
+                                                    <td><?php echo htmlspecialchars($rows["pop_branch_name"]); ?></td>
                                                     <td><?php echo htmlspecialchars($rows["type_name"]); ?></td>
                                                     <td><?php echo htmlspecialchars($rows["customer_ip"]); ?></td>
                                                     <td><?php echo htmlspecialchars($rows["customer_bandwidth"]); ?></td>

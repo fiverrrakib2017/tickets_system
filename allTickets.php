@@ -44,7 +44,7 @@ include("include/security_token.php");
                                     <div class="mr-md-3 mr-xl-5">
                                         <div class="d-flex">
                                             <i class="mdi mdi-home text-muted hover-cursor"></i>
-                                            <p class="text-muted mb-0 hover-cursor">&nbsp;/&nbsp;Dashboard&nbsp;/&nbsp;
+                                            <p class="text-muted mb-0 hover-cursor">&nbsp;<a href="index.php">Dashboard</a>&nbsp;/&nbsp;
                                             </p>
                                             <p class="text-primary mb-0 hover-cursor">Ticket</p>
                                         </div>
@@ -53,7 +53,6 @@ include("include/security_token.php");
                                 </div>
                                 <div class="d-flex justify-content-between align-items-end flex-wrap">
                                    
-									<!-- <a href="create_ticket.php" class="btn btn-primary mt-2 mb-2 mt-xl-0 mdi mdi-account-plus mdi-18px" >&nbsp;&nbsp;New Ticket</a> -->
 									<button type="button" class="btn btn-primary mt-2 mb-2 mt-xl-0 "  data-bs-toggle="modal" data-bs-target="#ticketModal"><i class="fas fa-ticket-alt"></i>&nbsp;&nbsp; New Ticket</button>
                                     <br>
                                 </div>
@@ -64,7 +63,6 @@ include("include/security_token.php");
                         <div class="col-md-12 stretch-card">
                             <div class="card">
                                 <div class="card-body">
-                                    <!-- <div id="export_buttonscc" class="mb-3"></div> -->
                                     <div class="table-responsive">
                                         <table id="tickets_datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                             <thead class="thead-light">

@@ -26,8 +26,18 @@
                                         <input type="text" name="customer_phone" class="form-control" placeholder="Enter Customer Phone Number">
                                     </div>
                                     <div class="form-group mb-2">
-                                        <label>POP/Area/Location</label>
-                                        <input type="text" name="customer_location" class="form-control" placeholder="Enter Customer Area/Location">
+                                        <label>POP/Area</label>
+                                        <select type="text" name="customer_pop_branch" class="form-control">
+                                            <option value="">---Select---</option>
+                                            <?php 
+                                            if($con->query("SELECT * FROM pop_branch")){
+                                                $pop_branches = $con->query("SELECT * FROM pop_branch");
+                                                while($row = $pop_branches->fetch_array()){
+                                                    echo '<option value="'.$row['id'].'">'.$row['name'].'</option>';
+                                                }
+                                            }
+                                            ?>
+                                        </select>
                                     </div>
                                     <div class="form-group mb-2">
                                         <label>Connection Via</label>
@@ -110,8 +120,18 @@
                                         <input type="text" name="customer_phone" class="form-control" placeholder="Enter Customer Phone Number">
                                     </div>
                                     <div class="form-group mb-2">
-                                        <label>POP/Area/Location</label>
-                                        <input type="text" name="customer_location" class="form-control" placeholder="Enter Customer Area/Location">
+                                        <label>POP/Area</label>
+                                        <select type="text" name="customer_pop_branch" class="form-control">
+                                            <option value="">---Select---</option>
+                                            <?php 
+                                            if($con->query("SELECT * FROM pop_branch")){
+                                                $pop_branches = $con->query("SELECT * FROM pop_branch");
+                                                while($row = $pop_branches->fetch_array()){
+                                                    echo '<option value="'.$row['id'].'">'.$row['name'].'</option>';
+                                                }
+                                            }
+                                            ?>
+                                        </select>
                                     </div>
                                     <div class="form-group mb-2">
                                         <label>Connection Via</label>

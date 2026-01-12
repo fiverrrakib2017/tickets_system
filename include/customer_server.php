@@ -38,7 +38,9 @@ if(isset($_GET['get_customers_data']) && $_SERVER['REQUEST_METHOD']=='GET'){
 }
 /******** Add Customer  Script ******************/
 if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-    
+    echo '<pre>';
+    print_r($_POST);
+    echo '</pre>';exit; 
     $customer_name = trim($_POST['customer_name']);
     $customer_email = trim($_POST['customer_email']);
     $customer_phone = trim($_POST['customer_phone']);

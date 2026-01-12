@@ -18,6 +18,12 @@
                 <span>Customers</span>
             </a>
         </li>
+        <li>
+            <a href="create_customer.php" class="waves-effect">
+                <i class="mdi mdi-account-plus-outline"></i>
+                <span>Create Customer</span>
+            </a>
+        </li>
 
         <li>
             <a href="customer_type.php" class="waves-effect">

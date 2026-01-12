@@ -107,18 +107,7 @@ require 'Head.php';
                                                 </select>
                                             </div>
 
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Service</label>
-                                                <select name="service_id" class="form-select">
-                                                    <option value="">--- Select ---</option>
-                                                    <?php
-                                                    $services = $con->query('SELECT * FROM customer_service');
-                                                    while ($row = $services->fetch_assoc()) {
-                                                        echo "<option value='{$row['id']}'>{$row['name']}</option>";
-                                                    }
-                                                    ?>
-                                                </select>
-                                            </div>
+                                            
 
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label">VLAN</label>
@@ -139,6 +128,10 @@ require 'Head.php';
                                                     <option value="0">Inactive</option>
                                                 </select>
                                             </div>
+                                            
+
+                                            <?php include 'Component/customer_service_section.php'; ?>
+
 
                                         </div>
 
@@ -177,9 +170,9 @@ require 'Head.php';
     <?php include 'script.php'; ?>
     <script type="text/javascript"></script>
     <script type="text/javascript">
-        $('select').select2({
-            width: '100%'
-        });
+        // $('select').select2({
+        //     width: '100%'
+        // });
         $('#addCustomerForm').submit(function(e) {
             e.preventDefault();
             /*Get the submit button*/

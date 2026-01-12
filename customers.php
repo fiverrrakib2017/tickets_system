@@ -110,7 +110,11 @@ require 'Head.php';
                                                 ?>
                                                 <tr>
                                                     <td><?php echo $rows['id']; ?></td>
-                                                    <td><?php echo htmlspecialchars($rows["customer_name"]); ?></td>
+                                                    <td>
+                                                        <a href="customer_profile.php?clid=<?php echo $rows['id']; ?>">
+                                                            <?php echo htmlspecialchars($rows["customer_name"]); ?>
+                                                        </a>
+                                                    </td>
                                                     <td><?php echo htmlspecialchars($rows["customer_email"]); ?></td>
                                                     <td><?php echo htmlspecialchars($rows["customer_phone"]); ?></td>
                                                     <td><?php echo htmlspecialchars($rows["pop_branch_name"]); ?></td>
@@ -128,6 +132,9 @@ require 'Head.php';
                                                         <button type="button" name="delete_button" data-id="<?php echo $rows['id']; ?>" class="btn-sm btn btn-danger">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
+                                                        <a href="customer_profile.php?clid=<?php echo $rows['id']; ?>" class="btn-sm btn btn-success">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
                                                     </td>
                                                 </tr>
                                                 <?php } ?>

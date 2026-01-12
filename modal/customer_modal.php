@@ -27,7 +27,7 @@
                                     </div>
                                     <div class="form-group mb-2">
                                         <label>POP/Area</label>
-                                        <select type="text" name="customer_pop_branch" class="form-control">
+                                        <select type="text" name="customer_pop_branch" class="form-select">
                                             <option value="">---Select---</option>
                                             <?php 
                                             if($con->query("SELECT * FROM pop_branch")){
@@ -121,7 +121,7 @@
                                     </div>
                                     <div class="form-group mb-2">
                                         <label>POP/Area</label>
-                                        <select type="text" name="customer_pop_branch" class="form-control">
+                                        <select type="text" name="customer_pop_branch" class="form-select">
                                             <option value="">---Select---</option>
                                             <?php 
                                             if($con->query("SELECT * FROM pop_branch")){
@@ -249,7 +249,7 @@
                             $('#editCustomerModal input[name="customer_name"]').val(response.data.customer_name);
                             $('#editCustomerModal input[name="customer_email"]').val(response.data.customer_email);
                             $('#editCustomerModal input[name="customer_phone"]').val(response.data.customer_phone);
-                            $('#editCustomerModal input[name="customer_location"]').val(response.data.customer_location);
+                            $('#editCustomerModal select[name="customer_pop_branch"]').val(response.data.pop_id);
                             $('#editCustomerModal select[name="customer_type"]').val(response.data.customer_type_id);
                             $('#editCustomerModal input[name="customer_ip"]').val(response.data.customer_ip);
                             $('#editCustomerModal input[name="customer_bandwidth"]').val(response.data.customer_bandwidth);

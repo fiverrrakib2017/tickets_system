@@ -33,13 +33,19 @@
             <strong>Total Limit:</strong> <span id="servicesTotal">0</span> MBPS
         </div>
         <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="service_type" id="nttn" value="NTTN">
+            <input class="form-check-input" type="radio"
+                name="service_type" id="nttn"
+                value="NTTN" required>
             <label class="form-check-label" for="nttn">NTTN</label>
         </div>
+
         <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="service_type" id="overhead" value="Overhead">
+            <input class="form-check-input" type="radio"
+                name="service_type" id="overhead"
+                value="Overhead">
             <label class="form-check-label" for="overhead">Overhead</label>
         </div>
+
     </div>
 </div>
 
@@ -70,11 +76,12 @@
                 let row = e.target.closest('.service-row');
                 let newRow = row.cloneNode(true);
 
-                // Clear new row values
+                /*---- Clear new row values------*/
                 newRow.querySelector('select').value = '';
                 newRow.querySelector('.limit-input').value = '';
 
-                // Change add button to remove
+                
+                /*------- Change add button to remove-----*/ 
                 const btn = newRow.querySelector('.addServiceBtn');
                 btn.classList.remove('btn-success', 'addServiceBtn');
                 btn.classList.add('btn-danger', 'removeServiceBtn');

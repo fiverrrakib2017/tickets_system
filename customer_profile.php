@@ -15,15 +15,12 @@ if(isset($_GET['clid'])){
    $sql = "SELECT 
             c.*, 
             COALESCE(ct.name, 'N/A') AS type_name,
-            COALESCE(pb.name, 'N/A') AS pop_branch_name,
-            COALESCE(cs.name, 'N/A') AS service_name
+            COALESCE(pb.name, 'N/A') AS pop_branch_name
         FROM customers c
         LEFT JOIN customer_type ct 
             ON c.customer_type_id = ct.id
         LEFT JOIN pop_branch pb 
             ON c.pop_id = pb.id
-        LEFT JOIN customer_service cs
-            ON c.service_id = cs.id
         WHERE c.id = '$clid'
         ORDER BY c.id DESC 
         LIMIT 1";
@@ -217,10 +214,54 @@ require 'Head.php';
                                                             <i class="mdi mdi-network-outline me-2 text-success fs-5"></i>
                                                             <span class="fw-bold">Service:</span>
                                                         </p>
-                                                        <span class="fw-semibold text-dark"><?php echo htmlspecialchars($customer['service_name'] ?? 'N/A'); ?></span>
+                                                        <span class="fw-semibold text-dark">
+                                                            <?php
+                                                            /*----Fetch services for this customer----*/ 
+                                                            $service_sql = "SELECT cs.name, ci.customer_limit 
+                                                                            FROM customer_invoice ci
+                                                                            JOIN customer_service cs ON ci.service_id = cs.id
+                                                                            WHERE ci.customer_id = '{$customer['id']}'";
+                                                            $service_result = $con->query($service_sql);
+                                                            $services = [];
+                                                            if ($service_result->num_rows > 0) {
+                                                                while ($service_row = $service_result->fetch_assoc()) {
+                                                                    $services[] = htmlspecialchars($service_row['name'] . ' (' . $service_row['customer_limit'] . ' MBPS)');
+                                                                }
+                                                                echo implode(', ', $services);
+                                                            } else {
+                                                                echo 'N/A';
+                                                            }
+                                                            ?>
+                                                        </span>
                                                     </div>
                                                 </div>
 
+                                                <!-- Total Capacity -->
+                                                <div class="col-12 bg-white p-0">
+                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3">
+                                                        <p class="mb-0 text-muted">
+                                                            <i class="mdi mdi-checkbox-marked-circle-outline me-2 text-warning fs-5"></i>
+                                                            <span class="fw-bold">Total Capacity:</span>
+                                                        </p>
+                                                        <span class="fw-semibold text-dark">
+                                                            <?php echo htmlspecialchars($customer['total'] ?? '0'); ?> MBPS
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <!-- Service Type -->
+                                                <div class="col-12 bg-white p-0">
+                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3">
+                                                        <p class="mb-0 text-muted">
+                                                            <i class="mdi mdi-checkbox-marked-circle-outline me-2 text-warning fs-5"></i>
+                                                            <span class="fw-bold">Service Type:</span>
+                                                        </p>
+                                                        <span class="fw-semibold text-dark">
+                                                            <?php echo ($customer['service_type'] == 'NTTN') 
+                                                                ? '<span class="">NTTN</span>' 
+                                                                : '<span class="">O/H</span>'; ?>
+                                                        </span>
+                                                    </div>
+                                                </div>
                                                 <!-- Status -->
                                                 <div class="col-12 bg-white p-0">
                                                     <div class="d-flex justify-content-between align-items-center py-3 px-3">

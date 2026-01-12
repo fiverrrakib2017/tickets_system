@@ -26,11 +26,11 @@
                                         <input type="text" name="customer_phone" class="form-control" placeholder="Enter Customer Phone Number">
                                     </div>
                                     <div class="form-group mb-2">
-                                        <label>Area/Location</label>
+                                        <label>POP/Area/Location</label>
                                         <input type="text" name="customer_location" class="form-control" placeholder="Enter Customer Area/Location">
                                     </div>
                                     <div class="form-group mb-2">
-                                        <label>Type</label>
+                                        <label>Connection Via</label>
                                         <select type="text" name="customer_type" class="form-select" placeholder="Enter Customer Type">
                                             <option value="">Select Type</option>
                                            
@@ -55,7 +55,11 @@
                                     </div>
                                     <div class="form-group mb-2">
                                         <label>Bandwidth</label>
-                                        <input type="text" name="customer_bandwidth" class="form-control" placeholder="Enter Customer Bandwidth">
+                                        <input type="text" name="customer_bandwidth" class="form-control" placeholder="Enter Customer Bandwidth"  value="IIG 200Mbps | GGC 500Mbps FNA 500Mbps | CDN 500Mbps">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label>IIG</label>
+                                        <input type="number" name="customer_bandwidth" class="form-control" placeholder="Enter Customer Bandwidth"  value="200">
                                     </div>
                                     <div class="form-group mb-2">
                                         <label>Status</label>
@@ -106,13 +110,13 @@
                                         <input type="text" name="customer_phone" class="form-control" placeholder="Enter Customer Phone Number">
                                     </div>
                                     <div class="form-group mb-2">
-                                        <label>Area/Location</label>
+                                        <label>POP/Area/Location</label>
                                         <input type="text" name="customer_location" class="form-control" placeholder="Enter Customer Area/Location">
                                     </div>
                                     <div class="form-group mb-2">
-                                        <label>Type</label>
+                                        <label>Connection Via</label>
                                         <select type="text" name="customer_type" class="form-select" placeholder="Enter Customer Type">
-                                            <option value="">Select Type</option>
+                                            <option value="">---Select---</option>
                                            
                                             <?php 
                                             if($con->query("SELECT * FROM customer_type")){

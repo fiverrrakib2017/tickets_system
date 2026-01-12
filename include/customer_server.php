@@ -261,6 +261,110 @@ if (isset($_GET['delete_customer_type_data']) && $_SERVER['REQUEST_METHOD'] == '
     }
 }
 
+/******** Add Customer services type Script ******************/
+if (isset($_GET['add_customer_service_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $customer_service = trim($_POST['customer_service_name']);
+
+    /* Validate Customer Service */
+    __validate_input($customer_service, 'Customer Service');
+
+    
+    /* Insert into  table */
+    $result = $con->query("INSERT INTO customer_service(`name`) VALUES('$customer_service')");
+    if ($result) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Added successfully!',
+        ]);
+        exit();
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Failed to add Pool!',
+        ]);
+        exit();
+    }
+}
+
+/******** Update Customer Service Script ******************/
+if (isset($_GET['update_customer_service_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    $customer_service = trim($_POST['customer_service_name']);
+    $id = trim($_POST['id']);
+    /* Validate Customer Service */
+    __validate_input($customer_service, 'Customer Service');
+    /* Check if customer service already exists */
+    $check_customer_service = $con->query("SELECT * FROM customer_service WHERE name='$customer_service' AND id != '$id'");
+    if ($check_customer_service->num_rows > 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Customer Service Already exists!',
+        ]);
+        exit();
+    }
+    /* Update the customer service in the database */
+    $result = $con->query("UPDATE customer_service SET name='$customer_service' WHERE id='$id'");
+    if ($result) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Updated successfully!',
+        ]);
+        exit();
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Failed to update Topic!',
+        ]);
+        exit();
+    }
+}
+
+if (isset($_GET['get_customer_service_data']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
+    $id = isset($_GET['id']) ? trim($_GET['id']) : '';
+    $data = [];
+    if (isset($id) && is_numeric($id)) {
+        $result = $con->query("SELECT * FROM customer_service WHERE id='$id'");
+    }else{
+        $result = $con->query("SELECT * FROM customer_service");
+    }
+
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row;
+    }
+
+    echo json_encode([
+        'success' => true,
+        'data' => isset($_GET['id']) ? ($data[0] ?? []) : $data,
+    ]);
+    exit();
+}
+/*Delete customer service Script*/
+if (isset($_GET['delete_customer_service_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id = trim($_POST['id']);
+    if (empty($id)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'ID is required!',
+        ]);
+        exit();
+    }
+    $result = $con->query("DELETE FROM customer_service WHERE id='$id'");
+    $con->close();
+    if ($result) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Deleted successfully!',
+        ]);
+        exit();
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Failed to delete!',
+        ]);
+        exit();
+    }
+}
+
 
 
 

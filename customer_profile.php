@@ -7,21 +7,42 @@ include "include/db_connect.php";
 // error_reporting(E_ALL);
 if(isset($_GET['clid'])){
     $clid = $_GET['clid'];
-    $customer_query = $con->query("SELECT * FROM customers WHERE id='$clid'");
+
+    // Initialize
+    $customer = [];
+
+    // Fetch customer data
+   $sql = "SELECT 
+            c.*, 
+            COALESCE(ct.name, 'N/A') AS type_name,
+            COALESCE(pb.name, 'N/A') AS pop_branch_name,
+            COALESCE(cs.name, 'N/A') AS service_name
+        FROM customers c
+        LEFT JOIN customer_type ct 
+            ON c.customer_type_id = ct.id
+        LEFT JOIN pop_branch pb 
+            ON c.pop_id = pb.id
+        LEFT JOIN customer_service cs
+            ON c.service_id = cs.id
+        WHERE c.id = '$clid'
+        ORDER BY c.id DESC 
+        LIMIT 1";
+
+    $customer_query = $con->query($sql);
+
     if($customer_query->num_rows > 0){
         $customer = $customer_query->fetch_assoc();
-        $fullname = $customer['customer_name'];
-        $mobile = $customer['customer_phone'];
-        $profile_pic = $customer['profile_image'];
-        $createdate = $customer['created_at'];
     } else {
+        // Redirect if not found
         header("Location: customers.php");
         exit();
     }
 } else {
+    // Redirect if no clid
     header("Location: customers.php");
     exit();
 }
+
 ?>
 <!doctype html>
 <!doctype html>
@@ -55,63 +76,169 @@ require 'Head.php';
                             <div class="main-body">
                                 <div class="row gutters-sm">
                                     <div class="col-md-4 mb-3">
-                                        <div class="">
-                                            <div class="card  p-3 mb-4 bg-white rounded text-center">
-                                                <div class="card-body">
-                                                    <div class="d-flex flex-column align-items-center profile">
-                                                        <!-- Profile Image -->
+                                        <div class="card  p-3 mb-4 bg-white rounded text-center">
+                                            <div class="card-body">
+                                                <div class="d-flex flex-column align-items-center profile">
+                                                    <!-- Profile Image -->
 
-                                                        <img src="assets/images/<?php echo $profile_pic ?? 'avatar.png'; ?>"
-                                                            class="rounded-circle border border-3 border-primary shadow-sm"
-                                                            width="120" height="120" id="profilePreview"/>
-                                                             <!-- Upload Button -->
-                                                            <form id="profileImageForm" enctype="multipart/form-data" class="mt-2">
-                                                                <label for="profileImageUpload" class="btn btn-sm btn-outline-primary">
-                                                                    <i class="fas fa-upload"></i> Change Photo
-                                                                </label>
-                                                                <input type="file" name="profile_image" id="profileImageUpload" accept="image/*" hidden />
-                                                            </form>
+                                                    <img src="assets/images/<?php echo $customer['profile_pic'] ?? 'avatar.png'; ?>"
+                                                        class="rounded-circle border border-3 border-primary shadow-sm"
+                                                        width="120" height="120" id="profilePreview"/>
+                                                            <!-- Upload Button -->
+                                                        <form id="profileImageForm" enctype="multipart/form-data" class="mt-2">
+                                                            <label for="profileImageUpload" class="btn btn-sm btn-outline-primary">
+                                                                <i class="fas fa-upload"></i> Change Photo
+                                                            </label>
+                                                            <input type="file" name="profile_image" id="profileImageUpload" accept="image/*" hidden />
+                                                        </form>
 
-                                                        <!-- Profile Details -->
+                                                    <!-- Profile Details -->
+                                                    <div class="mt-3">
+                                                        <h4 class="text-primary fw-bold"><?php echo $customer['customer_name'] ?? 'N/A'; ?></h4>
+                                                        <p class="text-muted mb-1">
+                                                            <span class="badge bg-secondary">#
+                                                                <?php echo $customer['id']; ?></span>
+                                                        </p>
+                                                        <p class="text-dark fw-semibold">
+                                                            <i class="fas fa-phone-alt text-success"></i>
+                                                            <?php echo $customer['customer_phone']; ?>
+                                                        </p>
+
+                                                        <!-- User Since -->
+                                                        <small class="text-muted">
+                                                            <i class="far fa-calendar-alt"></i>
+                                                            <?php
+                                                            $createdate = new DateTime(
+                                                                $customer['created_at']
+                                                            );
+                                                            echo $createdate->format(
+                                                                "d M, Y"
+                                                            );
+                                                            ?>
+                                                        </small>
+
+                                                        
+
+                                                        <!-- Action Buttons -->
                                                         <div class="mt-3">
-                                                            <h4 class="text-primary fw-bold"><?php echo $fullname ?? 'N/A'; ?></h4>
-                                                            <p class="text-muted mb-1">
-                                                                <span class="badge bg-secondary">#
-                                                                    <?php echo $clid; ?></span>
-                                                            </p>
-                                                            <p class="text-dark fw-semibold">
-                                                                <i class="fas fa-phone-alt text-success"></i>
-                                                                <?php echo $mobile; ?>
-                                                            </p>
+                                                            <a href="profile_edit.php?clid=<?php echo $clid; ?>"
+                                                                class="btn btn-primary btn-sm">
+                                                                <i class="fas fa-edit"></i> Edit Profile
+                                                            </a>
 
-                                                            <!-- User Since -->
-                                                            <small class="text-muted">
-                                                                <i class="far fa-calendar-alt"></i>
-                                                                <?php
-                                                                $createdate = new DateTime(
-                                                                    $createdate
-                                                                );
-                                                                echo $createdate->format(
-                                                                    "d M, Y"
-                                                                );
-                                                                ?>
-                                                            </small>
-
-                                                           
-
-                                                            <!-- Action Buttons -->
-                                                            <div class="mt-3">
-                                                                <a href="profile_edit.php?clid=<?php echo $clid; ?>"
-                                                                    class="btn btn-primary btn-sm">
-                                                                    <i class="fas fa-edit"></i> Edit Profile
-                                                                </a>
-
-                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="card border-0 rounded-4 shadow-sm">
+                                            <div class="card-body p-0">
+
+                                                <!-- Fullname -->
+                                                <div class="col-12 bg-white p-0">
+                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3 border-bottom border-dotted">
+                                                        <p class="mb-0 text-muted">
+                                                            <i class="mdi mdi-account me-2 text-primary fs-5"></i>
+                                                            <span class="fw-bold">Fullname:</span>
+                                                        </p>
+                                                        <span class="fw-semibold text-dark"><?php echo htmlspecialchars($customer['customer_name'] ?? 'N/A'); ?></span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Email -->
+                                                <div class="col-12 bg-white p-0">
+                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3 border-bottom border-dotted">
+                                                        <p class="mb-0 text-muted">
+                                                            <i class="mdi mdi-email-outline me-2 text-success fs-5"></i>
+                                                            <span class="fw-bold">Email:</span>
+                                                        </p>
+                                                        <span class="fw-semibold text-dark"><?php echo htmlspecialchars($customer['customer_email'] ?? 'N/A'); ?></span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Phone -->
+                                                <div class="col-12 bg-white p-0">
+                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3 border-bottom border-dotted">
+                                                        <p class="mb-0 text-muted">
+                                                            <i class="mdi mdi-phone me-2 text-info fs-5"></i>
+                                                            <span class="fw-bold">Phone:</span>
+                                                        </p>
+                                                        <span class="fw-semibold text-dark"><?php echo htmlspecialchars($customer['customer_phone'] ?? 'N/A'); ?></span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- VLAN -->
+                                                <div class="col-12 bg-white p-0">
+                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3 border-bottom border-dotted">
+                                                        <p class="mb-0 text-muted">
+                                                            <i class="mdi mdi-network me-2 text-warning fs-5"></i>
+                                                            <span class="fw-bold">VLAN:</span>
+                                                        </p>
+                                                        <span class="fw-semibold text-dark"><?php echo htmlspecialchars($customer['customer_vlan'] ?? 'N/A'); ?></span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- IP Address -->
+                                                <div class="col-12 bg-white p-0">
+                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3 border-bottom border-dotted">
+                                                        <p class="mb-0 text-muted">
+                                                            <i class="mdi mdi-server-network me-2 text-danger fs-5"></i>
+                                                            <span class="fw-bold">IP Address:</span>
+                                                        </p>
+                                                        <span class="fw-semibold text-dark"><?php echo htmlspecialchars($customer['customer_ip'] ?? 'N/A'); ?></span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- POP / Area -->
+                                                <div class="col-12 bg-white p-0">
+                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3 border-bottom border-dotted">
+                                                        <p class="mb-0 text-muted">
+                                                            <i class="mdi mdi-map-marker-outline me-2 text-primary fs-5"></i>
+                                                            <span class="fw-bold">POP / Area:</span>
+                                                        </p>
+                                                        <span class="fw-semibold text-dark"><?php echo htmlspecialchars($customer['pop_branch_name'] ?? 'N/A'); ?></span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Connection Type -->
+                                                <div class="col-12 bg-white p-0">
+                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3 border-bottom border-dotted">
+                                                        <p class="mb-0 text-muted">
+                                                            <i class="mdi mdi-network-outline me-2 text-success fs-5"></i>
+                                                            <span class="fw-bold">Connection Via:</span>
+                                                        </p>
+                                                        <span class="fw-semibold text-dark"><?php echo htmlspecialchars($customer['type_name'] ?? 'N/A'); ?></span>
+                                                    </div>
+                                                </div>
+                                                <!-- Service Type -->
+                                                <div class="col-12 bg-white p-0">
+                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3 border-bottom border-dotted">
+                                                        <p class="mb-0 text-muted">
+                                                            <i class="mdi mdi-network-outline me-2 text-success fs-5"></i>
+                                                            <span class="fw-bold">Service:</span>
+                                                        </p>
+                                                        <span class="fw-semibold text-dark"><?php echo htmlspecialchars($customer['service_name'] ?? 'N/A'); ?></span>
+                                                    </div>
+                                                </div>
+
+                                                <!-- Status -->
+                                                <div class="col-12 bg-white p-0">
+                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3">
+                                                        <p class="mb-0 text-muted">
+                                                            <i class="mdi mdi-checkbox-marked-circle-outline me-2 text-warning fs-5"></i>
+                                                            <span class="fw-bold">Status:</span>
+                                                        </p>
+                                                        <span class="fw-semibold text-dark">
+                                                            <?php echo ($customer['status'] == 1) 
+                                                                ? '<span class="badge bg-success">Active</span>' 
+                                                                : '<span class="badge bg-danger">Inactive</span>'; ?>
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+
                                     </div>
                                     <div class="col-md-8">
                                         

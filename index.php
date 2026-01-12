@@ -78,79 +78,8 @@ require 'Head.php';
                                 Customer</button>
                         </div>
                     </div>
-                    <div class="row">
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card mini-stats-wid">
-                                <div class="card-body">
-                                    <div class="d-flex">
-                                        <div class="flex-grow-1">
-                                            <p class="text-muted fw-medium">Total Tickets</p>
-                                            <h4 class="mb-0">120</h4>
-                                        </div>
-                                        <div class="mini-stat-icon avatar-sm rounded-circle bg-primary">
-                                            <span class="avatar-title">
-                                                <i class="fas fa-ticket-alt font-size-24"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
 
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card mini-stats-wid">
-                                <div class="card-body">
-                                    <div class="d-flex">
-                                        <div class="flex-grow-1">
-                                            <p class="text-muted fw-medium">Open Tickets</p>
-                                            <h4 class="mb-0">32</h4>
-                                        </div>
-                                        <div class="mini-stat-icon avatar-sm rounded-circle bg-warning">
-                                            <span class="avatar-title">
-                                                <i class="fas fa-folder-open font-size-24"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card mini-stats-wid">
-                                <div class="card-body">
-                                    <div class="d-flex">
-                                        <div class="flex-grow-1">
-                                            <p class="text-muted fw-medium">Pending Tickets</p>
-                                            <h4 class="mb-0">18</h4>
-                                        </div>
-                                        <div class="mini-stat-icon avatar-sm rounded-circle bg-danger">
-                                            <span class="avatar-title">
-                                                <i class="fas fa-hourglass-half font-size-24"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-xl-3 col-md-6">
-                            <div class="card mini-stats-wid">
-                                <div class="card-body">
-                                    <div class="d-flex">
-                                        <div class="flex-grow-1">
-                                            <p class="text-muted fw-medium">Resolved Tickets</p>
-                                            <h4 class="mb-0">70</h4>
-                                        </div>
-                                        <div class="mini-stat-icon avatar-sm rounded-circle bg-success">
-                                            <span class="avatar-title">
-                                                <i class="fas fa-check-circle font-size-24"></i>
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <?php include 'Component/dashboard_card.php'; ?>
                     <?php include 'Component/chart.php'; ?>
                     <?php include 'Component/recent_ticket.php'; ?>
 

@@ -3,7 +3,7 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title mb-4">Ticket Status Overview</h4>
-                <canvas id="ticketStatusChart" height="250"></canvas>
+                <canvas id="ticketStatusChart" height="200"></canvas>
             </div>
         </div>
     </div>
@@ -12,7 +12,7 @@
         <div class="card">
             <div class="card-body">
                 <h4 class="card-title mb-4">Ticket Priority</h4>
-                <canvas id="ticketPriorityChart" height="250"></canvas>
+                <canvas id="ticketPriorityChart" height="200"></canvas>
             </div>
         </div>
     </div>
@@ -34,7 +34,7 @@ new Chart(statusCtx, {
         responsive: true,
         plugins: {
             legend: {
-                position: 'bottom'
+                position: 'top',
             }
         }
     }

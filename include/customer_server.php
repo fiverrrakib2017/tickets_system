@@ -38,9 +38,9 @@ if(isset($_GET['get_customers_data']) && $_SERVER['REQUEST_METHOD']=='GET'){
 }
 /******** Add Customer  Script ******************/
 if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-    echo '<pre>';
-    print_r($_POST);
-    echo '</pre>';exit; 
+    // echo '<pre>';
+    // print_r($_POST);
+    // echo '</pre>';exit; 
     $customer_name = trim($_POST['customer_name']);
     $customer_email = trim($_POST['customer_email']);
     $customer_phone = trim($_POST['customer_phone']);
@@ -48,16 +48,39 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $customer_pop_branch = trim($_POST['customer_pop_branch']);
     $customer_vlan = trim($_POST['customer_vlan']);
     $customer_ip = trim($_POST['customer_ip']);
-    $service_id = trim($_POST['service_id']);
+    $service_type = trim($_POST['service_type']); //nttn or overhead
     $customer_status = trim($_POST['customer_status']);
-
+    
 
     /* Validate Customer Name */
     __validate_input($customer_name, 'Customer Name');
 
+    /* get  customer total */
+    $total_limit = 0;
+    if(isset($_POST['limit']) && is_array($_POST['limit'])){
+        foreach($_POST['limit'] as $lim){
+            $total_limit += (int)$lim;
+        }
+    }
 
     /* Insert into  table */
-    $result = $con->query("INSERT INTO customers(`customer_name`,`customer_email`,`customer_phone`,`pop_id`,`customer_type_id`,`customer_vlan`,`customer_ip`,`service_id`,`status`) VALUES('$customer_name','$customer_email','$customer_phone','$customer_pop_branch','$customer_type','$customer_vlan','$customer_ip','$service_id','$customer_status')");
+    $result = $con->query("INSERT INTO customers(`customer_name`,`customer_email`,`customer_phone`,`pop_id`,`customer_type_id`,`customer_vlan`,`customer_ip`,`service_type`,`status`,`total`) VALUES('$customer_name','$customer_email','$customer_phone','$customer_pop_branch','$customer_type','$customer_vlan','$customer_ip','$service_type','$customer_status','$total_limit')");
+
+    $get_customer_id=$con->insert_id;
+
+    if(isset($_POST['service_id']) && is_array($_POST['service_id'])){
+        $service_ids = $_POST['service_id'];
+        $limits = $_POST['limit'];
+        $service_type = $_POST['service_type'];
+        $total_limit = 0;
+        foreach($limits as $lim){
+            $total_limit += (int)$lim;
+        }
+        foreach($service_ids as $index => $service_id){
+            $limit = isset($limits[$index]) ? (int)$limits[$index] : 0;
+            $con->query("INSERT INTO customer_invoice(`customer_id`,`service_id`,`customer_limit`) VALUES($get_customer_id,'$service_id','$limit')");
+        }
+    }
 
     if ($result) {
         echo json_encode([

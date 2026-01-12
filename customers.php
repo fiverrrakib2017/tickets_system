@@ -87,26 +87,22 @@ require 'Head.php';
                                                     <th>POP/Area</th>
                                                     <th>Type</th>
                                                     <th>IP</th>
-                                                    <th>Bandwidth</th>
                                                     <th>Status</th> 
                                                     <th>Action</th> 
                                                 </tr>
                                             </thead>
                                             <tbody id="customer-list">
                                                 <?php
-                                                $sql = "SELECT 
-                                                            c.*, 
-                                                            COALESCE(ct.name, 'N/A') AS type_name,
-                                                            COALESCE(pb.name, 'N/A') AS pop_branch_name,
-                                                            COALESCE(cs.name, 'N/A') AS service_name
-                                                        FROM customers c
-                                                        LEFT JOIN customer_type ct 
-                                                            ON c.customer_type_id = ct.id
-                                                        LEFT JOIN pop_branch pb 
-                                                            ON c.pop_id = pb.id
-                                                        LEFT JOIN customer_service cs
-                                                            ON c.service_id = cs.id
-                                                        ORDER BY c.id DESC";
+                                               $sql = "SELECT 
+                                                        c.*, 
+                                                        COALESCE(ct.name, 'N/A') AS type_name,
+                                                        COALESCE(pb.name, 'N/A') AS pop_branch_name
+                                                    FROM customers c
+                                                    LEFT JOIN customer_type ct 
+                                                        ON c.customer_type_id = ct.id
+                                                    LEFT JOIN pop_branch pb 
+                                                        ON c.pop_id = pb.id
+                                                    ORDER BY c.id DESC";
 
                                                 $result = mysqli_query($con, $sql);
 
@@ -124,7 +120,7 @@ require 'Head.php';
                                                     <td><?php echo htmlspecialchars($rows["pop_branch_name"]); ?></td>
                                                     <td><?php echo htmlspecialchars($rows["type_name"]); ?></td>
                                                     <td><?php echo htmlspecialchars($rows["customer_ip"]); ?></td>
-                                                    <td><?php echo htmlspecialchars($rows['service_name']); ?></td>
+                                                  
                                                     <td>
                                                         <?php echo ($rows["status"] == 1) ? '<span class="badge bg-success">Active</span>' 
                                                                                             : '<span class="badge bg-danger">Inactive</span>'; ?>

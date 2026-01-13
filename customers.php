@@ -98,6 +98,23 @@ require 'Head.php';
                                                 ?>
                                             </p>
                                             <?php endif; ?>
+                                            <?php if(isset($_GET['customer_type'])): ?>
+                                            <p class="text-primary mb-0 hover-cursor">
+                                                &nbsp;/&nbsp;
+                                                <?php
+                                                    $customer_type_id = (int)$_GET['customer_type'];
+                                                    $customer_type_query = $con->prepare("SELECT name FROM customer_type WHERE id = ?");
+                                                    $customer_type_query->bind_param("i", $customer_type_id);
+                                                    $customer_type_query->execute();
+                                                    $customer_type_result = $customer_type_query->get_result();
+                                                    if ($customer_type_row = $customer_type_result->fetch_assoc()) {
+                                                        echo htmlspecialchars($customer_type_row['name']);
+                                                    } else {
+                                                        echo "Unknown Customer Type";
+                                                    }
+                                                ?>
+                                            </p>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <br>
@@ -136,37 +153,65 @@ require 'Head.php';
                                                     <th>Action</th> 
                                                 </tr>
                                             </thead>
-                                            <tbody id="customer-list">
-                                                <?php
-                                                /*------GET Service id And Find Customer id--------*/
-                                                   $customer_ids = [];
-                                                if (isset($_GET['service_id'])) {
-                                                    $service_id=(int)$_GET['service_id'];
-                                                    $service_query=$con->query("SELECT DISTINCT customer_id FROM customer_invoice WHERE service_id = $service_id");
-                                                    while($service_row = $service_query->fetch_assoc()){
-                                                        $customer_ids[] = (int)$service_row['customer_id'];
-                                                    }
-                                                }
-                       
-                                                $where_clause='';
-                                                if(!empty($customer_ids)){
-                                                    $ids_string = implode(',', $customer_ids);
-                                                    $where_clause = "WHERE c.id IN ($ids_string)";
-                                                }
-                                                if(isset($_GET['ip'])){
-                                                    $ip = $_GET['ip'];
-                                                    $where_clause = "WHERE c.customer_ip = '$ip'";
-                                                }
-                                                if(isset($_GET['pop_branch'])){
-                                                    $pop_branch_id = (int)$_GET['pop_branch'];
-                                                    if($where_clause){
-                                                        $where_clause .= " AND c.pop_id = $pop_branch_id";
-                                                    } else {
-                                                        $where_clause = "WHERE c.pop_id = $pop_branch_id";
-                                                    }
-                                                }
+                                          <tbody id="customer-list">
+                                            <?php
+                                            /*------GET Service id And Find Customer id--------*/
+                                            $customer_ids = [];
 
-                                                $sql = "SELECT 
+                                            /*---- Service filter ----*/
+                                            if (isset($_GET['service_id'])) {
+                                                $service_id = (int)$_GET['service_id'];
+                                                $service_query = $con->query(
+                                                    "SELECT DISTINCT customer_id 
+                                                    FROM customer_invoice 
+                                                    WHERE service_id = $service_id"
+                                                );
+                                                while ($row = $service_query->fetch_assoc()) {
+                                                    $customer_ids[] = (int)$row['customer_id'];
+                                                }
+                                            }
+
+                                            /*---- Customer type filter ----*/
+                                            if (isset($_GET['customer_type'])) {
+                                                $customer_type_id = (int)$_GET['customer_type'];
+                                                $customer_query = $con->query(
+                                                    "SELECT id 
+                                                    FROM customers 
+                                                    WHERE customer_type_id = $customer_type_id"
+                                                );
+                                                while ($row = $customer_query->fetch_assoc()) {
+                                                    $customer_ids[] = (int)$row['id'];
+                                                }
+                                            }
+
+                                            /*---- Remove duplicate IDs ----*/
+                                            $customer_ids = array_unique($customer_ids);
+
+                                            /*---- WHERE clause ----*/
+                                            $where_clause = [];
+                                            if (!empty($customer_ids)) {
+                                                $ids_string = implode(',', $customer_ids);
+                                                $where_clause[] = "c.id IN ($ids_string)";
+                                            }
+
+                                            if (isset($_GET['ip']) && $_GET['ip'] !== '') {
+                                                $ip = mysqli_real_escape_string($con, $_GET['ip']);
+                                                $where_clause[] = "c.customer_ip = '$ip'";
+                                            }
+
+                                            if (isset($_GET['pop_branch'])) {
+                                                $pop_branch_id = (int)$_GET['pop_branch'];
+                                                $where_clause[] = "c.pop_id = $pop_branch_id";
+                                            }
+
+                                            /*---- Final WHERE ----*/
+                                            $where_sql = '';
+                                            if (!empty($where_clause)) {
+                                                $where_sql = 'WHERE ' . implode(' AND ', $where_clause);
+                                            }
+
+                                            /*---- Main Query ----*/
+                                            $sql = "SELECT 
                                                         c.*, 
                                                         COALESCE(ct.name, 'N/A') AS type_name,
                                                         COALESCE(pb.name, 'N/A') AS pop_branch_name
@@ -175,56 +220,57 @@ require 'Head.php';
                                                         ON c.customer_type_id = ct.id
                                                     LEFT JOIN pop_branch pb 
                                                         ON c.pop_id = pb.id
-                                                        $where_clause
+                                                    $where_sql
                                                     ORDER BY c.id DESC";
 
-                                                $result = mysqli_query($con, $sql);
+                                            $result = mysqli_query($con, $sql);
 
-                                                while ($rows = mysqli_fetch_assoc($result)) {
-                                                ?>
-                                                <tr>
-                                                    <td><?php echo $rows['id']; ?></td>
-                                                    <td>
-                                                        <a href="customer_profile.php?clid=<?php echo $rows['id']; ?>">
-                                                            <?php echo htmlspecialchars($rows["customer_name"]); ?>
-                                                        </a>
-                                                    </td>
-                                                    <td><?php echo htmlspecialchars($rows["customer_email"]); ?></td>
-                                                    <td><?php echo htmlspecialchars($rows["customer_phone"]); ?></td>
-                                                    <td><?php echo htmlspecialchars($rows["pop_branch_name"]); ?></td>
-                                                    <td><?php echo htmlspecialchars($rows["type_name"]); ?></td>
-                                                    <td><?php echo htmlspecialchars($rows["customer_ip"]); ?></td>
-                                                    <td>
-                                                        
-                                                        <?php
-                                                           
-                                                            if(function_exists('get_customer_services')){
-                                                                print_r(get_customer_services($rows['id'])) ;
-                                                            } else {
-                                                                echo 'N/A';
-                                                            }
-                                                        ?>
-                                                    </td>
-                                                    <td><?php echo htmlspecialchars($rows["total"]); ?> MBPS</td>
-                                                  
-                                                    <td>
-                                                        <?php echo ($rows["status"] == 1) ? '<span class="badge bg-success">Active</span>' 
-                                                                                            : '<span class="badge bg-danger">Inactive</span>'; ?>
-                                                    </td>
-                                                    <td style="text-align:right">
-                                                        <a type="button" href="customer_profile_edit.php?clid=<?php echo $rows['id']; ?>" class="btn-sm btn btn-info">
-                                                            <i class="fas fa-edit"></i>
-                                                        </a>
-                                                        <button type="button" name="delete_button" data-id="<?php echo $rows['id']; ?>" class="btn-sm btn btn-danger">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                        <a href="customer_profile.php?clid=<?php echo $rows['id']; ?>" class="btn-sm btn btn-success">
-                                                            <i class="fas fa-eye"></i>
-                                                        </a>
-                                                    </td>
-                                                </tr>
-                                                <?php } ?>
+                                            while ($rows = mysqli_fetch_assoc($result)) {
+                                            ?>
+                                            <tr>
+                                                <td><?php echo $rows['id']; ?></td>
+                                                <td>
+                                                    <a href="customer_profile.php?clid=<?php echo $rows['id']; ?>">
+                                                        <?php echo htmlspecialchars($rows["customer_name"]); ?>
+                                                    </a>
+                                                </td>
+                                                <td><?php echo htmlspecialchars($rows["customer_email"]); ?></td>
+                                                <td><?php echo htmlspecialchars($rows["customer_phone"]); ?></td>
+                                                <td><?php echo htmlspecialchars($rows["pop_branch_name"]); ?></td>
+                                                <td><?php echo htmlspecialchars($rows["type_name"]); ?></td>
+                                                <td><?php echo htmlspecialchars($rows["customer_ip"]); ?></td>
+                                                <td>
+                                                    <?php
+                                                    if (function_exists('get_customer_services')) {
+                                                        echo get_customer_services($rows['id']);
+                                                    } else {
+                                                        echo 'N/A';
+                                                    }
+                                                    ?>
+                                                </td>
+                                                <td><?php echo (int)$rows["total"]; ?> MBPS</td>
+                                                <td>
+                                                    <?php echo ($rows["status"] == 1)
+                                                        ? '<span class="badge bg-success">Active</span>'
+                                                        : '<span class="badge bg-danger">Inactive</span>'; ?>
+                                                </td>
+                                                <td style="text-align:right">
+                                                    <a href="customer_profile_edit.php?clid=<?php echo $rows['id']; ?>" class="btn-sm btn btn-info">
+                                                        <i class="fas fa-edit"></i>
+                                                    </a>
+                                                    <button type="button" name="delete_button"
+                                                        data-id="<?php echo $rows['id']; ?>"
+                                                        class="btn-sm btn btn-danger">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                    <a href="customer_profile.php?clid=<?php echo $rows['id']; ?>" class="btn-sm btn btn-success">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                            <?php } ?>
                                             </tbody>
+
                                         </table>
 
                                     </div>

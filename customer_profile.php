@@ -182,7 +182,11 @@ require 'Head.php';
                                                             <i class="mdi mdi-server-network me-2 text-danger fs-5"></i>
                                                             <span class="fw-bold">IP Address:</span>
                                                         </p>
-                                                        <span class="fw-semibold text-dark"><?php echo htmlspecialchars($customer['customer_ip'] ?? 'N/A'); ?></span>
+                                                        <a href="customers.php?ip=<?php echo htmlspecialchars($customer['customer_ip'] ?? 'N/A'); ?>" class="text-decoration-none">
+                                                            <span class="fw-semibold text-dark">
+                                                                <?php echo htmlspecialchars($customer['customer_ip'] ?? 'N/A'); ?>
+                                                            </span>
+                                                        </a>
                                                     </div>
                                                 </div>
 
@@ -210,29 +214,52 @@ require 'Head.php';
                                                 <!-- Service Type -->
                                                 <div class="col-12 bg-white p-0">
                                                     <div class="d-flex justify-content-between align-items-center py-3 px-3 border-bottom border-dotted">
+                                                        <a href="customers.php?service=true" class="text-decoration-none">
+                                                        <!-- Services -->
                                                         <p class="mb-0 text-muted">
-                                                            <i class="mdi mdi-network-outline me-2 text-success fs-5"></i>
-                                                            <span class="fw-bold">Service:</span>
-                                                        </p>
+                                                                <i class="mdi mdi-network-outline me-2 text-success fs-5"></i>
+                                                                <span class="fw-bold">Service:</span>
+                                                            </p>
+                                                        </a>
+                                                   
                                                         <span class="fw-semibold text-dark">
                                                             <?php
-                                                            /*----Fetch services for this customer----*/ 
-                                                            $service_sql = "SELECT cs.name, ci.customer_limit 
+                                                            $service_sql = "SELECT 
+                                                                                cs.id AS service_id,
+                                                                                cs.name,
+                                                                                ci.customer_limit 
                                                                             FROM customer_invoice ci
-                                                                            JOIN customer_service cs ON ci.service_id = cs.id
+                                                                            JOIN customer_service cs 
+                                                                                ON ci.service_id = cs.id
                                                                             WHERE ci.customer_id = '{$customer['id']}'";
+
                                                             $service_result = $con->query($service_sql);
-                                                            $services = [];
+
                                                             if ($service_result->num_rows > 0) {
-                                                                while ($service_row = $service_result->fetch_assoc()) {
-                                                                    $services[] = htmlspecialchars($service_row['name'] . ' (' . $service_row['customer_limit'] . ' MBPS)');
+                                                                $serviceLinks = [];
+
+                                                                while ($row = $service_result->fetch_assoc()) {
+
+                                                                    $serviceName  = htmlspecialchars($row['name']);
+                                                                    $serviceLimit = (int)$row['customer_limit'];
+                                                                    $serviceId    = (int)$row['service_id'];
+
+                                                                    $serviceLinks[] = '
+                                                                        <a href="customers.php?service_id='.$serviceId.'" 
+                                                                        class="text-decoration-none text-primary fw-semibold">
+                                                                            '.$serviceName.' ('.$serviceLimit.' MBPS)
+                                                                        </a>
+                                                                    ';
                                                                 }
-                                                                echo implode(', ', $services);
+
+                                                                echo implode(' , ', $serviceLinks);
+
                                                             } else {
                                                                 echo 'N/A';
                                                             }
                                                             ?>
                                                         </span>
+
                                                     </div>
                                                 </div>
 

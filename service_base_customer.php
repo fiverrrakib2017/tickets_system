@@ -55,31 +55,6 @@ require 'Head.php';
                                             <p class="text-primary mb-0 hover-cursor">&nbsp;/&nbsp;<a href="index.php">Dashboard</a>&nbsp;/&nbsp;
                                             </p>
                                             <p class="text-primary mb-0 hover-cursor">Customers</p>
-                                            
-                                            <?php if(isset($_GET['service_id'])): ?>
-                                            <p class="text-primary mb-0 hover-cursor">
-                                                &nbsp;/&nbsp;
-                                                
-                                                <?php
-                                                    $service_id = (int)$_GET['service_id'];
-                                                    $service_query = $con->prepare("SELECT name FROM customer_service WHERE id = ?");
-                                                    $service_query->bind_param("i", $service_id);
-                                                    $service_query->execute();
-                                                    $service_result = $service_query->get_result();
-                                                    if ($service_row = $service_result->fetch_assoc()) {
-                                                        echo htmlspecialchars($service_row['name']);
-                                                    } else {
-                                                        echo "Unknown Service";
-                                                    }
-                                                ?>
-                                            </p>
-                                            <?php endif; ?>
-                                            <?php if(isset($_GET['ip'])): ?>
-                                            <p class="text-primary mb-0 hover-cursor">
-                                                &nbsp;/&nbsp;
-                                                <?php echo htmlspecialchars($_GET['ip']); ?>
-                                            </p>
-                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <br>
@@ -118,27 +93,7 @@ require 'Head.php';
                                             </thead>
                                             <tbody id="customer-list">
                                                 <?php
-                                                /*------GET Service id And Find Customer id--------*/
-                                                   $customer_ids = [];
-                                                if (isset($_GET['service_id'])) {
-                                                    $service_id=(int)$_GET['service_id'];
-                                                    $service_query=$con->query("SELECT DISTINCT customer_id FROM customer_invoice WHERE service_id = $service_id");
-                                                    while($service_row = $service_query->fetch_assoc()){
-                                                        $customer_ids[] = (int)$service_row['customer_id'];
-                                                    }
-                                                }
-                       
-                                                $where_clause='';
-                                                if(!empty($customer_ids)){
-                                                    $ids_string = implode(',', $customer_ids);
-                                                    $where_clause = "WHERE c.id IN ($ids_string)";
-                                                }
-                                                if(isset($_GET['ip'])){
-                                                    $ip = $_GET['ip'];
-                                                    $where_clause = "WHERE c.customer_ip = '$ip'";
-                                                }
-
-                                                $sql = "SELECT 
+                                               $sql = "SELECT 
                                                         c.*, 
                                                         COALESCE(ct.name, 'N/A') AS type_name,
                                                         COALESCE(pb.name, 'N/A') AS pop_branch_name
@@ -147,7 +102,6 @@ require 'Head.php';
                                                         ON c.customer_type_id = ct.id
                                                     LEFT JOIN pop_branch pb 
                                                         ON c.pop_id = pb.id
-                                                        $where_clause
                                                     ORDER BY c.id DESC";
 
                                                 $result = mysqli_query($con, $sql);

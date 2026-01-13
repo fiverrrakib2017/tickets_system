@@ -1,7 +1,7 @@
 <?php
 include 'include/security_token.php';
 include 'include/db_connect.php';
-
+include 'include/functions.php';
 // ini_set('display_errors', 1);
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
@@ -54,7 +54,7 @@ require 'Head.php';
                                             <i class="mdi mdi-home text-muted hover-cursor"></i>
                                             <p class="text-primary mb-0 hover-cursor">&nbsp;/&nbsp;<a href="index.php">Dashboard</a>&nbsp;/&nbsp;
                                             </p>
-                                            <p class="text-primary mb-0 hover-cursor">Customers</p>
+                                            <p class="text-primary mb-0 hover-cursor"><a href="customers.php">Customers</a></p>
                                             
                                             <?php if(isset($_GET['service_id'])): ?>
                                             <p class="text-primary mb-0 hover-cursor">
@@ -78,6 +78,24 @@ require 'Head.php';
                                             <p class="text-primary mb-0 hover-cursor">
                                                 &nbsp;/&nbsp;
                                                 <?php echo htmlspecialchars($_GET['ip']); ?>
+                                            </p>
+                                            <?php endif; ?>
+                                            <?php if(isset($_GET['pop_branch'])): ?>
+                                            <p class="text-primary mb-0 hover-cursor">
+                                                &nbsp;/&nbsp; POP/&nbsp;
+                                                
+                                                <?php
+                                                    $pop_branch_id = (int)$_GET['pop_branch'];
+                                                    $pop_branch_query = $con->prepare("SELECT name FROM pop_branch WHERE id = ?");
+                                                    $pop_branch_query->bind_param("i", $pop_branch_id);
+                                                    $pop_branch_query->execute();
+                                                    $pop_branch_result = $pop_branch_query->get_result();
+                                                    if ($pop_branch_row = $pop_branch_result->fetch_assoc()) {
+                                                        echo htmlspecialchars($pop_branch_row['name']);
+                                                    } else {
+                                                        echo "Unknown POP/Area";
+                                                    }
+                                                ?>
                                             </p>
                                             <?php endif; ?>
                                         </div>
@@ -112,6 +130,8 @@ require 'Head.php';
                                                     <th>POP/Area</th>
                                                     <th>Type</th>
                                                     <th>IP</th>
+                                                    <th>Bandwidth</th>
+                                                    <th>Capacity</th> 
                                                     <th>Status</th> 
                                                     <th>Action</th> 
                                                 </tr>
@@ -136,6 +156,14 @@ require 'Head.php';
                                                 if(isset($_GET['ip'])){
                                                     $ip = $_GET['ip'];
                                                     $where_clause = "WHERE c.customer_ip = '$ip'";
+                                                }
+                                                if(isset($_GET['pop_branch'])){
+                                                    $pop_branch_id = (int)$_GET['pop_branch'];
+                                                    if($where_clause){
+                                                        $where_clause .= " AND c.pop_id = $pop_branch_id";
+                                                    } else {
+                                                        $where_clause = "WHERE c.pop_id = $pop_branch_id";
+                                                    }
                                                 }
 
                                                 $sql = "SELECT 
@@ -166,6 +194,18 @@ require 'Head.php';
                                                     <td><?php echo htmlspecialchars($rows["pop_branch_name"]); ?></td>
                                                     <td><?php echo htmlspecialchars($rows["type_name"]); ?></td>
                                                     <td><?php echo htmlspecialchars($rows["customer_ip"]); ?></td>
+                                                    <td>
+                                                        
+                                                        <?php
+                                                           
+                                                            if(function_exists('get_customer_services')){
+                                                                print_r(get_customer_services($rows['id'])) ;
+                                                            } else {
+                                                                echo 'N/A';
+                                                            }
+                                                        ?>
+                                                    </td>
+                                                    <td><?php echo htmlspecialchars($rows["total"]); ?> MBPS</td>
                                                   
                                                     <td>
                                                         <?php echo ($rows["status"] == 1) ? '<span class="badge bg-success">Active</span>' 

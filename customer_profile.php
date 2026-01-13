@@ -2,6 +2,7 @@
 date_default_timezone_set('Asia/Dhaka');
 include "include/security_token.php";
 include "include/db_connect.php";
+include 'include/functions.php';
 // ini_set('display_errors', 1);
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
@@ -223,43 +224,15 @@ require 'Head.php';
                                                         </a>
                                                    
                                                         <span class="fw-semibold text-dark">
-                                                            <?php
-                                                            $service_sql = "SELECT 
-                                                                                cs.id AS service_id,
-                                                                                cs.name,
-                                                                                ci.customer_limit 
-                                                                            FROM customer_invoice ci
-                                                                            JOIN customer_service cs 
-                                                                                ON ci.service_id = cs.id
-                                                                            WHERE ci.customer_id = '{$customer['id']}'";
-
-                                                            $service_result = $con->query($service_sql);
-
-                                                            if ($service_result->num_rows > 0) {
-                                                                $serviceLinks = [];
-
-                                                                while ($row = $service_result->fetch_assoc()) {
-
-                                                                    $serviceName  = htmlspecialchars($row['name']);
-                                                                    $serviceLimit = (int)$row['customer_limit'];
-                                                                    $serviceId    = (int)$row['service_id'];
-
-                                                                    $serviceLinks[] = '
-                                                                        <a href="customers.php?service_id='.$serviceId.'" 
-                                                                        class="text-decoration-none text-primary fw-semibold">
-                                                                            '.$serviceName.' ('.$serviceLimit.' MBPS)
-                                                                        </a>
-                                                                    ';
-                                                                }
-
-                                                                echo implode(' , ', $serviceLinks);
-
-                                                            } else {
-                                                                echo 'N/A';
-                                                            }
+                                                            <?php    
+                                                                if(function_exists('get_customer_services')){
+                                                                    print_r(get_customer_services($customer['id'])) ;
+                                                                } else {
+                                                                    echo 'N/A';
+                                                                }  
                                                             ?>
                                                         </span>
-
+                                                          
                                                     </div>
                                                 </div>
 

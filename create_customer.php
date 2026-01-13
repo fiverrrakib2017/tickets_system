@@ -63,76 +63,10 @@ require 'Head.php';
                                     <div class="card-body">
 
                                         <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Customer Name</label>
-                                                <input type="text" name="customer_name" class="form-control"
-                                                    placeholder="Enter Customer Name" required>
-                                            </div>
-
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Email</label>
-                                                <input type="email" name="customer_email" class="form-control"
-                                                    placeholder="Enter Customer Email">
-                                            </div>
-
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Phone Number</label>
-                                                <input type="text" name="customer_phone" class="form-control"
-                                                    placeholder="Enter Phone Number">
-                                            </div>
-
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">POP / Area</label>
-                                                <select name="customer_pop_branch" class="form-select" required>
-                                                    <option value="">--- Select ---</option>
-                                                    <?php
-                                                    $pop = $con->query('SELECT * FROM pop_branch');
-                                                    while ($row = $pop->fetch_assoc()) {
-                                                        echo "<option value='{$row['id']}'>{$row['name']}</option>";
-                                                    }
-                                                    ?>
-                                                </select>
-                                            </div>
-
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Connection Via</label>
-                                                <select name="customer_type" class="form-select">
-                                                    <option value="">--- Select ---</option>
-                                                    <?php
-                                                    $types = $con->query('SELECT * FROM customer_type');
-                                                    while ($row = $types->fetch_assoc()) {
-                                                        echo "<option value='{$row['id']}'>{$row['name']}</option>";
-                                                    }
-                                                    ?>
-                                                </select>
-                                            </div>
-
-                                            
-
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">VLAN</label>
-                                                <input type="text" name="customer_vlan" class="form-control"
-                                                    placeholder="Enter VLAN">
-                                            </div>
-
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">IP Address</label>
-                                                <input type="text" name="customer_ip" class="form-control"
-                                                    placeholder="Enter IP Address">
-                                            </div>
-
-                                            <div class="col-md-6 mb-3">
-                                                <label class="form-label">Status</label>
-                                                <select name="customer_status" class="form-select">
-                                                    <option value="1">Active</option>
-                                                    <option value="0">Inactive</option>
-                                                </select>
-                                            </div>
+                                            <?php include 'Component/customer_form.php'; ?>
                                             
 
                                             <?php include 'Component/customer_service_section.php'; ?>
-
-
                                         </div>
 
                                     </div>

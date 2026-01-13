@@ -1,95 +1,105 @@
+
+<?php
+$isEdit = false;
+$customerServices = [];
+
+if (isset($customer_id) && $customer_id > 0) {
+    $isEdit = true;
+
+    $q = $con->query("
+        SELECT service_id, customer_limit 
+        FROM customer_invoice 
+        WHERE customer_id = $customer_id
+    ");
+    while ($r = $q->fetch_assoc()) {
+        $customerServices[] = $r;
+    }
+}
+?>
+
+
 <div class="col-12 mb-3">
     <label class="form-label">Services</label>
 
     <div id="servicesContainer">
 
-        <?php
-        /* customer_profile_edit.php */
-        $customerServices = [];
-        $q = $con->query("
-            SELECT service_id, customer_limit 
-            FROM customer_invoice 
-            WHERE customer_id = $customer_id
-        ");
-        while($r = $q->fetch_assoc()){
-            $customerServices[] = $r;
-        }
+        <?php if ($isEdit && !empty($customerServices)) { ?>
+            <?php foreach ($customerServices as $index => $cs) { ?>
+                <div class="row mb-2 service-row align-items-center">
+                    <div class="col-md-3">
+                        <select name="service_id[]" class="form-select" required>
+                            <option value="">--- Select Service ---</option>
+                            <?php
+                            $services = $con->query("SELECT * FROM customer_service");
+                            while ($row = $services->fetch_assoc()) {
+                                $selected = ($row['id'] == $cs['service_id']) ? 'selected' : '';
+                                echo "<option value='{$row['id']}' $selected>{$row['name']}</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
 
-        /* If edit mode & services exist */
-        if (!empty($customerServices)) {
-            foreach ($customerServices as $index => $cs) {
-        ?>
-        <div class="row mb-2 service-row align-items-center">
-            <div class="col-md-3">
-                <select name="service_id[]" class="form-select" required>
-                    <option value="">--- Select Service ---</option>
-                    <?php
-                    $services = $con->query("SELECT * FROM customer_service");
-                    while ($row = $services->fetch_assoc()) {
-                        $selected = ($row['id'] == $cs['service_id']) ? 'selected' : '';
-                        echo "<option value='{$row['id']}' $selected>{$row['name']}</option>";
-                    }
-                    ?>
-                </select>
-            </div>
+                    <div class="col-md-3">
+                        <input type="number"
+                               name="limit[]"
+                               class="form-control limit-input"
+                               value="<?php echo (int)$cs['customer_limit']; ?>"
+                               required>
+                    </div>
 
-            <div class="col-md-3">
-                <input type="number" name="limit[]"
-                       class="form-control limit-input"
-                       value="<?php echo (int)$cs['customer_limit']; ?>"
-                       required>
-            </div>
+                    <div class="col-md-2">
+                        <input type="text" class="form-control" value="MBPS" disabled>
+                    </div>
 
-            <div class="col-md-2">
-                <input type="text" class="form-control" value="MBPS" disabled>
-            </div>
+                    <div class="col-md-4 d-flex gap-2">
+                        <?php if ($index == 0) { ?>
+                            <button type="button" class="btn btn-success btn-sm addServiceBtn">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        <?php } else { ?>
+                            <button type="button" class="btn btn-danger btn-sm removeServiceBtn">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                        <?php } ?>
+                    </div>
+                </div>
+            <?php } ?>
 
-            <div class="col-md-4 d-flex gap-2">
-                <?php if ($index == 0) { ?>
+        <?php } else { ?>
+
+            <!-- ADD MODE DEFAULT ROW -->
+            <div class="row mb-2 service-row align-items-center">
+                <div class="col-md-3">
+                    <select name="service_id[]" class="form-select" required>
+                        <option value="">--- Select Service ---</option>
+                        <?php
+                        $services = $con->query("SELECT * FROM customer_service");
+                        while ($row = $services->fetch_assoc()) {
+                            echo "<option value='{$row['id']}'>{$row['name']}</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <input type="number"
+                           name="limit[]"
+                           class="form-control limit-input"
+                           placeholder="Limit"
+                           required>
+                </div>
+
+                <div class="col-md-2">
+                    <input type="text" class="form-control" value="MBPS" disabled>
+                </div>
+
+                <div class="col-md-4 d-flex gap-2">
                     <button type="button" class="btn btn-success btn-sm addServiceBtn">
-                        <i class="fas fa-plus"></i>
+                        <i class="fas fa-plus"></i> 
                     </button>
-                <?php } else { ?>
-                    <button type="button" class="btn btn-danger btn-sm removeServiceBtn">
-                        <i class="fas fa-minus"></i>
-                    </button>
-                <?php } ?>
-            </div>
-        </div>
-        <?php
-            }
-        } else {
-        /* Add mode default row */
-        ?>
-        <div class="row mb-2 service-row align-items-center">
-            <div class="col-md-3">
-                <select name="service_id[]" class="form-select" required>
-                    <option value="">--- Select Service ---</option>
-                    <?php
-                    $services = $con->query("SELECT * FROM customer_service");
-                    while ($row = $services->fetch_assoc()) {
-                        echo "<option value='{$row['id']}'>{$row['name']}</option>";
-                    }
-                    ?>
-                </select>
+                </div>
             </div>
 
-            <div class="col-md-3">
-                <input type="number" name="limit[]"
-                       class="form-control limit-input"
-                       placeholder="Limit" required>
-            </div>
-
-            <div class="col-md-2">
-                <input type="text" class="form-control" value="MBPS" disabled>
-            </div>
-
-            <div class="col-md-4 d-flex gap-2">
-                <button type="button" class="btn btn-success btn-sm addServiceBtn">
-                    <i class="fas fa-plus"></i> Add
-                </button>
-            </div>
-        </div>
         <?php } ?>
 
     </div>
@@ -102,17 +112,21 @@
         </div>
 
         <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio"
-                   name="service_type" value="NTTN"
-                   <?php if(($customer['service_type'] ?? '')=='NTTN') echo 'checked'; ?>
+            <input class="form-check-input"
+                   type="radio"
+                   name="service_type"
+                   value="NTTN"
+                   <?php if (($customer['service_type'] ?? '') === 'NTTN') echo 'checked'; ?>
                    required>
             <label class="form-check-label">NTTN</label>
         </div>
 
         <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio"
-                   name="service_type" value="Overhead"
-                   <?php if(($customer['service_type'] ?? '')=='Overhead') echo 'checked'; ?>>
+            <input class="form-check-input"
+                   type="radio"
+                   name="service_type"
+                   value="Overhead"
+                   <?php if (($customer['service_type'] ?? '') === 'Overhead') echo 'checked'; ?>>
             <label class="form-check-label">Overhead</label>
         </div>
     </div>
@@ -152,7 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             let btn = newRow.querySelector('button');
             btn.className = 'btn btn-danger btn-sm removeServiceBtn';
-            btn.innerHTML = '<i class="fas fa-trash"></i> Remove';
+            btn.innerHTML = '<i class="fas fa-minus"></i>';
 
             servicesContainer.appendChild(newRow);
         }

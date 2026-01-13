@@ -1,19 +1,19 @@
  <div class="col-md-6 mb-3">
                                                 <label class="form-label">Customer Name</label>
                                                 <input type="text" name="customer_name" class="form-control"
-                                                    placeholder="Enter Customer Name"  value="<?php echo htmlspecialchars($customer['customer_name']); ?>" required>
+                                                    placeholder="Enter Customer Name"  value="<?= isset($customer['customer_name']) ? htmlspecialchars($customer['customer_name']) : '' ?>" required>
                                             </div>
 
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label">Email</label>
                                                 <input type="email" name="customer_email" class="form-control"
-                                                    placeholder="Enter Customer Email"  value="<?php echo htmlspecialchars($customer['customer_email']); ?>">
+                                                    placeholder="Enter Customer Email"  value="<?= isset($customer['customer_email']) ? htmlspecialchars($customer['customer_email']) : '' ?>">
                                             </div>
 
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label">Phone Number</label>
                                                 <input type="text" name="customer_phone" class="form-control"
-                                                    placeholder="Enter Phone Number" value="<?php echo htmlspecialchars($customer['customer_phone']); ?>">
+                                                    placeholder="Enter Phone Number" value="<?= isset($customer['customer_phone']) ? htmlspecialchars($customer['customer_phone']) : '' ?>">
                                             </div>
 
                                             <div class="col-md-6 mb-3">
@@ -47,19 +47,19 @@
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label">VLAN</label>
                                                 <input type="text" name="customer_vlan" class="form-control"
-                                                    placeholder="Enter VLAN"  value="<?php echo htmlspecialchars($customer['customer_vlan']); ?>">
+                                                    placeholder="Enter VLAN"  value="<?= isset($customer['customer_vlan']) ? htmlspecialchars($customer['customer_vlan']) : '' ?>">
                                             </div>
 
                                             <div class="col-md-6 mb-3">
                                                 <label class="form-label">IP Address</label>
                                                 <input type="text" name="customer_ip" class="form-control"
-                                                    placeholder="Enter IP Address" value="<?php echo htmlspecialchars($customer['customer_ip']); ?>">
+                                                    placeholder="Enter IP Address" value="<?= isset($customer['customer_ip']) ? htmlspecialchars($customer['customer_ip']) : '' ?>">
                                             </div>
 
                                              <div class="col-md-6 mb-3">
                                                 <label class="form-label">Status</label>
                                                 <select name="customer_status" class="form-select">
-                                                    <option value="1" <?php if($customer['status']==1) echo 'selected'; ?>>Active</option>
-                                                    <option value="0" <?php if($customer['status']==0) echo 'selected'; ?>>Inactive</option>
+                                                    <option value="1" <?php if (isset($customer['status']) && $customer['status'] == 1) echo 'selected'; ?>>Active</option>
+                                                    <option value="0" <?php if (isset($customer['status']) && $customer['status'] == 0) echo 'selected'; ?>>Inactive</option>
                                                 </select>
                                             </div>

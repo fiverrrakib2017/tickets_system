@@ -98,28 +98,44 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 /******** Update customer data Script ******************/
 if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $customer_id = trim($_POST['customer_id']);
     $customer_name = trim($_POST['customer_name']);
     $customer_email = trim($_POST['customer_email']);
     $customer_phone = trim($_POST['customer_phone']);
-    $customer_pop_branch = trim($_POST['customer_pop_branch']);
     $customer_type = trim($_POST['customer_type']);
+    $customer_pop_branch = trim($_POST['customer_pop_branch']);
     $customer_vlan = trim($_POST['customer_vlan']);
     $customer_ip = trim($_POST['customer_ip']);
-    $service_id = trim($_POST['service_id']);
-    $id = trim($_POST['id']);
+    $service_type = trim($_POST['service_type']); //nttn or overhead
+    $customer_status = trim($_POST['customer_status']);
+    
+
     /* Validate Customer Name */
-    __validate_input($customer_name, 'Customer Name');
-    /* Check if customer name already exists */
-    $check_customer_name = $con->query("SELECT * FROM customers WHERE customer_name='$customer_name' AND id != '$id'");
-    if ($check_customer_name->num_rows > 0) {
-        echo json_encode([
-            'success' => false,
-            'message' => 'Customer Name Already exists!',
-        ]);
-        exit();
+    //__validate_input($customer_name, 'Customer Name');
+
+    /* get  customer total */
+    $total_limit = 0;
+    if(isset($_POST['limit']) && is_array($_POST['limit'])){
+        foreach($_POST['limit'] as $lim){
+            $total_limit += (int)$lim;
+        }
     }
-    /* Update the customer in the database */
-    $result = $con->query("UPDATE customers SET customer_name='$customer_name',customer_email='$customer_email',customer_phone='$customer_phone',pop_id='$customer_pop_branch',customer_type_id='$customer_type',customer_vlan='$customer_vlan',customer_ip='$customer_ip',service_id='$service_id' WHERE id='$id'");
+
+    /* Update  table */
+    $result = $con->query("UPDATE customers SET `customer_name`='$customer_name',`customer_email`='$customer_email',`customer_phone`='$customer_phone',`pop_id`='$customer_pop_branch',`customer_type_id`='$customer_type',`customer_vlan`='$customer_vlan',`customer_ip`='$customer_ip',`service_type`='$service_type',`status`='$customer_status',`total`='$total_limit' WHERE id='$customer_id'");
+
+    /*------- Delete existing services------*/
+    $con->query("DELETE FROM customer_invoice WHERE customer_id='$customer_id'");
+
+    if(isset($_POST['service_id']) && is_array($_POST['service_id'])){
+        $service_ids = $_POST['service_id'];
+        $limits = $_POST['limit'];
+        foreach($service_ids as $index => $service_id){
+            $limit = isset($limits[$index]) ? (int)$limits[$index] : 0;
+            $con->query("INSERT INTO customer_invoice(`customer_id`,`service_id`,`customer_limit`) VALUES($customer_id,'$service_id','$limit')");
+        }
+    }
+
     if ($result) {
         echo json_encode([
             'success' => true,
@@ -129,7 +145,7 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     } else {
         echo json_encode([
             'success' => false,
-            'message' => 'Failed to update Topic!',
+            'message' => 'Failed to update customer!',
         ]);
         exit();
     }

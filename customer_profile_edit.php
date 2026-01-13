@@ -77,7 +77,7 @@ require 'Head.php';
                                     </h5>
                                 </div>
 
-                                <form id="addCustomerForm" action="include/customer_server.php?add_customer_data=true"
+                                <form id="addCustomerForm" action="include/customer_server.php?update_customer_data=true"
                                     method="POST">
 
                                     <div class="card-body">
@@ -126,9 +126,6 @@ require 'Head.php';
     <?php include 'script.php'; ?>
     <script type="text/javascript"></script>
     <script type="text/javascript">
-        // $('select').select2({
-        //     width: '100%'
-        // });
         $('#addCustomerForm').submit(function(e) {
             e.preventDefault();
             /*Get the submit button*/

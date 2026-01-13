@@ -87,7 +87,9 @@ include("include/db_connect.php");
 
                                                     <tr>
                                                         <td><?php echo $rows['id']; ?></td>
-                                                        <td><?php echo $rows["name"]; ?></td>
+                                                        <td>
+                                                            <a href="customers.php?service_id=<?php echo $rows['id']; ?>"><?php echo $rows["name"]; ?></a>
+                                                        </td>
 
                                                         <td style="text-align:right">
 

@@ -263,11 +263,11 @@ require 'Head.php';
                                                     </div>
                                                 </div>
 
-                                                <!-- Total Capacity -->
+                                               <!-- Total Capacity -->
                                                 <div class="col-12 bg-white p-0">
-                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3">
+                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3 border-bottom border-dotted">
                                                         <p class="mb-0 text-muted">
-                                                            <i class="mdi mdi-checkbox-marked-circle-outline me-2 text-warning fs-5"></i>
+                                                            <i class="mdi mdi-speedometer me-2 text-primary fs-5"></i>
                                                             <span class="fw-bold">Total Capacity:</span>
                                                         </p>
                                                         <span class="fw-semibold text-dark">
@@ -275,34 +275,41 @@ require 'Head.php';
                                                         </span>
                                                     </div>
                                                 </div>
+
                                                 <!-- Service Type -->
                                                 <div class="col-12 bg-white p-0">
-                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3">
+                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3 border-bottom border-dotted">
                                                         <p class="mb-0 text-muted">
-                                                            <i class="mdi mdi-checkbox-marked-circle-outline me-2 text-warning fs-5"></i>
+                                                            <i class="mdi mdi-access-point-network me-2 text-success fs-5"></i>
                                                             <span class="fw-bold">Service Type:</span>
                                                         </p>
                                                         <span class="fw-semibold text-dark">
-                                                            <?php echo ($customer['service_type'] == 'NTTN') 
-                                                                ? '<span class="">NTTN</span>' 
-                                                                : '<span class="">O/H</span>'; ?>
+                                                            <?php 
+                                                                echo ($customer['service_type'] === 'NTTN') 
+                                                                    ? '<span class="badge bg-info">NTTN</span>' 
+                                                                    : '<span class="badge bg-warning text-dark">Overhead</span>'; 
+                                                            ?>
                                                         </span>
                                                     </div>
                                                 </div>
+
                                                 <!-- Status -->
                                                 <div class="col-12 bg-white p-0">
                                                     <div class="d-flex justify-content-between align-items-center py-3 px-3">
                                                         <p class="mb-0 text-muted">
-                                                            <i class="mdi mdi-checkbox-marked-circle-outline me-2 text-warning fs-5"></i>
+                                                            <i class="mdi mdi-shield-check-outline me-2 text-success fs-5"></i>
                                                             <span class="fw-bold">Status:</span>
                                                         </p>
                                                         <span class="fw-semibold text-dark">
-                                                            <?php echo ($customer['status'] == 1) 
-                                                                ? '<span class="badge bg-success">Active</span>' 
-                                                                : '<span class="badge bg-danger">Inactive</span>'; ?>
+                                                            <?php 
+                                                                echo ($customer['status'] == 1) 
+                                                                    ? '<span class="badge bg-success">Active</span>' 
+                                                                    : '<span class="badge bg-danger">Inactive</span>'; 
+                                                            ?>
                                                         </span>
                                                     </div>
                                                 </div>
+
 
                                             </div>
                                         </div>

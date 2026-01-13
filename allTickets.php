@@ -76,7 +76,7 @@ include("include/security_token.php");
                                                     <th>Phone Number</th>
                                                     <th>Issues</th>
                                                     <th>Pop/Area</th>                                                   
-                                                    <th>Assigned Team</th>
+                                                    <th>Assigned</th>
                                                     <th>Acctual Work</th>
                                                     <th>Completed</th>
                                                     <th>Percentage</th>

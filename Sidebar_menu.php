@@ -60,7 +60,7 @@
         <li class="menu-title">Ticket Management</li>
 
         <li>
-            <a href="allTickets.php" class="waves-effect">
+            <a href="tickets.php" class="waves-effect">
                 <i class="fas fa-ticket-alt"></i>
                 <span>All Tickets</span>
             </a>

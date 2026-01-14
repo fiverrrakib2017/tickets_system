@@ -10,21 +10,50 @@ if (!isset($_SESSION)) {
 
 /*----------- Add Ticket Data------------------*/
 if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
-    $errors = [];
-
-    /* Sanitize input values */
+   
     $customer_id = isset($_POST['customer_id']) ? trim($_POST['customer_id']) : '';
     $ticket_for = isset($_POST['ticket_for']) ? trim($_POST['ticket_for']) : '';
     $complain_type = isset($_POST['complain_type']) ? trim($_POST['complain_type']) : '';
     $assign_to = isset($_POST['assign_to']) ? trim($_POST['assign_to']) : '';
     $note = isset($_POST['notes']) ? trim($_POST['notes']) : '';
     $priority = isset($_POST['ticket_priority']) ? trim($_POST['ticket_priority']) : '';
+
     /* ---------- Validation ---------- */
-    if (empty($customer_id)) $errors['customer_id'] = 'Customer ID is required.';
-    if (empty($ticket_for)) $errors['ticket_for'] = 'Ticket For is required.';
-    if (empty($complain_type)) $errors['complain_type'] = 'Complain Type is required.';
-    if (empty($assign_to)) $errors['assign_to'] = 'Assigned field is required.';
-    if (empty($priority)) $errors['ticket_priority'] = 'Priority is required.';
+    if(empty((int)$customer_id)) {
+       echo json_encode([
+            'success' => false,
+            'message'  =>  'Customer ID is required.'
+        ]);
+        exit();
+    }
+    if(empty($ticket_for)) {
+       echo json_encode([
+            'success' => false,
+            'message'  =>  'Ticket For is required.'
+        ]);
+        exit();
+    }
+    if(empty($complain_type)) {
+       echo json_encode([
+            'success' => false,
+            'message'  =>  'Complain Type is required.'
+        ]);
+        exit();
+    }
+    if(empty($assign_to)) {
+       echo json_encode([
+            'success' => false,
+            'message'  =>  'Assign To is required.'
+        ]);
+        exit();
+    }
+    if(empty($priority)) {
+       echo json_encode([
+            'success' => false,
+            'message'  =>  'Ticket Priority is required.'
+        ]);
+        exit();
+    }
 
     /* ---------- Check Active Ticket ---------- */
     $stmt = $con->prepare("
@@ -38,16 +67,14 @@ if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
     $stmt->store_result();
 
     if ($stmt->num_rows > 0) {
-        $errors['customer_ticket'] = 'This customer already has an active ticket';
-    }
-
-    if (!empty($errors)) {
         echo json_encode([
             'success' => false,
-            'errors'  => $errors
+            'message'  =>  'You already have an active ticket.'
         ]);
-        exit;
+        exit();
     }
+
+    
     /* ---------- Get Customer POP ---------- */
     $popStmt = $con->prepare("SELECT pop_id FROM customers WHERE id = ?");
     $popStmt->bind_param('i', $customer_id);
@@ -86,6 +113,7 @@ if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
             'success' => true,
             'message' => 'Ticket Added Successfully'
         ]);
+        exit();
     } else {
         echo json_encode([
             'success' => false,
@@ -104,86 +132,6 @@ if (isset($_POST['get_complain_type']) && $_SERVER['REQUEST_METHOD'] == 'POST') 
     }
     echo json_encode(['success' => true, 'data' => $data]);
     exit();
-}
-if (isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-    $errors = [];
-
-    /* Sanitize input values */
-    $customer_id = isset($_POST['customer_id']) ? trim($_POST['customer_id']) : '';
-    $ticket_for = isset($_POST['ticket_for']) ? trim($_POST['ticket_for']) : '';
-    $complain_type = isset($_POST['ticket_complain_type']) ? trim($_POST['ticket_complain_type']) : '';
-    $assigned = isset($_POST['assigned']) ? trim($_POST['assigned']) : '';
-    $send_message = isset($_POST['send_message']) ? trim($_POST['send_message']) : '0';
-    $note = isset($_POST['notes']) ? trim($_POST['notes']) : '';
-    $priority = isset($_POST['ticket_priority']) ? trim($_POST['ticket_priority']) : '';
-
-    if (empty($customer_id)) $errors['customer_id'] = 'Customer ID is required.';
-    if (empty($ticket_for)) $errors['ticket_for'] = 'Ticket For is required.';
-    if (empty($complain_type)) $errors['ticket_complain_type'] = 'Complain Type is required.';
-    if (empty($assigned)) $errors['assigned'] = 'Assigned field is required.';
-    if (empty($priority)) $errors['ticket_priority'] = 'Priority is required.';
-
-    $stmt = $con->prepare('SELECT ticket_type FROM ticket WHERE customer_id = ?');
-    $stmt->bind_param('i', $customer_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    $allComplete = true;
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            if ($row['ticket_type'] !== 'Complete') {
-                $allComplete = false;
-                break;
-            }
-        }
-    }
-
-    if (!$allComplete) {
-        $errors['customer_ticket'] = 'You already have a ticket.';
-    }
-
-    if (!empty($errors)) {
-        echo json_encode([
-            'success' => false,
-            'errors' => $errors,
-        ]);
-        exit();
-    }
-
-    $customerPopId = null;
-    $customerAreaId = null;
-    $mobile_number = null;
-
-    if ($allCstmr = $con->query("SELECT pop, area, mobile FROM customers WHERE id=$customer_id")) {
-        $customerData = $allCstmr->fetch_assoc();
-        $customerPopId = $customerData['pop'];
-        $customerAreaId = $customerData['area'];
-        $mobile_number = $customerData['mobile'];
-    }
-    if ($send_message == 1 && !empty($mobile_number)) {
-        $message = 'Your Complain is Created. Sorry for inconvenience, as soon as possible connection will be recovered.';
-        send_message($mobile_number, $message);
-    }
-    $create_date = date('Y-m-d H:i:s');
-    $stmt = $con->prepare("INSERT INTO ticket (`customer_id`, `ticket_type`, `asignto`, `ticketfor`, `pop_id`,`area_id`, `complain_type`, `startdate`, `enddate`, `user_type`, `notes`, `parcent`, `priority`, `create_date`) VALUES (?, 'Active', ?, ?, ?, ?, ?, NOW(), NULL, 1, ?, '0%', ?,'$create_date')");
-    $stmt->bind_param('iisssssi', $customer_id, $assigned, $ticket_for, $customerPopId, $customerAreaId, $complain_type, $note, $priority);
-
-    $result = $stmt->execute();
-
-    if ($result) {
-        echo json_encode([
-            'success' => true,
-            'message' => 'Ticket Added Successfully!',
-        ]);
-    } else {
-        echo json_encode([
-            'success' => false,
-            'error' => 'Error: ' . $stmt->error,
-        ]);
-    }
-
-    $stmt->close();
-    exit; 
 }
 /******** Ticket Update ******************/
 if (isset($_GET['update_ticket_data']) && $_SERVER['REQUEST_METHOD'] === 'POST') {

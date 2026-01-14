@@ -17,6 +17,8 @@ if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
     $assign_to = isset($_POST['assign_to']) ? trim($_POST['assign_to']) : '';
     $note = isset($_POST['notes']) ? trim($_POST['notes']) : '';
     $priority = isset($_POST['ticket_priority']) ? trim($_POST['ticket_priority']) : '';
+    $customer_note = isset($_POST['customer_note']) ? trim($_POST['customer_note']) : '';
+    $noc_note = isset($_POST['noc_note']) ? trim($_POST['noc_note']) : '';
 
     /* ---------- Validation ---------- */
     if(empty((int)$customer_id)) {
@@ -88,42 +90,145 @@ if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
     
     $insert = $con->prepare("
         INSERT INTO ticket 
-        (customer_id, ticket_type, asignto, ticketfor, pop_id, complain_type,
-         startdate, enddate, notes, parcent, priority, create_date)
-        VALUES (?, 'Active', ?, ?, ?, ?, ?, NULL, ?, '0%', ?, ?)
+        (
+            customer_id,
+            ticket_type,
+            asignto,
+            ticketfor,
+            pop_id,
+            complain_type,
+            startdate,
+            enddate,
+            parcent,
+            priority,
+            customer_note,
+            noc_note,
+            create_date
+        )
+        VALUES (
+            ?, 'Active', ?, ?, ?, ?, ?, NULL, '0%', ?, ?, ?, ?
+        )
     ");
+
 
     $startDate = date('Y-m-d H:i:s');
 
     $insert->bind_param(
-        'ississsis',
+        'iissssssss',
         $customer_id,
         $assign_to,
         $ticket_for,
         $customerPopId,
         $complain_type,
         $startDate,
-        $note,
         $priority,
+        $customer_note,
+        $noc_note,
         $create_date
     );
-
-    if ($insert->execute()) {
+    $result = $insert->execute();
+    if($result){
         echo json_encode([
             'success' => true,
-            'message' => 'Ticket Added Successfully'
+            'message'  =>  'Ticket created successfully.'
         ]);
-        exit();
     } else {
         echo json_encode([
             'success' => false,
-            'error'   => $insert->error
+            'message'  =>  'Error: ' . $insert->error
         ]);
     }
 
     exit;
 }
+/*----------- update Ticket Data------------------*/
+if (isset($_GET['update_ticket_data']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    $ticket_id = isset($_POST['ticket_id']) ? trim($_POST['ticket_id']) : '';
+    $customer_id = isset($_POST['customer_id']) ? trim($_POST['customer_id']) : '';
+    $ticket_for = isset($_POST['ticket_for']) ? trim($_POST['ticket_for']) : '';
+    $complain_type = isset($_POST['complain_type']) ? trim($_POST['complain_type']) : '';
+    $assign_to = isset($_POST['assign_to']) ? trim($_POST['assign_to']) : '';
+    $note = isset($_POST['notes']) ? trim($_POST['notes']) : '';
+    $priority = isset($_POST['ticket_priority']) ? trim($_POST['ticket_priority']) : '';
+    $customer_note = isset($_POST['customer_note']) ? trim($_POST['customer_note']) : '';
+    $noc_note = isset($_POST['noc_note']) ? trim($_POST['noc_note']) : '';
 
+    /* ---------- Validation ---------- */
+    if(empty((int)$customer_id)) {
+       echo json_encode([
+            'success' => false,
+            'message'  =>  'Customer ID is required.'
+        ]);
+        exit();
+    }
+    if(empty($ticket_for)) {
+       echo json_encode([
+            'success' => false,
+            'message'  =>  'Ticket For is required.'
+        ]);
+        exit();
+    }
+    if(empty($complain_type)) {
+       echo json_encode([
+            'success' => false,
+            'message'  =>  'Complain Type is required.'
+        ]);
+        exit();
+    }
+    if(empty($assign_to)) {
+       echo json_encode([
+            'success' => false,
+            'message'  =>  'Assign To is required.'
+        ]);
+        exit();
+    }
+    if(empty($priority)) {
+       echo json_encode([
+            'success' => false,
+            'message'  =>  'Ticket Priority is required.'
+        ]);
+        exit();
+    }
+    /* ---------- Update Ticket ---------- */
+    $update = $con->prepare("
+        UPDATE ticket 
+        SET 
+            customer_id = ?,
+            ticketfor = ?,
+            asignto = ?,
+            complain_type = ?,
+            priority = ?,
+            customer_note = ?,
+            noc_note = ?
+        WHERE id = ?
+    ");
+
+    $update->bind_param(
+        'isssssss',
+        $customer_id,
+        $ticket_for,
+        $assign_to,
+        $complain_type,
+        $priority,
+        $customer_note,
+        $noc_note,
+        $ticket_id
+    );
+    $result = $update->execute();
+    if($result){
+        echo json_encode([
+            'success' => true,
+            'message'  =>  'Ticket updated successfully.'
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message'  =>  'Error: ' . $update->error
+        ]);
+    }
+
+    exit;
+}
 if (isset($_POST['get_complain_type']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $result = $con->query('SELECT id,topic_name FROM ticket_topic WHERE user_type=1');
     $data = [];
@@ -133,52 +238,7 @@ if (isset($_POST['get_complain_type']) && $_SERVER['REQUEST_METHOD'] == 'POST') 
     echo json_encode(['success' => true, 'data' => $data]);
     exit();
 }
-/******** Ticket Update ******************/
-if (isset($_GET['update_ticket_data']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id = isset($_POST['id']) ? trim($_POST['id']) : '';
-    $ticket_type = isset($_POST['ticket_type']) ? trim($_POST['ticket_type']) : '';
-    $assigned = isset($_POST['assigned']) ? trim($_POST['assigned']) : '';
-    $ticket_for = isset($_POST['ticket_for']) ? trim($_POST['ticket_for']) : '';
-    $complain_type = isset($_POST['complain_type']) ? trim($_POST['complain_type']) : '';
-    $from_date= isset($_POST['from_date']) ? trim($_POST['from_date']) : '';
-    $end_date= isset($_POST['end_date']) ? trim($_POST['end_date']) : '';
-    $user_type= isset($_POST['user_type']) ? trim($_POST['user_type']) : '1';
-    $note = isset($_POST['note']) ? trim($_POST['note']) : '';
-    $errors = [];
-    if (empty($id)) $errors['id'] = 'Ticket ID is required.';
-    if (empty($ticket_type)) $errors['ticket_type'] = 'Ticket Type is required.';
-    if (empty($assigned)) $errors['assigned'] = 'Assigned field is required.';
-    if (empty($ticket_for)) $errors['ticket_for'] = 'Ticket For is required.';
-    if (empty($complain_type)) $errors['complain_type'] = 'Complain Type is required.';
-    if (empty($from_date)) $errors['from_date'] = 'From Date is required.';
-    // if (!empty($end_date) && strtotime($end_date) < strtotime($from_date)) {
-    //     $errors['end_date'] = 'End Date cannot be earlier than From Date.';
-    // }
-    if (!empty($errors)) {
-        echo json_encode([
-            'success' => false,
-            'errors' => $errors,
-        ]);
-        exit();
-    }
-    // echo 'okkkk'; exit; 
-    $stmt = $con->prepare("UPDATE ticket SET ticket_type=?, asignto=?, ticketfor=?, complain_type=?, startdate=?, enddate=?, notes=?, user_type=? WHERE id=?");
-    $stmt->bind_param('sisssssii', $ticket_type, $assigned, $ticket_for, $complain_type, $from_date, $end_date, $note, $user_type, $id);    
-    $result = $stmt->execute();
-    if ($result) {
-        echo json_encode([
-            'success' => true,
-            'message' => 'Ticket updated successfully.',
-        ]);
-    } else {
-        echo json_encode([
-            'success' => false,
-            'error' => 'Error: ' . $stmt->error,
-        ]);
-    }
-    $stmt->close();
-    exit();
-}
+
 
 
 /******** Add Ticket topic  Script ******************/

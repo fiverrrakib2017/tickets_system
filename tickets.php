@@ -93,7 +93,8 @@ require 'Head.php';
                                                     <th>Acctual Work</th>
                                                     <th>Completed</th>
                                                     <th>Percentage</th>
-                                                    <th>Note</th>
+                                                    <th>Customer Note</th>
+                                                    <th>NOC Note</th>
                                                     <th></th>
                                                 </tr>
                                             </thead>
@@ -195,7 +196,8 @@ while($row = $result->fetch_assoc()){
     </td>
 
     <!-- Note -->
-    <td><?php echo htmlspecialchars($row['notes']); ?></td>
+    <td><?php echo htmlspecialchars($row['customer_note']); ?></td>
+    <td><?php echo htmlspecialchars($row['noc_note']); ?></td>
 
     <!-- Action -->
     <td class="text-end">

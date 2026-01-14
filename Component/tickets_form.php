@@ -1,3 +1,8 @@
+ <div class="col-md-6 mb-3 d-none">
+     <label class="form-label">Ticket id</label>
+     <input type="text" name="ticket_id" class="form-control"
+         value="<?= isset($ticket['id']) ? htmlspecialchars($ticket['id']) : '' ?>" >
+ </div>
 <div class="col-md-6 mb-3">
     <label class="form-label">Customer Name</label>
     <select name="customer_id" class="form-select" required>
@@ -40,25 +45,58 @@
     </select>
 </div>
 <div class="col-md-6 mb-3">
-        <label  class="form-label">Ticket For</label>
-        <select id="ticket_for" name="ticket_for" class="form-select" required>
-            <option value="Home Connection">Home Connection</option>
-            <option value="POP">POP Support</option>
-            <option value="Corporate">Corporate</option>
-        </select>
+    <label class="form-label">Ticket For</label>
+    <select id="ticket_for" name="ticket_for" class="form-select" required>
+        <option value="">--- Select ---</option>
+
+        <option value="Mac Client"
+            <?= (isset($ticket['ticketfor']) && $ticket['ticketfor'] === 'Mac Client') ? 'selected' : ''; ?>>
+            Mac Client
+        </option>
+
+        <option value="Bandwidth Client"
+            <?= (isset($ticket['ticketfor']) && $ticket['ticketfor'] === 'Bandwidth Client') ? 'selected' : ''; ?>>
+            Bandwidth Client
+        </option>
+
+        <option value="Corporate Client"
+            <?= (isset($ticket['ticketfor']) && $ticket['ticketfor'] === 'Corporate Client') ? 'selected' : ''; ?>>
+            Corporate Client
+        </option>
+    </select>
 </div>
+
 <div class="col-md-6 mb-3">
-        <label  class="form-label">Ticket Priority</label>
-        <select id="ticket_priority" name="ticket_priority" class="form-select" style="width: 100%;">
-           <option value="">---select---</option>
-            <option value="1">Low</option>
-            <option value="2">Normal</option>
-            <option value="3">Standard</option>
-            <option value="4">Medium</option>
-            <option value="5">High</option>
-            <option value="6">Very High</option>
-        </select>
+    <label class="form-label">Ticket Priority</label>
+    <select id="ticket_priority" name="ticket_priority" class="form-select" required>
+        <option value="">--- Select ---</option>
+
+        <option value="1" <?= (isset($ticket['priority']) && (int)$ticket['priority'] === 1) ? 'selected' : ''; ?>>
+            Low
+        </option>
+
+        <option value="2" <?= (isset($ticket['priority']) && (int)$ticket['priority'] === 2) ? 'selected' : ''; ?>>
+            Normal
+        </option>
+
+        <option value="3" <?= (isset($ticket['priority']) && (int)$ticket['priority'] === 3) ? 'selected' : ''; ?>>
+            Standard
+        </option>
+
+        <option value="4" <?= (isset($ticket['priority']) && (int)$ticket['priority'] === 4) ? 'selected' : ''; ?>>
+            Medium
+        </option>
+
+        <option value="5" <?= (isset($ticket['priority']) && (int)$ticket['priority'] === 5) ? 'selected' : ''; ?>>
+            High
+        </option>
+
+        <option value="6" <?= (isset($ticket['priority']) && (int)$ticket['priority'] === 6) ? 'selected' : ''; ?>>
+            Very High
+        </option>
+    </select>
 </div>
+
 
 <div class="col-md-6 mb-3">
     <label class="form-label">Complain Type</label>
@@ -77,8 +115,12 @@
 
 
 <div class="col-md-6 mb-3">
-    <label  class="form-label">Note</label>
-    <input id="notes" type="text" name="notes" class="form-control" placeholder="Enter Your Note">
+    <label  class="form-label">Customer Note</label>
+    <input id="notes" type="text" name="customer_note" class="form-control" value="<?= isset($ticket['customer_note']) ? $ticket['customer_note'] : '' ?>" placeholder="Enter Your Note">
+</div>
+<div class="col-md-6 mb-3">
+    <label  class="form-label">NOC Note</label>
+    <input id="notes" type="text" name="noc_note" class="form-control" value="<?= isset($ticket['noc_note']) ? $ticket['noc_note'] : '' ?>" placeholder="Enter Your NOC Note">
 </div>
 
 

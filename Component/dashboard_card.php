@@ -35,6 +35,35 @@
         font-size: 22px;
     }
 </style>
+<?php
+$todayStats = [
+    'total'    => 0,
+    'open'     => 0,
+    'pending'  => 0,
+    'resolved' => 0,
+];
+
+$sql = "
+    SELECT 
+        COUNT(*) AS total,
+        SUM(ticket_type = 'Active')   AS open_ticket,
+        SUM(ticket_type = 'Pending')  AS pending_ticket,
+        SUM(ticket_type = 'Complete') AS resolved_ticket
+    FROM ticket
+    WHERE DATE(create_date) = CURDATE()
+";
+
+$result = $con->query($sql);
+
+if ($row = $result->fetch_assoc()) {
+    $todayStats['total']    = (int)$row['total'];
+    $todayStats['open']     = (int)$row['open_ticket'];
+    $todayStats['pending']  = (int)$row['pending_ticket'];
+    $todayStats['resolved'] = (int)$row['resolved_ticket'];
+}
+
+
+?>
 
 
 <div class="row">
@@ -45,7 +74,9 @@
                 <div class="d-flex align-items-center">
                     <div class="flex-grow-1">
                         <p class="stat-title">Total Tickets</p>
-                        <h3 class="stat-value">120</h3>
+                        <h3 class="stat-value">
+                              <?= $todayStats['total']; ?>
+                        </h3>
                         <small class="text-muted">All time tickets</small>
                     </div>
                     <div class="stat-icon bg-primary">
@@ -63,7 +94,7 @@
                 <div class="d-flex align-items-center">
                     <div class="flex-grow-1">
                         <p class="stat-title">Open Tickets</p>
-                        <h3 class="stat-value">32</h3>
+                        <h3 class="stat-value">  <?= $todayStats['open']; ?></h3>
                         <small class="text-muted">Currently open</small>
                     </div>
                     <div class="stat-icon bg-warning">
@@ -81,7 +112,7 @@
                 <div class="d-flex align-items-center">
                     <div class="flex-grow-1">
                         <p class="stat-title">Pending Tickets</p>
-                        <h3 class="stat-value">18</h3>
+                        <h3 class="stat-value"> <?= $todayStats['pending']; ?></h3>
                         <small class="text-muted">Awaiting response</small>
                     </div>
                     <div class="stat-icon bg-danger">
@@ -99,7 +130,7 @@
                 <div class="d-flex align-items-center">
                     <div class="flex-grow-1">
                         <p class="stat-title">Resolved Tickets</p>
-                        <h3 class="stat-value">70</h3>
+                        <h3 class="stat-value"> <?= $todayStats['resolved']; ?></h3>
                         <small class="text-muted">Successfully closed</small>
                     </div>
                     <div class="stat-icon bg-success">

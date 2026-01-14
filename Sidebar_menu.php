@@ -66,12 +66,12 @@
             </a>
         </li>
 
-        <li>
+        <!-- <li>
             <a href="pending_issues.php" class="waves-effect">
                 <i class="mdi mdi-timer-sand"></i>
                 <span>Pending Issues</span>
             </a>
-        </li>
+        </li> -->
 
         <li>
             <a href="assign_members.php" class="waves-effect">

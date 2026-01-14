@@ -305,10 +305,8 @@ require 'Head.php';
                                                         <select name="ticket_type" class="form-select">
                                                             <option value="">Select</option>
                                                             <option value="Active" <?= $ticket['ticket_type'] == 'Active' ? 'selected' : '' ?>>Active</option>
-                                                            <option value="New" <?= $ticket['ticket_type'] == 'New' ? 'selected' : '' ?>>New</option>
-                                                            <option value="Open" <?= $ticket['ticket_type'] == 'Open' ? 'selected' : '' ?>>Open</option>
+                                                            <option value="Pending" <?= $ticket['ticket_type'] == 'Pending' ? 'selected' : '' ?>>Pending</option>
                                                             <option value="Complete" <?= $ticket['ticket_type'] == 'Complete' ? 'selected' : '' ?>>Complete</option>
-                                                            <option value="Close" <?= $ticket['ticket_type'] == 'Close' ? 'selected' : '' ?>>Close</option>
                                                         </select>
                                                     </div>
                                                 </div>

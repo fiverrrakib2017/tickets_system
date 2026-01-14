@@ -41,19 +41,62 @@ while($row = $result->fetch_assoc()) {
 }
 
 $priorityData = json_encode(array_values($priorityCounts)); 
+
+
+$statusCounts = [
+    'Open'     => 0,
+    'Pending'  => 0,
+    'Resolved' => 0,
+];
+
+$sql = "
+    SELECT ticket_type, COUNT(*) AS total
+    FROM ticket
+    GROUP BY ticket_type
+";
+
+$result = $con->query($sql);
+
+while($row = $result->fetch_assoc()){
+    $type = $row['ticket_type'];
+    $count = (int)$row['total'];
+
+    switch($type){
+        case 'Active':
+        case 'Open':
+            $statusCounts['Open'] += $count;
+            break;
+        case 'Pending':
+            $statusCounts['Pending'] += $count;
+            break;
+        case 'Complete':
+        case 'Close':
+            $statusCounts['Resolved'] += $count;
+            break;
+    }
+}
+
+$statusData = json_encode(array_values($statusCounts)); 
 ?>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
 /* Ticket Status Chart */
+const statusData = <?= $statusData; ?>;
 const statusCtx = document.getElementById('ticketStatusChart').getContext('2d');
 new Chart(statusCtx, {
     type: 'doughnut',
     data: {
         labels: ['Open', 'Pending', 'Resolved'],
         datasets: [{
-            data: [32, 18, 70, 10],
+            data: statusData,
+            backgroundColor: [
+                '#ffc107', // Open - yellow
+                '#dc3545', // Pending - red
+                '#198754'  // Resolved - green
+            ],
+            borderWidth: 1
         }]
     },
     options: {
@@ -67,6 +110,7 @@ new Chart(statusCtx, {
 });
 
 /* Ticket Priority Chart */
+
 const priorityCtx = document.getElementById('ticketPriorityChart').getContext('2d');
 const priorityData = <?= $priorityData; ?>;
 new Chart(priorityCtx, {

@@ -99,23 +99,54 @@ require 'Head.php';
                                                 </tr>
                                             </thead>
                                           <tbody id="tickets-list">
-                                                <?php
+<?php
+
+$conditions = [];
+
+/*------------- Status Filter -------------------*/
+if (isset($_GET['status']) && $_GET['status'] != '') {
+    switch ($_GET['status']) {
+        case 'open':
+            $conditions[] = "t.ticket_type = 'Active'";
+            break;
+
+        case 'pending':
+            $conditions[] = "t.ticket_type = 'Pending'";
+            break;
+
+        case 'resolved':
+            $conditions[] = "t.ticket_type = 'Complete'";
+            break;
+    }
+}
+
+/*------------- Today Filter -------------------*/
+$conditions[] = "DATE(t.create_date) = CURDATE()";
+
+/*------------- Build WHERE Clause -------------*/
+$whereSql = '';
+if (!empty($conditions)) {
+    $whereSql = 'WHERE ' . implode(' AND ', $conditions);
+}
+
+/*------------- Final Query --------------------*/
 $sql = "
-SELECT 
-    t.*,
-    c.customer_name,
-    c.customer_phone,
-    pb.name AS pop_name,
-    ta.name AS assigned_name,
-    tt.topic_name AS issue_name
-    
-FROM ticket t
-LEFT JOIN customers c ON t.customer_id = c.id
-LEFT JOIN pop_branch pb ON t.pop_id = pb.id
-LEFT JOIN ticket_assign ta ON t.asignto = ta.id
-LEFT JOIN ticket_topic tt ON t.complain_type = tt.id
-ORDER BY t.id DESC
+    SELECT 
+        t.*,
+        c.customer_name,
+        c.customer_phone,
+        pb.name AS pop_name,
+        ta.name AS assigned_name,
+        tt.topic_name AS issue_name
+    FROM ticket t
+    LEFT JOIN customers c ON t.customer_id = c.id
+    LEFT JOIN pop_branch pb ON t.pop_id = pb.id
+    LEFT JOIN ticket_assign ta ON t.asignto = ta.id
+    LEFT JOIN ticket_topic tt ON t.complain_type = tt.id
+    $whereSql
+    ORDER BY t.id DESC
 ";
+
 
 $result = $con->query($sql);
 $no = 1;

@@ -85,7 +85,17 @@ require 'Head.php';
     <?php include 'modal/customer_modal.php'; ?>
     <?php include 'script.php'; ?>
     <script type="text/javascript"></script>
-
+    <script>
+         $('#tickets_table').DataTable({
+                "order": [
+                    [0, "desc"]
+                ],
+                "columnDefs": [{
+                    "targets": [2],
+                    "orderable": false,
+                }],
+            });
+    </script>
 </body>
 
 </html>

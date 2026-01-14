@@ -68,63 +68,72 @@ if ($row = $result->fetch_assoc()) {
 
 <div class="row">
     <!-- Total Tickets -->
+  
     <div class="col-xl-3 col-md-6">
-        <div class="card stat-card">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-grow-1">
-                        <p class="stat-title">Total Tickets</p>
-                        <h3 class="stat-value">
-                              <?= $todayStats['total']; ?>
-                        </h3>
-                        <small class="text-muted">All time tickets</small>
-                    </div>
-                    <div class="stat-icon bg-primary">
-                        <i class="fas fa-ticket-alt"></i>
+        <a href="tickets.php?status=open">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="stat-title">Total Tickets</p>
+                            <h3 class="stat-value">
+                                <?= $todayStats['total']; ?>
+                            </h3>
+                            <small class="text-muted">All time tickets</small>
+                        </div>
+                        <div class="stat-icon bg-primary">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
+
 
     <!-- Open Tickets -->
     <div class="col-xl-3 col-md-6">
-        <div class="card stat-card">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-grow-1">
-                        <p class="stat-title">Open Tickets</p>
-                        <h3 class="stat-value">  <?= $todayStats['open']; ?></h3>
-                        <small class="text-muted">Currently open</small>
-                    </div>
-                    <div class="stat-icon bg-warning">
-                        <i class="fas fa-folder-open"></i>
+        <a href="tickets.php?status=open">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="stat-title">Open Tickets</p>
+                            <h3 class="stat-value">  <?= $todayStats['open']; ?></h3>
+                            <small class="text-muted">Currently open</small>
+                        </div>
+                        <div class="stat-icon bg-warning">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 
     <!-- Pending Tickets -->
     <div class="col-xl-3 col-md-6">
-        <div class="card stat-card">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-grow-1">
-                        <p class="stat-title">Pending Tickets</p>
-                        <h3 class="stat-value"> <?= $todayStats['pending']; ?></h3>
-                        <small class="text-muted">Awaiting response</small>
-                    </div>
-                    <div class="stat-icon bg-danger">
-                        <i class="fas fa-hourglass-half"></i>
+        <a href="tickets.php?status=resolved">
+            <div class="card stat-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center">
+                        <div class="flex-grow-1">
+                            <p class="stat-title">Pending Tickets</p>
+                            <h3 class="stat-value"> <?= $todayStats['pending']; ?></h3>
+                            <small class="text-muted">Awaiting response</small>
+                        </div>
+                        <div class="stat-icon bg-danger">
+                            <i class="fas fa-hourglass-half"></i>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
+        </a>
     </div>
 
     <!-- Resolved Tickets -->
     <div class="col-xl-3 col-md-6">
+        <a href="tickets.php?status=resolved">
         <div class="card stat-card">
             <div class="card-body">
                 <div class="d-flex align-items-center">
@@ -139,6 +148,7 @@ if ($row = $result->fetch_assoc()) {
                 </div>
             </div>
         </div>
+        </a>
     </div>
 
 </div>

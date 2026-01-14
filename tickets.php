@@ -128,9 +128,23 @@ while($row = $result->fetch_assoc()){
     <!-- Status -->
     <td>
         <?php
-        echo ($row['ticket_type'] == 'Complete')
-            ? '<span class="badge bg-success">Complete</span>'
-            : '<span class="badge bg-warning">Active</span>';
+      
+
+            if($row['ticket_type']=='Active'){
+                echo '<span class="badge bg-danger">Active</span>';
+            }else if($row['ticket_type']=='Complete'){
+                echo '<span class="badge bg-success">Complete</span>';
+            }else if($row['ticket_type']=='Open'){
+                echo '<span class="badge bg-warning">Open</span>';
+            }else if($row['ticket_type']=='Open'){
+                echo '<span class="badge bg-warning">Open</span>';
+            }else if($row['ticket_type']=='New'){
+                echo '<span class="badge bg-warning">New</span>';
+            }else if($row['ticket_type']=='Close'){
+                echo '<span class="badge bg-danger">Close</span>';
+            }else{
+                echo '-----';
+            }
         ?>
     </td>
 

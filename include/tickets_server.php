@@ -443,8 +443,44 @@ if (isset($_GET['delete_ticket_assign_data']) && $_SERVER['REQUEST_METHOD'] == '
     }
 }
 
+/*--------Add Ticket Comment Script------------------*/
+if (isset($_GET['add_ticket_comment']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+     
+    $ticket_id = trim($_POST['ticket_id']);
+    $ticket_type = trim($_POST['ticket_type']);
+    $progress = trim($_POST['progress']);
+    $assign_to = trim($_POST['assign_to']);
+    $comment = trim($_POST['comment']);
 
+    /* Validate ticket ID */
+    __validate_input($ticket_id, 'Ticket ID');
+    __validate_input($comment, 'Comment');
+    __validate_input($assign_to, 'Assign To');
 
+    /* Insert into ticket_details table */
+    $result = $con->query("INSERT INTO ticket_details(tcktid, status, datetm,comments,parcent,asignto) VALUES('$ticket_id', '$ticket_type', NOW(), '$comment', '$progress', '$assign_to')");
+
+    $con->query("UPDATE ticket SET ticket_type='$ticket_type', parcent='$progress', asignto='$assign_to' WHERE id='$ticket_id'");
+    if(isset($progress) && $progress == '100%'){
+        $enddate = date('Y-m-d H:i:s');
+        $con->query("UPDATE ticket SET enddate='$enddate' WHERE id='$ticket_id'");
+    }
+    
+    if ($result) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Comment added successfully!',
+        ]);
+        exit();
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Failed to add comment!',
+        ]);
+        exit();
+    }
+}
+/* -------Function to calculate actual work time */
 function acctual_work($startdate, $enddate)
 {
     $startTimestamp = strtotime($startdate);

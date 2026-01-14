@@ -86,7 +86,6 @@ require 'Head.php';
                                                     <th>Created</th>
                                                     <th>Priority</th>
                                                     <th>Customer Name</th>
-                                                    <th>Total Ticket</th>
                                                     <th>Phone Number</th>
                                                     <th>Issues</th>
                                                     <th>Pop/Area</th>                                                   
@@ -107,12 +106,8 @@ SELECT
     c.customer_phone,
     pb.name AS pop_name,
     ta.name AS assigned_name,
-    tt.topic_name AS issue_name,
-    (
-        SELECT COUNT(*) 
-        FROM ticket t2 
-        WHERE t2.customer_id = t.customer_id
-    ) AS total_ticket
+    tt.topic_name AS issue_name
+    
 FROM ticket t
 LEFT JOIN customers c ON t.customer_id = c.id
 LEFT JOIN pop_branch pb ON t.pop_id = pb.id
@@ -155,12 +150,7 @@ while($row = $result->fetch_assoc()){
         </a>
     </td>
 
-    <!-- Total Ticket -->
-    <td class="text-center">
-        <span class="badge bg-secondary">
-            <?php echo (int)$row['total_ticket']; ?>
-        </span>
-    </td>
+   
 
     <!-- Phone -->
     <td><?php echo htmlspecialchars($row['customer_phone'] ?? 'N/A'); ?></td>

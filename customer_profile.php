@@ -119,7 +119,7 @@ require 'Head.php';
 
                                                         <!-- Action Buttons -->
                                                         <div class="mt-3">
-                                                            <a href="profile_edit.php?clid=<?php echo $clid; ?>"
+                                                            <a href="customer_profile_edit.php?clid=<?php echo $clid; ?>"
                                                                 class="btn btn-primary btn-sm">
                                                                 <i class="fas fa-edit"></i> Edit Profile
                                                             </a>

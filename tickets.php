@@ -70,7 +70,7 @@ require 'Head.php';
                             <div class="card">
                                <div class="card-header customer_card_header border-bottom d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3" style="background-color: white;">
                                 <!-- Add Ticket Button -->
-                                <a href="create_ticket.php" class="btn btn-success">
+                                <a href="ticket_create.php" class="btn btn-success">
                                     <i class="fas fa-ticket-alt me-1"></i> Add New Ticket
                                 </a>
                             </div>

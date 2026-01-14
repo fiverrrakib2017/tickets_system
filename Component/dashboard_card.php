@@ -70,7 +70,7 @@ if ($row = $result->fetch_assoc()) {
     <!-- Total Tickets -->
   
     <div class="col-xl-3 col-md-6">
-        <a href="tickets.php?status=open">
+        <a href="tickets.php?status=total">
             <div class="card stat-card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -113,7 +113,7 @@ if ($row = $result->fetch_assoc()) {
 
     <!-- Pending Tickets -->
     <div class="col-xl-3 col-md-6">
-        <a href="tickets.php?status=resolved">
+        <a href="tickets.php?status=pending">
             <div class="card stat-card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">

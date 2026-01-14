@@ -10,6 +10,39 @@ require 'datatable.php';
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
 
+if(isset($_GET['update_customer_link']) && $_SERVER['REQUEST_METHOD']==='POST'){
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    $customer_id = isset($input['customer_id']) ? (int)$input['customer_id'] : 0;
+    $customer_link = isset($input['customer_link']) ? trim($input['customer_link']) : '';
+
+    if($customer_id <= 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid Customer ID.'
+        ]);
+        exit();
+    }
+
+    // Update database
+    $stmt = $con->prepare("UPDATE customers SET customer_link = ? WHERE id = ?");
+    $stmt->bind_param('si', $customer_link, $customer_id);
+
+    if($stmt->execute()) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Customer link updated successfully.'
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Database error: '.$stmt->error
+        ]);
+    }
+
+    exit();
+   
+}
 if(isset($_GET['get_customers_data']) && $_SERVER['REQUEST_METHOD']=='GET'){
 
     $table = 'customers';

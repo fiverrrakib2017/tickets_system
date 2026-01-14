@@ -99,7 +99,126 @@ require 'Head.php';
                                                 </tr>
                                             </thead>
                                           <tbody id="tickets-list">
-                                           
+                                                <?php
+$sql = "
+SELECT 
+    t.*,
+    c.customer_name,
+    c.customer_phone,
+    pb.name AS pop_name,
+    ta.name AS assigned_name,
+    tt.topic_name AS issue_name,
+    (
+        SELECT COUNT(*) 
+        FROM ticket t2 
+        WHERE t2.customer_id = t.customer_id
+    ) AS total_ticket
+FROM ticket t
+LEFT JOIN customers c ON t.customer_id = c.id
+LEFT JOIN pop_branch pb ON t.pop_id = pb.id
+LEFT JOIN ticket_assign ta ON t.asignto = ta.id
+LEFT JOIN ticket_topic tt ON t.complain_type = tt.id
+ORDER BY t.id DESC
+";
+
+$result = $con->query($sql);
+$no = 1;
+
+while($row = $result->fetch_assoc()){
+?>
+<tr>
+    <td><?php echo $no++; ?></td>
+
+    <!-- Status -->
+    <td>
+        <?php
+        echo ($row['ticket_type'] == 'Complete')
+            ? '<span class="badge bg-success">Complete</span>'
+            : '<span class="badge bg-warning">Active</span>';
+        ?>
+    </td>
+
+    <!-- Created -->
+    <td><?php echo time_ago($row['create_date']); ?></td>
+
+    <!-- Priority -->
+    <td>
+        <span class="badge bg-info">
+            <?php echo ticket_priority($row['priority']); ?>
+        </span>
+    </td>
+
+    <!-- Customer -->
+    <td>
+        <a href="customer_profile.php?clid=<?php echo $row['customer_id']; ?>">
+            <?php echo htmlspecialchars($row['customer_name'] ?? 'N/A'); ?>
+        </a>
+    </td>
+
+    <!-- Total Ticket -->
+    <td class="text-center">
+        <span class="badge bg-secondary">
+            <?php echo (int)$row['total_ticket']; ?>
+        </span>
+    </td>
+
+    <!-- Phone -->
+    <td><?php echo htmlspecialchars($row['customer_phone'] ?? 'N/A'); ?></td>
+
+    <!-- Issues -->
+    <td><?php echo htmlspecialchars($row['issue_name'] ?? 'N/A'); ?></td>
+
+    <!-- POP -->
+    <td><?php echo htmlspecialchars($row['pop_name'] ?? 'N/A'); ?></td>
+
+    <!-- Assigned -->
+    <td><?php echo htmlspecialchars($row['assigned_name'] ?? 'N/A'); ?></td>
+
+    <!-- Actual Work -->
+    <td>
+        <?php
+            if(!empty($row['create_date']) && !empty($row['enddate'])) {
+                echo acctual_work($row['create_date'], $row['enddate']);
+            } else {
+                echo 'N/A';
+            }
+        ?>
+    </td>
+
+    <!-- Completed -->
+    <td>
+        <?php
+        echo $row['enddate']
+            ? date('d M Y', strtotime($row['enddate']))
+            : '<span class="text-muted">Pending</span>';
+        ?>
+    </td>
+
+    <!-- Percentage -->
+    <td>
+        <div class="progress" style="height: 6px;">
+            <div class="progress-bar bg-success"
+                style="width: <?php echo (int)$row['parcent']; ?>;">
+            </div>
+        </div>
+        <small><?php echo $row['parcent']; ?></small>
+    </td>
+
+    <!-- Note -->
+    <td><?php echo htmlspecialchars($row['notes']); ?></td>
+
+    <!-- Action -->
+    <td class="text-end">
+        <a href="ticket_edit.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-info">
+            <i class="fas fa-edit"></i>
+        </a>
+        <a href="ticket_view.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-success">
+            <i class="fas fa-eye"></i>
+        </a>
+    </td>
+</tr>
+<?php } ?>
+
                                             </tbody>
 
                                         </table>

@@ -52,37 +52,7 @@
 //     return false;
 //     exit; 
 // }
-// function timeAgo($startdate)
-// {
-//     /*Convert startdate to a timestamp*/
-//     $startTimestamp = strtotime($startdate);
-//     $currentTimestamp = time();
 
-//     /* Calculate the difference in seconds*/
-//     $difference = $currentTimestamp - $startTimestamp;
-
-//     /*Define time intervals*/
-//     $units = [
-//         'year' => 31536000,
-//         'month' => 2592000,
-//         'week' => 604800,
-//         'day' => 86400,
-//         'hour' => 3600,
-//         'min' => 60,
-//         'second' => 1,
-//     ];
-
-//     /*Check for each time unit*/
-//     foreach ($units as $unit => $value) {
-//         if ($difference >= $value) {
-//             $time = floor($difference / $value);
-//             return '<img src="images/icon/online.png" height="10" width="10"/>' . ' ' . $time . ' ' . $unit . ($time > 1 ? 's' : '') . '';
-//         }
-//     }
-//     /*If the difference is less than a second*/
-//     return '<img src="images/icon/online.png" height="10" width="10"/> just now';
-//     exit; 
-// }
 
 // function send_message ($phone, $message) {
 //     $errors = [];
@@ -175,6 +145,89 @@
 //         $stmt->close();
 //     }
 // }
+if(!function_exists('time_ago')){
+    function time_ago($startdate)
+{
+    /*Convert startdate to a timestamp*/
+    $startTimestamp = strtotime($startdate);
+    $currentTimestamp = time();
+
+    /* Calculate the difference in seconds*/
+    $difference = $currentTimestamp - $startTimestamp;
+
+    /*Define time intervals*/
+    $units = [
+        'year' => 31536000,
+        'month' => 2592000,
+        'week' => 604800,
+        'day' => 86400,
+        'hour' => 3600,
+        'min' => 60,
+        'second' => 1,
+    ];
+
+    /*Check for each time unit*/
+    foreach ($units as $unit => $value) {
+        if ($difference >= $value) {
+            $time = floor($difference / $value);
+            return '' . ' ' . $time . ' ' . $unit . ($time > 1 ? 's' : '') . '';
+        }
+    }
+    /*If the difference is less than a second*/
+    return ' just now';
+    exit; 
+}
+}
+if(!function_exists('acctual_work')) {
+    
+    function acctual_work($startdate, $enddate)
+    {
+        $startTimestamp = strtotime($startdate);
+        $endTimestamp = strtotime($enddate);
+        $time_difference = $endTimestamp - $startTimestamp;
+
+        /*--------Define time periods in seconds-----*/ 
+        $units = [
+            'year' => 365 * 24 * 60 * 60,
+            'month' => 30 * 24 * 60 * 60,
+            'week' => 7 * 24 * 60 * 60,
+            'day' => 24 * 60 * 60,
+            'hour' => 60 * 60,
+            'minute' => 60,
+            'second' => 1,
+        ];
+
+        /*-------Determine the appropriate time period---*/ 
+        foreach ($units as $unit => $value) {
+            if ($time_difference >= $value) {
+                $count = floor($time_difference / $value);
+                return $count . ' ' . $unit . ($count > 1 ? 's' : '') . ' ';
+            }
+        }
+
+        return 'just now';
+    }
+}
+if(!function_exists('ticket_priority')) {
+    function ticket_priority($priority){
+        switch ($priority) {
+            case 1:
+                return 'Low';
+            case 2:
+                return 'Normal';
+            case 3:
+                return 'Standard';
+            case 4:
+                return 'Medium';
+            case 5:
+                return 'High';
+            case 6:
+                return 'Very High';
+            default:
+                return 'Unknown';
+        }
+    }
+}
 /**
  * Get services of a customer 
  *

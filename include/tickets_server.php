@@ -480,6 +480,123 @@ if (isset($_GET['add_ticket_comment']) && $_SERVER['REQUEST_METHOD'] == 'POST') 
         exit();
     }
 }
+
+/******** Ticket Reports ******************/
+
+if (isset($_GET['get_tickets_report_data']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $start_date = isset($_POST['start_date']) ? trim($_POST['start_date']) : '';
+    $end_date   = isset($_POST['end_date']) ? trim($_POST['end_date']) : '';
+
+    $errors = [];
+    $params = [];
+    $where_clauses = ["1=1"]; 
+
+    /* Date validation*/
+    if ($start_date !== '') {
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $start_date)) {
+            $where_clauses[] = "DATE(create_date) >= ?";
+            $params[] = $start_date;
+        } else {
+            $errors[] = "Invalid start date format.";
+        }
+    }
+
+    if ($end_date !== '') {
+        if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $end_date)) {
+            $where_clauses[] = "DATE(create_date) <= ?";
+            $params[] = $end_date;
+        } else {
+            $errors[] = "Invalid end date format.";
+        }
+    }
+
+    if (!empty($errors)) {
+        echo json_encode(['success' => false, 'message' => implode(" ", $errors)]);
+        exit;
+    }
+
+    $where_sql = implode(' AND ', $where_clauses);
+
+    
+    $query = "
+        SELECT 
+            DATE(create_date) as report_date,
+            asignto,
+            COUNT(*) as total_ticket,
+            SUM(CASE WHEN ticket_type='Complete' THEN 1 ELSE 0 END) as completed_ticket,
+            SUM(CASE WHEN ticket_type='Active' THEN 1 ELSE 0 END) as active_ticket
+        FROM ticket
+        WHERE $where_sql
+        GROUP BY DATE(create_date), asignto
+        ORDER BY report_date ASC
+    ";
+
+    $stmt = $con->prepare($query);
+    if (!$stmt) {
+        echo json_encode(['success' => false, 'message' => 'Query preparation failed: ' . $con->error]);
+        exit;
+    }
+
+    if (!empty($params)) {
+        $types = str_repeat('s', count($params));
+        $stmt->bind_param($types, ...$params);
+    }
+
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    $rows_html = '';
+    if ($result->num_rows > 0) {
+        $i = 1;
+        while ($row = $result->fetch_assoc()) {
+            $asg_id = intval($row['asignto']);
+            $asg_name = 'N/A';
+            $asgRes = $con->query("SELECT `name` FROM ticket_assign WHERE id = $asg_id");
+            if ($asgRes && $asgRes->num_rows > 0) {
+                $asgRow = $asgRes->fetch_assoc();
+                $asg_name = $asgRow['name'];
+            }
+
+            $view_url = "tickets_report_list.php?date={$row['report_date']}&assign_id={$asg_id}";
+
+            $rows_html .= "<tr>
+                <td>{$i}</td>
+                <td>" . date('d M Y', strtotime($row['report_date'])) . "</td>
+                <td>{$asg_name}</td>
+                <td><span class='badge bg-secondary'>{$row['total_ticket']}</span></td>
+                <td><span class='badge bg-success'>{$row['completed_ticket']}</span></td>
+                <td><span class='badge bg-danger'>{$row['active_ticket']}</span></td>
+                <td><a href='{$view_url}' class='btn btn-sm btn-primary'><i class='fas fa-eye'></i></a></td>
+            </tr>";
+            $i++;
+        }
+    } else {
+        $rows_html = '<tr><td colspan="7" class="text-center">No data found</td></tr>';
+    }
+
+    $html = '
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>No.</th>
+                    <th>Date</th>
+                    <th>Assigned To</th>
+                    <th>Total Tickets</th>
+                    <th>Completed</th>
+                    <th>Active</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>' . $rows_html . '</tbody>
+        </table>
+    </div>';
+
+    echo json_encode(['success' => true, 'html' => $html]);
+    exit;
+}
+
 /* -------Function to calculate actual work time */
 function acctual_work($startdate, $enddate)
 {

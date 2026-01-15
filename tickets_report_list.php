@@ -1,0 +1,349 @@
+<?php
+include 'include/security_token.php';
+include 'include/db_connect.php';
+include 'include/functions.php';
+// ini_set('display_errors', 1);
+// ini_set('display_startup_errors', 1);
+// error_reporting(E_ALL);
+
+?>
+
+<!doctype html>
+<html lang="en">
+<?php 
+$extra_css  = '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">';
+require 'Head.php';
+
+?>
+
+<body data-sidebar="dark">
+
+
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+
+        <?php $page_title = 'Tickets';
+        include 'Header.php'; ?>
+
+        <!-- ========== Left Sidebar Start ========== -->
+        <div class="vertical-menu">
+
+            <div data-simplebar class="h-100">
+
+                <!--- Sidemenu -->
+                <?php include 'Sidebar_menu.php'; ?>
+
+                <!-- Sidebar -->
+            </div>
+        </div>
+        <!-- Left Sidebar End -->
+
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content">
+
+            <div class="page-content">
+                <div class="container-fluid">
+                     <div class="row">
+                        <div class="col-md-12 grid-margin">
+                            <div class="d-flex justify-content-between flex-wrap">
+                                <div class="d-flex align-items-end flex-wrap">
+                                    <div class="mr-md-3 mr-xl-5">
+                                        <div class="d-flex">
+                                            <i class="mdi mdi-home text-muted hover-cursor"></i>
+                                            <p class="text-primary mb-0 hover-cursor">&nbsp;/&nbsp;<a href="index.php">Dashboard</a>&nbsp;/&nbsp;
+                                            </p>
+                                            <p class="text-primary mb-0 hover-cursor"><a href="tickets.php">Tickets</a></p>
+                                           
+                                        </div>
+                                    </div>
+                                    <br>
+                                </div>
+
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 stretch-card">
+                            <div class="card">
+                               <div class="card-header customer_card_header border-bottom d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3" style="background-color: white;">
+                                <!-- Add Ticket Button -->
+                                <a href="ticket_create.php" class="btn btn-success">
+                                    <i class="fas fa-ticket-alt me-1"></i> Add New Ticket
+                                </a>
+                            </div>
+
+                                <div class="card-body">
+                                    <div class="table-responsive ">
+                                        <table id="tickets_table" class="table table-bordered dt-responsive nowrap"
+                                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th>No.</th> 
+                                                    <th>Status</th> 
+                                                    <th>Created</th>
+                                                    <th>Priority</th>
+                                                    <th>Customer Name</th>
+                                                    <th>Phone Number</th>
+                                                    <th>Issues</th>
+                                                    <th>Pop/Area</th>                                                   
+                                                    <th>Assigned</th>
+                                                    <th>Acctual Work</th>
+                                                    <th>Completed</th>
+                                                    <th>Percentage</th>
+                                                    <th>Customer Note</th>
+                                                    <th>NOC Note</th>
+                                                    <th></th>
+                                                </tr>
+                                            </thead>
+                                          <tbody id="tickets-list">
+<?php
+$conditions = [];
+$whereSql = '';
+
+$assign_id = $_GET['assign_id'] ?? '';
+$date      = $_GET['date'] ?? '';
+
+/*------------- Filter -------------------*/
+if ($assign_id !== '') {
+    $assign_id = (int)$assign_id; 
+    $conditions[] = "t.asignto = {$assign_id}";
+}
+
+if ($date !== '') {
+    $date = $con->real_escape_string($date);
+    $conditions[] = "DATE(t.create_date) = '{$date}'";
+}
+
+/*------------- WHERE clause -------------------*/
+if (!empty($conditions)) {
+    $whereSql = 'WHERE ' . implode(' AND ', $conditions);
+}
+
+/*------------- Final Query --------------------*/
+$sql = "
+    SELECT 
+        t.*,
+        c.customer_name,
+        c.customer_phone,
+        pb.name AS pop_name,
+        ta.name AS assigned_name,
+        tt.topic_name AS issue_name
+    FROM ticket t
+    LEFT JOIN customers c ON t.customer_id = c.id
+    LEFT JOIN pop_branch pb ON t.pop_id = pb.id
+    LEFT JOIN ticket_assign ta ON t.asignto = ta.id
+    LEFT JOIN ticket_topic tt ON t.complain_type = tt.id
+    $whereSql
+    ORDER BY t.id DESC
+";
+
+
+$result = $con->query($sql);
+$no = 1;
+
+while($row = $result->fetch_assoc()){
+?>
+<tr>
+    <td><?php echo $no++; ?></td>
+
+    <!-- Status -->
+    <td>
+        <?php
+      
+
+            if($row['ticket_type']=='Active'){
+                echo '<span class="badge bg-danger">Active</span>';
+            }else if($row['ticket_type']=='Complete'){
+                echo '<span class="badge bg-success">Complete</span>';
+            }else if($row['ticket_type']=='Open'){
+                echo '<span class="badge bg-warning">Open</span>';
+            }else if($row['ticket_type']=='Open'){
+                echo '<span class="badge bg-warning">Open</span>';
+            }else if($row['ticket_type']=='New'){
+                echo '<span class="badge bg-warning">New</span>';
+            }else if($row['ticket_type']=='Close'){
+                echo '<span class="badge bg-danger">Close</span>';
+            }else{
+                echo '-----';
+            }
+        ?>
+    </td>
+
+    <!-- Created -->
+    <td><?php echo time_ago($row['create_date']); ?></td>
+
+    <!-- Priority -->
+    <td>
+        <span class="badge bg-info">
+            <?php echo ticket_priority($row['priority']); ?>
+        </span>
+    </td>
+
+    <!-- Customer -->
+    <td>
+        <a href="customer_profile.php?clid=<?php echo $row['customer_id']; ?>">
+            <?php echo htmlspecialchars($row['customer_name'] ?? 'N/A'); ?>
+        </a>
+    </td>
+
+   
+
+    <!-- Phone -->
+    <td><?php echo htmlspecialchars($row['customer_phone'] ?? 'N/A'); ?></td>
+
+    <!-- Issues -->
+    <td><?php echo htmlspecialchars($row['issue_name'] ?? 'N/A'); ?></td>
+
+    <!-- POP -->
+    <td><?php echo htmlspecialchars($row['pop_name'] ?? 'N/A'); ?></td>
+
+    <!-- Assigned -->
+    <td><?php echo htmlspecialchars($row['assigned_name'] ?? 'N/A'); ?></td>
+
+    <!-- Actual Work -->
+    <td>
+        <?php
+            if(!empty($row['create_date']) && !empty($row['enddate'])) {
+                echo acctual_work($row['create_date'], $row['enddate']);
+            } else {
+                echo 'N/A';
+            }
+        ?>
+    </td>
+
+    <!-- Completed -->
+    <td>
+        <?php
+        echo $row['enddate']
+            ? date('d M Y', strtotime($row['enddate']))
+            : '<span class="text-muted">Pending</span>';
+        ?>
+    </td>
+
+    <!-- Percentage -->
+    <td>
+        <div class="progress" style="height: 6px;">
+            <div class="progress-bar bg-success"
+                style="width: <?php echo (int)$row['parcent']; ?>;">
+            </div>
+        </div>
+        <small><?php echo $row['parcent']; ?></small>
+    </td>
+
+    <!-- Note -->
+    <td><?php echo htmlspecialchars($row['customer_note']); ?></td>
+    <td><?php echo htmlspecialchars($row['noc_note']); ?></td>
+
+    <!-- Action -->
+    <td class="text-end">
+        <a href="ticket_edit.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-info">
+            <i class="fas fa-edit"></i>
+        </a>
+        <a href="ticket_view.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-success">
+            <i class="fas fa-eye"></i>
+        </a>
+    </td>
+</tr>
+<?php } ?>
+
+                                            </tbody>
+
+                                        </table>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- container-fluid -->
+            </div>
+            <!-- End Page-content -->
+            <?php include 'Footer.php'; ?>
+
+        </div>
+        <!-- end main content-->
+
+    </div>
+    <!-- END layout-wrapper -->
+    <!-- Delete Modal -->
+    <div id="deleteModal" class="modal fade">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <div class="icon-box">
+                        <i class="fa fa-trash"></i>
+                    </div>
+                    <h4 class="modal-title w-100">Are you sure?</h4>
+                    <h4 class="modal-title w-100 d-none" id="DeleteId"></h4>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="True">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Do you really want to delete these records? This process cannot be undone.</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="DeleteConfirm">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal for Send Message -->
+     <?php include 'modal/message_modal.php'; ?>
+    <!-- Right bar overlay-->
+    <div class="rightbar-overlay"></div>
+    <?php include 'script.php'; ?>
+    <script src="js/Ajax.js"></script>
+    <!-- Include SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        $(document).ready(function() {
+           
+            $('#tickets_table').DataTable({
+                "order": [
+                    [0, "desc"]
+                ],
+                "columnDefs": [{
+                    "targets": [2],
+                    "orderable": false,
+                }],
+            });
+            /** Delete Script **/
+            $(document).on('click', "button[name='delete_button']", function() {
+                var id = $(this).data('id');
+                $('#DeleteId').text(id);
+                $('#deleteModal').modal('show');
+
+                $('#DeleteConfirm').off('click').on('click', function() {
+                    $.ajax({
+                        url: "include/customer_server.php?delete_customer_data=true",
+                        type: "POST",
+                        data: {
+                            id: id
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                toastr.success(response.message);
+                                $('#deleteModal').modal('hide');
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 500);
+                            } else {
+                                toastr.error(response.message);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            toastr.error("Error deleting NAS: " + xhr.responseText);
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

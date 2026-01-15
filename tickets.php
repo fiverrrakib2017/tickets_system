@@ -102,7 +102,7 @@ require 'Head.php';
 <?php
 
 $conditions = [];
-
+ $whereSql = '';
 /*------------- Status Filter -------------------*/
 if (isset($_GET['status']) && $_GET['status'] != '') {
     switch ($_GET['status']) {
@@ -118,15 +118,13 @@ if (isset($_GET['status']) && $_GET['status'] != '') {
             $conditions[] = "t.ticket_type = 'Complete'";
             break;
     }
-}
-
-/*------------- Today Filter -------------------*/
-$conditions[] = "DATE(t.create_date) = CURDATE()";
-
-/*------------- Build WHERE Clause -------------*/
-$whereSql = '';
-if (!empty($conditions)) {
-    $whereSql = 'WHERE ' . implode(' AND ', $conditions);
+    /*------------- Today Filter -------------------*/
+    $conditions[] = "DATE(t.create_date) = CURDATE()";
+    /*------------- Build WHERE Clause -------------*/
+   
+    if (!empty($conditions)) {
+        $whereSql = 'WHERE ' . implode(' AND ', $conditions);
+    }
 }
 
 /*------------- Final Query --------------------*/

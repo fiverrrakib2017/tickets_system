@@ -96,5 +96,13 @@
 
         <?php endif; ?>
 
+        <!-- User Management -->
+        <li>
+            <a href="users.php" class="waves-effect">
+                <i class="mdi mdi-account-multiple-outline"></i>
+                <span>User Management</span>
+            </a>
+        </li>
+
     </ul>
 </div>

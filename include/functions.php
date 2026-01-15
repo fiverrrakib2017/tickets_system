@@ -25,33 +25,33 @@
  * @param string $value The value to check for uniqueness
  * @return bool True if the value exists, false otherwise
  */
-// function isUniqueColumn($con, $table, $column, $value, $exclude=NULL)
-// {
-//     $condition=""; 
-//     $types = "s";
-//     if(isset($exclude) && !empty($exclude)){
-//         $condition ='AND id != ?'; 
-//         $types .= "i"; 
-//     }
+function isUniqueColumn($con, $table, $column, $value, $exclude=NULL)
+{
+    $condition=""; 
+    $types = "s";
+    if(isset($exclude) && !empty($exclude)){
+        $condition ='AND id != ?'; 
+        $types .= "i"; 
+    }
     
 
-//     $query = "SELECT COUNT(*) as count FROM $table WHERE $column = ? $condition ";
-//     $stmt = $con->prepare($query);
-//     if ($stmt) {
-//         if (!empty($exclude)) {
-//             $stmt->bind_param($types, $value, $exclude); 
-//         } else {
-//             $stmt->bind_param("s", $value); 
-//         }
+    $query = "SELECT COUNT(*) as count FROM $table WHERE $column = ? $condition ";
+    $stmt = $con->prepare($query);
+    if ($stmt) {
+        if (!empty($exclude)) {
+            $stmt->bind_param($types, $value, $exclude); 
+        } else {
+            $stmt->bind_param("s", $value); 
+        }
         
-//         $stmt->execute();
-//         $result = $stmt->get_result();
-//         $row = $result->fetch_assoc();
-//         return $row['count'] > 0;
-//     }
-//     return false;
-//     exit; 
-// }
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        return $row['count'] > 0;
+    }
+    return false;
+    exit; 
+}
 
 
 // function send_message ($phone, $message) {

@@ -69,9 +69,12 @@ error_reporting(E_ALL);
 
                                 </div>
                                 <div class="d-flex justify-content-between align-items-end flex-wrap">
+                                   <?php if (isset($_SESSION['details']['role']) && $_SESSION['details']['role'] === 'Super Admin') { ?>
                                     <button class="btn btn-primary mt-2 mt-xl-0 mdi mdi-account-plus mdi-18px"
                                         data-bs-toggle="modal" data-bs-target="#addModal"
                                         style="margin-bottom: 12px;">&nbsp;&nbsp;New User</button>
+                                    <?php } ?> 
+                                  
                                 </div>
                             </div>
                         </div>
@@ -167,6 +170,7 @@ if ($get_all_users && $get_all_users->num_rows > 0) {
             </td>
 
             <td class="text-center">
+                <?php if (isset($_SESSION['details']['role']) && $_SESSION['details']['role'] === 'Super Admin') { ?>
                 <button type="button" name="edit_button" class="btn-sm btn btn-info" data-id="<?= (int)$row['id']; ?>"><i class="fas fa-edit"></i></button>
 
                 <a href="user_delete.php?id=<?= (int)$row['id']; ?>" 
@@ -174,6 +178,8 @@ if ($get_all_users && $get_all_users->num_rows > 0) {
                    onclick="return confirm('Are you sure?')">
                     <i class="fas fa-trash"></i>
                 </a>
+            <?php } ?>
+               
             </td>
         </tr>
 <?php

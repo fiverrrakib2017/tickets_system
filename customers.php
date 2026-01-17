@@ -194,9 +194,13 @@ require 'Head.php';
                                                 $where_clause[] = "c.id IN ($ids_string)";
                                             }
 
-                                            if (isset($_GET['ip']) && $_GET['ip'] !== '') {
-                                                $ip = mysqli_real_escape_string($con, $_GET['ip']);
+                                            if (isset($_GET['public_ip']) && $_GET['public_ip'] !== '') {
+                                                $ip = mysqli_real_escape_string($con, $_GET['public_ip']);
                                                 $where_clause[] = "c.customer_ip = '$ip'";
+                                            }
+                                            if (isset($_GET['private_ip']) && $_GET['private_ip'] !== '') {
+                                                $ip = mysqli_real_escape_string($con, $_GET['private_ip']);
+                                                $where_clause[] = "c.private_customer_ip = '$ip'";
                                             }
 
                                             if (isset($_GET['pop_branch'])) {

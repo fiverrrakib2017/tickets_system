@@ -1,6 +1,6 @@
 <div id="sidebar-menu">
     <ul class="metismenu list-unstyled" id="side-menu">
-
+       
         <!-- Dashboard -->
         <li>
             <a href="index.php" class="waves-effect">
@@ -8,6 +8,7 @@
                 <span>Dashboard</span>
             </a>
         </li>
+         <select name="menu_select_box" id="menu_select_box" class="form-select"></select> 
 
         <!-- Customers -->
         <li class="menu-title">Customer Management</li>

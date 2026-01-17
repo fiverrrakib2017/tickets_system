@@ -86,7 +86,7 @@ $(document).ready(function () {
         allowClear: false,
 
         ajax: {
-            url: 'include/customers_server.php',
+            url: 'include/customer_server.php',
             dataType: 'json',
             delay: 300, 
             data: function (params) {
@@ -105,14 +105,11 @@ $(document).ready(function () {
 
                 $.each(response.data, function (i, customer) {
 
-                    let statusIcon = customer.status === 'online'
-                        ? '🟢'
-                        : '🔴';
 
                     results.push({
                         id: customer.id,
-                        text: `${statusIcon} [${customer.id}] ${customer.username}
-${customer.fullname} (${customer.mobile})`
+                        text: ` [${customer.id}] ${customer.customer_name} ||
+                                ${customer.customer_email} (${customer.customer_phone})`
                     });
                 });
 
@@ -132,7 +129,7 @@ ${customer.fullname} (${customer.mobile})`
     $('#menu_select_box').on('select2:select', function (e) {
         let customerId = e.params.data.id;
         if (customerId) {
-            window.location.href = 'profile.php?clid=' + customerId;
+            window.location.href = 'customer_profile.php?clid=' + customerId;
         }
     });
 

@@ -43,6 +43,29 @@ if(isset($_GET['update_customer_link']) && $_SERVER['REQUEST_METHOD']==='POST'){
     exit();
    
 }
+/*------------ Customer Search List ----------*/
+if (isset($_GET['search_customer']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
+    $search = $con->real_escape_string($_GET['search_customer']);
+
+    $query = $con->query("
+        SELECT id, customer_name, customer_email, customer_phone 
+        FROM customers
+        WHERE id = '$search'                                   
+        OR customer_name LIKE '%$search%'                       
+        OR customer_email LIKE '%$search%'                       
+        OR customer_phone LIKE '%$search%'                      
+    ");
+    $data = [];
+    while ($row = $query->fetch_assoc()) {         
+        $data[] = $row;
+    }
+    echo json_encode([
+        'success' => true,
+        'data' => $data
+    ]);
+
+    exit;
+}
 if(isset($_GET['get_customers_data']) && $_SERVER['REQUEST_METHOD']=='GET'){
 
     $table = 'customers';

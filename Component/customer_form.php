@@ -15,16 +15,85 @@
          value="<?= isset($customer['customer_email']) ? htmlspecialchars($customer['customer_email']) : '' ?>">
  </div>
 
- <div class="col-md-6 mb-3">
-     <label class="form-label">Phone Number</label>
-     <input type="text" name="customer_phone" class="form-control" placeholder="Enter Phone Number"
-         value="<?= isset($customer['customer_phone']) ? htmlspecialchars($customer['customer_phone']) : '' ?>">
- </div>
- <div class="col-md-6 mb-3">
-     <label class="form-label">Phone Number 2</label>
-     <input type="text" name="customer_phone_2" class="form-control" placeholder="Enter Phone Number"
-         value="<?= isset($customer['phone_number']) ? htmlspecialchars($customer['phone_number']) : '' ?>">
- </div>
+
+<!---------- Phone Number Section Start--------- -->
+<div class="col-md-6 mb-3">
+    <label class="form-label">Phone Numbers</label>
+
+    <div id="phoneWrapper">
+
+        <?php
+        $hasPhone = false;
+
+        if (isset($customer['id'])) {
+            $stmt = $con->prepare("SELECT phone_number FROM customer_phones WHERE customer_id = ?");
+            $stmt->bind_param('i', $customer['id']);
+            $stmt->execute();
+            $phones = $stmt->get_result();
+
+            if ($phones->num_rows > 0) {
+                $hasPhone = true;
+                while ($phone = $phones->fetch_assoc()) {
+            ?>
+                    <div class="input-group mb-2">
+                        <input type="text"
+                               name="customer_phones[]"
+                               class="form-control"
+                               placeholder="Enter Phone Number"
+                               value="<?= htmlspecialchars($phone['phone_number']) ?>">
+
+                        <button type="button" class="btn btn-danger removePhone">
+                            <i class="mdi mdi-close"></i>
+                        </button>
+                    </div>
+            <?php
+                }
+            }
+        }
+        ?>
+        <div class="input-group mb-2">
+            <input type="text"
+                   name="customer_phones[]"
+                   class="form-control"
+                   placeholder="Enter Phone Number">
+
+            <button type="button" class="btn btn-primary" id="addPhone">
+                <i class="mdi mdi-plus"></i>
+            </button>
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+document.getElementById('addPhone').addEventListener('click', function () {
+    const wrapper = document.getElementById('phoneWrapper');
+
+    const div = document.createElement('div');
+    div.className = 'input-group mb-2';
+
+    div.innerHTML = `
+        <input type="text"
+               name="customer_phones[]"
+               class="form-control"
+               placeholder="Enter Phone Number">
+        <button type="button" class="btn btn-danger removePhone">
+            <i class="mdi mdi-close"></i>
+        </button>
+    `;
+
+    wrapper.appendChild(div);
+});
+
+/*-------Remove phone input------*/ 
+document.addEventListener('click', function (e) {
+    if (e.target.closest('.removePhone')) {
+        e.target.closest('.input-group').remove();
+    }
+});
+</script>
+ <!---------- Phone Number Section End--------- -->
 
  <div class="col-md-6 mb-3">
      <label class="form-label">POP / Area</label>

@@ -260,15 +260,22 @@ if(!function_exists('get_customer_services')) {
             $serviceLimit = (int)$row['customer_limit'];
             $serviceId    = (int)$row['service_id'];
 
-            $serviceLinks[] = '
-                <a href="customers.php?service_id='.$serviceId.'" 
-                class="text-decoration-none text-primary fw-semibold">
+           $serviceLinks[] = '
+            <a href="customers.php?service_id='.$serviceId.'"
+            class="text-decoration-none text-primary fw-semibold d-flex justify-content-between align-items-center w-100">
+
+                <span class="text-truncate">
                     '.$serviceName.'
-                    <span class="badge bg-light text-dark fw-normal ms-2">
-                        '.$serviceLimit.' Mbps
-                    </span>
-                </a>
+                </span>
+
+                <span class="text-white bg-info fw-normal fs-12 ms-3" style="white-space: nowrap;">
+                    '.$serviceLimit.' Mbps
+                </span>
+
+            </a>
             ';
+
+
 
 
         }

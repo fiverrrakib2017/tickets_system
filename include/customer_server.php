@@ -45,18 +45,26 @@ if(isset($_GET['update_customer_link']) && $_SERVER['REQUEST_METHOD']==='POST'){
 }
 /*------------ Customer Search List ----------*/
 if (isset($_GET['search_customer']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
-    $search = $con->real_escape_string($_GET['search_customer']);
-
-    $query = $con->query("
-        SELECT id, customer_name, customer_email, customer_phone 
-        FROM customers
-        WHERE id = '$search'                                   
-        OR customer_name LIKE '%$search%'                       
-        OR customer_email LIKE '%$search%'                       
-        OR customer_phone LIKE '%$search%'                      
+    $search = $con->real_escape_string(trim($_GET['search_customer']));
+    $customers = $con->query("
+      SELECT DISTINCT
+                c.id,
+                c.customer_name,
+                c.customer_email,
+                c.customer_phone
+            FROM customers c
+            LEFT JOIN customer_invoice ci ON ci.customer_id = c.id
+            LEFT JOIN customer_service s ON s.id = ci.service_id
+            WHERE 
+                c.id = 'iig'
+                OR c.customer_name LIKE '%$search%'
+                OR c.customer_email LIKE '%$search%'
+                OR c.customer_phone LIKE '%$search%'
+                OR s.name LIKE '%$search%';
+                  
     ");
     $data = [];
-    while ($row = $query->fetch_assoc()) {         
+    while ($row = $customers->fetch_assoc()) {         
         $data[] = $row;
     }
     echo json_encode([
@@ -94,13 +102,9 @@ if(isset($_GET['get_customers_data']) && $_SERVER['REQUEST_METHOD']=='GET'){
 }
 /******** Add Customer  Script ******************/
 if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-    // echo '<pre>';
-    // print_r($_POST);
-    // echo '</pre>';exit; 
+   
     $customer_name          = trim($_POST['customer_name']);
     $customer_email         = trim($_POST['customer_email']);
-    $customer_phone         = trim($_POST['customer_phone']);
-    $phone_number           = trim($_POST['customer_phone_2']);
     $customer_type          = trim($_POST['customer_type']);
     $customer_pop_branch    = trim($_POST['customer_pop_branch']);
     $customer_vlan          = trim($_POST['customer_vlan']);
@@ -122,7 +126,7 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     /* Insert into  table */
-    $result = $con->query("INSERT INTO customers(`customer_name`,`customer_email`,`customer_phone`,`phone_number`,`pop_id`,`customer_type_id`,`customer_vlan`,`customer_ip`,`private_customer_ip`,`service_type`,`status`,`total`) VALUES('$customer_name','$customer_email','$customer_phone','$phone_number','$customer_pop_branch','$customer_type','$customer_vlan','$customer_ip','$private_customer_ip','$service_type','$customer_status','$total_limit')");
+    $result = $con->query("INSERT INTO customers(`customer_name`,`customer_email`,`pop_id`,`customer_type_id`,`customer_vlan`,`customer_ip`,`private_customer_ip`,`service_type`,`status`,`total`) VALUES('$customer_name','$customer_email','$customer_pop_branch','$customer_type','$customer_vlan','$customer_ip','$private_customer_ip','$service_type','$customer_status','$total_limit')");
 
     $get_customer_id=$con->insert_id;
 
@@ -137,6 +141,12 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         foreach($service_ids as $index => $service_id){
             $limit = isset($limits[$index]) ? (int)$limits[$index] : 0;
             $con->query("INSERT INTO customer_invoice(`customer_id`,`service_id`,`customer_limit`) VALUES($get_customer_id,'$service_id','$limit')");
+        }
+    }
+    if(isset($_POST['customer_phones']) && is_array($_POST['customer_phones'])){
+        $customer_phones = $_POST['customer_phones'];
+        foreach($customer_phones as $phone){
+            $con->query("INSERT INTO customer_phones(`customer_id`,`phone_number`) VALUES($get_customer_id,'$phone')");
         }
     }
 
@@ -159,8 +169,6 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     $customer_id            = trim($_POST['customer_id']);
     $customer_name          = trim($_POST['customer_name']);
     $customer_email         = trim($_POST['customer_email']);
-    $customer_phone         = trim($_POST['customer_phone']);
-    $phone_number           = trim($_POST['customer_phone_2']);
     $customer_type          = trim($_POST['customer_type']);
     $customer_pop_branch    = trim($_POST['customer_pop_branch']);
     $customer_vlan          = trim($_POST['customer_vlan']);
@@ -182,8 +190,18 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     }
 
     /* Update  table */
-    $result = $con->query("UPDATE customers SET `customer_name`='$customer_name',`customer_email`='$customer_email',`customer_phone`='$customer_phone',`phone_number`='$phone_number',`pop_id`='$customer_pop_branch',`customer_type_id`='$customer_type',`customer_vlan`='$customer_vlan',`customer_ip`='$customer_ip',`private_customer_ip`='$private_customer_ip',`service_type`='$service_type',`status`='$customer_status',`total`='$total_limit' WHERE id='$customer_id'");
-
+    $result = $con->query("UPDATE customers SET `customer_name`='$customer_name',`customer_email`='$customer_email',`pop_id`='$customer_pop_branch',`customer_type_id`='$customer_type',`customer_vlan`='$customer_vlan',`customer_ip`='$customer_ip',`private_customer_ip`='$private_customer_ip',`service_type`='$service_type',`status`='$customer_status',`total`='$total_limit' WHERE id='$customer_id'");
+   
+    if(isset($_POST['customer_phones']) && is_array($_POST['customer_phones'])){
+        /*-------------Delete Existing Phone Number----------------*/
+        $con->query("DELETE FROM customer_phones WHERE customer_id='$customer_id'");
+        $customer_phones = $_POST['customer_phones'];
+        foreach($customer_phones as $phone){
+            if(!empty($phone)){
+                $con->query("INSERT INTO customer_phones(`customer_id`,`phone_number`) VALUES($customer_id,'$phone')");
+            }
+        }
+    }
     /*------- Delete existing services------*/
     $con->query("DELETE FROM customer_invoice WHERE customer_id='$customer_id'");
 

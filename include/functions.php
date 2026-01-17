@@ -261,19 +261,19 @@ if(!function_exists('get_customer_services')) {
             $serviceId    = (int)$row['service_id'];
 
            $serviceLinks[] = '
-            <a href="customers.php?service_id='.$serviceId.'"
-            class="text-decoration-none text-primary fw-semibold d-flex justify-content-between align-items-center w-100">
+        <a href="customers.php?service_id='.$serviceId.'"
+        class="text-decoration-none text-primary fw-semibold d-flex justify-content-between align-items-center w-100">
 
-                <span class="text-truncate">
-                    '.$serviceName.'
-                </span>
+            <span class="text-truncate">
+                '.$serviceName.'
+            </span>
 
-                <span class="text-white bg-info fw-normal fs-12 ms-3" style="white-space: nowrap;">
-                    '.$serviceLimit.' Mbps
-                </span>
+            <span class="text-muted fw-normal fs-12 ms-3" style="white-space: nowrap;">
+                '.$serviceLimit.' Mbps
+            </span>
 
-            </a>
-            ';
+        </a>
+        ';
 
 
 

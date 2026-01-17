@@ -217,6 +217,16 @@ require 'Head.php';
                                                         <span class="fw-semibold text-dark"><?php echo htmlspecialchars($customer['customer_phone'] ?? 'N/A'); ?></span>
                                                     </div>
                                                 </div>
+                                                <!-- Phone 2-->
+                                                <div class="col-12 bg-white p-0">
+                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3 border-bottom border-dotted">
+                                                        <p class="mb-0 text-muted">
+                                                            <i class="mdi mdi-phone me-2 text-info fs-5"></i>
+                                                            <span class="fw-bold">Phone 2:</span>
+                                                        </p>
+                                                        <span class="fw-semibold text-dark"><?php echo htmlspecialchars($customer['phone_number'] ?? 'N/A'); ?></span>
+                                                    </div>
+                                                </div>
 
                                                 <!-- VLAN -->
                                                 <div class="col-12 bg-white p-0">
@@ -234,11 +244,25 @@ require 'Head.php';
                                                     <div class="d-flex justify-content-between align-items-center py-3 px-3 border-bottom border-dotted">
                                                         <p class="mb-0 text-muted">
                                                             <i class="mdi mdi-server-network me-2 text-danger fs-5"></i>
-                                                            <span class="fw-bold">IP Address:</span>
+                                                            <span class="fw-bold">Public IP Address:</span>
                                                         </p>
-                                                        <a href="customers.php?ip=<?php echo htmlspecialchars($customer['customer_ip'] ?? 'N/A'); ?>" class="text-decoration-none">
+                                                        <a href="customers.php?public_ip=<?php echo htmlspecialchars($customer['customer_ip'] ?? 'N/A'); ?>" class="text-decoration-none">
                                                             <span class="fw-semibold text-dark">
                                                                 <?php echo htmlspecialchars($customer['customer_ip'] ?? 'N/A'); ?>
+                                                            </span>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                                <!-- IP Address -->
+                                                <div class="col-12 bg-white p-0">
+                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3 border-bottom border-dotted">
+                                                        <p class="mb-0 text-muted">
+                                                            <i class="mdi mdi-server-network me-2 text-danger fs-5"></i>
+                                                            <span class="fw-bold">Private IP Address:</span>
+                                                        </p>
+                                                        <a href="customers.php?private_ip=<?php echo htmlspecialchars($customer['private_customer_ip'] ?? 'N/A'); ?>" class="text-decoration-none">
+                                                            <span class="fw-semibold text-dark">
+                                                                <?php echo htmlspecialchars($customer['private_customer_ip'] ?? 'N/A'); ?>
                                                             </span>
                                                         </a>
                                                     </div>

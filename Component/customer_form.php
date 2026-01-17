@@ -20,6 +20,11 @@
      <input type="text" name="customer_phone" class="form-control" placeholder="Enter Phone Number"
          value="<?= isset($customer['customer_phone']) ? htmlspecialchars($customer['customer_phone']) : '' ?>">
  </div>
+ <div class="col-md-6 mb-3">
+     <label class="form-label">Phone Number 2</label>
+     <input type="text" name="customer_phone_2" class="form-control" placeholder="Enter Phone Number"
+         value="<?= isset($customer['phone_number']) ? htmlspecialchars($customer['phone_number']) : '' ?>">
+ </div>
 
  <div class="col-md-6 mb-3">
      <label class="form-label">POP / Area</label>
@@ -56,9 +61,14 @@
  </div>
 
  <div class="col-md-6 mb-3">
-     <label class="form-label">IP Address</label>
+     <label class="form-label">Public Address</label>
      <input type="text" name="customer_ip" class="form-control" placeholder="Enter IP Address"
          value="<?= isset($customer['customer_ip']) ? htmlspecialchars($customer['customer_ip']) : '' ?>">
+ </div>
+ <div class="col-md-6 mb-3">
+     <label class="form-label">Private Address</label>
+     <input type="text" name="private_customer_ip" class="form-control" placeholder="Enter IP Address"
+         value="<?= isset($customer['private_customer_ip']) ? htmlspecialchars($customer['private_customer_ip']) : '' ?>">
  </div>
 
  <div class="col-md-6 mb-3">

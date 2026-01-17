@@ -263,9 +263,14 @@ if(!function_exists('get_customer_services')) {
             $serviceLinks[] = '
                 <a href="customers.php?service_id='.$serviceId.'" 
                 class="text-decoration-none text-primary fw-semibold">
-                    '.$serviceName.' ('.$serviceLimit.' MBPS)
+                    '.$serviceName.'
+                    <span class="badge bg-light text-dark fw-normal ms-2">
+                        '.$serviceLimit.' Mbps
+                    </span>
                 </a>
             ';
+
+
         }
         return implode('<br>', $serviceLinks);
 

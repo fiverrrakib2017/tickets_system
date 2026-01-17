@@ -16,12 +16,16 @@ if(isset($_GET['clid'])){
    $sql = "SELECT 
             c.*, 
             COALESCE(ct.name, 'N/A') AS type_name,
-            COALESCE(pb.name, 'N/A') AS pop_branch_name
+            COALESCE(pb.name, 'N/A') AS pop_branch_name,
+            GROUP_CONCAT(DISTINCT cp.phone_number SEPARATOR '<br>') AS phones
+
         FROM customers c
         LEFT JOIN customer_type ct 
             ON c.customer_type_id = ct.id
         LEFT JOIN pop_branch pb 
             ON c.pop_id = pb.id
+        LEFT JOIN customer_phones cp
+            ON c.id = cp.customer_id
         WHERE c.id = '$clid'
         ORDER BY c.id DESC 
         LIMIT 1";
@@ -96,10 +100,6 @@ require 'Head.php';
                                                         <p class="text-muted mb-1">
                                                             <span class="badge bg-secondary">#
                                                                 <?php echo $customer['id']; ?></span>
-                                                        </p>
-                                                        <p class="text-dark fw-semibold">
-                                                            <i class="fas fa-phone-alt text-success"></i>
-                                                            <?php echo $customer['customer_phone']; ?>
                                                         </p>
 
                                                         <!-- User Since -->
@@ -214,17 +214,9 @@ require 'Head.php';
                                                             <i class="mdi mdi-phone me-2 text-info fs-5"></i>
                                                             <span class="fw-bold">Phone:</span>
                                                         </p>
-                                                        <span class="fw-semibold text-dark"><?php echo htmlspecialchars($customer['customer_phone'] ?? 'N/A'); ?></span>
-                                                    </div>
-                                                </div>
-                                                <!-- Phone 2-->
-                                                <div class="col-12 bg-white p-0">
-                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3 border-bottom border-dotted">
-                                                        <p class="mb-0 text-muted">
-                                                            <i class="mdi mdi-phone me-2 text-info fs-5"></i>
-                                                            <span class="fw-bold">Phone 2:</span>
-                                                        </p>
-                                                        <span class="fw-semibold text-dark"><?php echo htmlspecialchars($customer['phone_number'] ?? 'N/A'); ?></span>
+                                                        <span class="fw-semibold text-dark">
+                                                             <?php echo $customer['phones'] ? $customer['phones'] : 'N/A'; ?>
+                                                        </span>
                                                     </div>
                                                 </div>
 
@@ -387,143 +379,37 @@ require 'Head.php';
                                                             <div class="tab-pane active" id="tickets" role="tabpanel">
                                                                 <div class="table-responsive">
                                                                    <table id="tickets_table" class="table table-bordered dt-responsive nowrap"
-                                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                                            <thead>
-                                                <tr>
-                                                    <th>No.</th> 
-                                                    <th>Status</th> 
-                                                    <th>Created</th>
-                                                    <th>Priority</th>
-                                                    <th>Customer Name</th>
-                                                    <th>Phone Number</th>
-                                                    <th>Issues</th>
-                                                    <th>Pop/Area</th>                                                   
-                                                    <th>Assigned</th>
-                                                    <th>Acctual Work</th>
-                                                    <th>Completed</th>
-                                                    <th>Percentage</th>
-                                                    <th>Customer Note</th>
-                                                    <th>NOC Note</th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                          <tbody id="tickets-list">
-                                                <?php
-$sql = "
-SELECT 
-    t.*,
-    c.customer_name,
-    c.customer_phone,
-    pb.name AS pop_name,
-    ta.name AS assigned_name,
-    tt.topic_name AS issue_name
-    
-FROM ticket t
-LEFT JOIN customers c ON t.customer_id = c.id
-LEFT JOIN pop_branch pb ON t.pop_id = pb.id
-LEFT JOIN ticket_assign ta ON t.asignto = ta.id
-LEFT JOIN ticket_topic tt ON t.complain_type = tt.id
-where c.id = {$customer['id']}
-ORDER BY t.id DESC
-";
+                                                                        style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th>No.</th> 
+                                                                                <th>Status</th> 
+                                                                                <th>Created</th>
+                                                                                <th>Priority</th>
+                                                                                <th>Customer Name</th>
+                                                                                <th>Phone Number</th>
+                                                                                <th>Issues</th>
+                                                                                <th>Pop/Area</th>                                                   
+                                                                                <th>Assigned</th>
+                                                                                <th>Acctual Work</th>
+                                                                                <th>Completed</th>
+                                                                                <th>Percentage</th>
+                                                                                <th>Customer Note</th>
+                                                                                <th>NOC Note</th>
+                                                                                <th></th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                    <tbody id="tickets-list">
+                                                                    <?php     
+                                                                        $tickets = get_tickets($con, [
+                                                                            'customer_id' => $customer['id']
+                                                                        ]);
+                                                                        include 'Table/tickets.php';
+                                                                    ?>
 
-$result = $con->query($sql);
-$no = 1;
+                                                                    </tbody>
 
-while($row = $result->fetch_assoc()){
-?>
-<tr>
-    <td><?php echo $no++; ?></td>
-
-    <!-- Status -->
-    <td>
-        <?php
-        echo ($row['ticket_type'] == 'Complete')
-            ? '<span class="badge bg-success">Complete</span>'
-            : '<span class="badge bg-warning">Active</span>';
-        ?>
-    </td>
-
-    <!-- Created -->
-    <td><?php echo time_ago($row['create_date']); ?></td>
-
-    <!-- Priority -->
-    <td>
-        <span class="badge bg-info">
-            <?php echo ticket_priority($row['priority']); ?>
-        </span>
-    </td>
-
-    <!-- Customer -->
-    <td>
-        <a href="customer_profile.php?clid=<?php echo $row['customer_id']; ?>">
-            <?php echo htmlspecialchars($row['customer_name'] ?? 'N/A'); ?>
-        </a>
-    </td>
-
-   
-
-    <!-- Phone -->
-    <td><?php echo htmlspecialchars($row['customer_phone'] ?? 'N/A'); ?></td>
-
-    <!-- Issues -->
-    <td><?php echo htmlspecialchars($row['issue_name'] ?? 'N/A'); ?></td>
-
-    <!-- POP -->
-    <td><?php echo htmlspecialchars($row['pop_name'] ?? 'N/A'); ?></td>
-
-    <!-- Assigned -->
-    <td><?php echo htmlspecialchars($row['assigned_name'] ?? 'N/A'); ?></td>
-
-    <!-- Actual Work -->
-    <td>
-        <?php
-            if(!empty($row['create_date']) && !empty($row['enddate'])) {
-                echo acctual_work($row['create_date'], $row['enddate']);
-            } else {
-                echo 'N/A';
-            }
-        ?>
-    </td>
-
-    <!-- Completed -->
-    <td>
-        <?php
-        echo $row['enddate']
-            ? date('d M Y', strtotime($row['enddate']))
-            : '<span class="text-muted">Pending</span>';
-        ?>
-    </td>
-
-    <!-- Percentage -->
-    <td>
-        <div class="progress" style="height: 6px;">
-            <div class="progress-bar bg-success"
-                style="width: <?php echo (int)$row['parcent']; ?>;">
-            </div>
-        </div>
-        <small><?php echo $row['parcent']; ?></small>
-    </td>
-
-    <!-- Note -->
-    <td><?php echo htmlspecialchars($row['customer_note']); ?></td>
-    <td><?php echo htmlspecialchars($row['noc_note']); ?></td>
-
-    <!-- Action -->
-    <td class="text-end">
-        <a href="ticket_edit.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-info">
-            <i class="fas fa-edit"></i>
-        </a>
-        <a href="ticket_view.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-success">
-            <i class="fas fa-eye"></i>
-        </a>
-    </td>
-</tr>
-<?php } ?>
-
-                                            </tbody>
-
-                                        </table>
+                                                                    </table>
                                                                 </div>
                                                             </div>
                                                            

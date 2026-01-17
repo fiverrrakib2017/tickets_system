@@ -287,4 +287,53 @@ if(!function_exists('get_customer_services')) {
     }
 }
 
+if(!function_exists('get_tickets')){
+    function get_tickets(mysqli $con, array $options = []){
+        $where = [];
+        $limit = '';
+        $order = 'ORDER BY t.id DESC';
+
+        /*---- Filters ----*/
+        if (!empty($options['customer_id'])) {
+            $customer_id = (int)$options['customer_id'];
+            $where[] = "t.customer_id = $customer_id";
+        }
+
+        if (!empty($options['status'])) {
+            $status = $con->real_escape_string($options['status']);
+            $where[] = "t.ticket_type = '$status'";
+        }
+
+        if (!empty($options['limit'])) {
+            $limit = "LIMIT " . (int)$options['limit'];
+        }
+
+        $where_sql = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
+
+        $sql = "
+            SELECT 
+                t.*,
+                c.customer_name,
+                pb.name AS pop_name,
+                ta.name AS assigned_name,
+                tt.topic_name AS issue_name,
+                GROUP_CONCAT(DISTINCT cp.phone_number SEPARATOR '<br>') AS phones
+            FROM ticket t
+            LEFT JOIN customers c ON t.customer_id = c.id
+            LEFT JOIN pop_branch pb ON t.pop_id = pb.id
+            LEFT JOIN ticket_assign ta ON t.asignto = ta.id
+            LEFT JOIN ticket_topic tt ON t.complain_type = tt.id
+            LEFT JOIN customer_phones cp ON c.id = cp.customer_id
+            $where_sql
+            GROUP BY t.id
+            $order
+            $limit
+        ";
+
+        return $con->query($sql);
+    }
+}
+
+
+
 ?>

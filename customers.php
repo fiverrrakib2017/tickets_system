@@ -170,7 +170,8 @@ require 'Head.php';
                                                     <th>Phone</th>
                                                     <th>POP/Area</th>
                                                     <th>Type</th>
-                                                    <th>IP</th>
+                                                    <th>Public IP</th>
+                                                    <th>Private IP</th>
                                                     <th>Bandwidth</th>
                                                     <th>Capacity</th> 
                                                     <th>Status</th> 
@@ -243,7 +244,8 @@ require 'Head.php';
                                                         c.*, 
                                                         COALESCE(ct.name, 'N/A') AS type_name,
                                                         COALESCE(pb.name, 'N/A') AS pop_branch_name,
-                                                        GROUP_CONCAT(DISTINCT cp.phone_number SEPARATOR '<br>') AS phones
+                                                        GROUP_CONCAT(DISTINCT cp.phone_number SEPARATOR '<br>') AS phones,
+                                                        GROUP_CONCAT(DISTINCT ci.ip_address SEPARATOR '<br>') AS public_ip_address
                                                     FROM customers c
                                                     LEFT JOIN customer_type ct 
                                                         ON c.customer_type_id = ct.id
@@ -251,6 +253,8 @@ require 'Head.php';
                                                         ON c.pop_id = pb.id
                                                     LEFT JOIN customer_phones cp
                                                         ON c.id = cp.customer_id
+                                                    LEFT JOIN customer_public_ip_address ci
+                                                        ON c.id = ci.customer_id
                                                     $where_sql
                                                     GROUP BY c.id
                                                     ORDER BY c.id DESC
@@ -276,7 +280,8 @@ require 'Head.php';
 
                                                 <td><?php echo htmlspecialchars($rows["pop_branch_name"]); ?></td>
                                                 <td><?php echo htmlspecialchars($rows["type_name"]); ?></td>
-                                                <td><?php echo htmlspecialchars($rows["customer_ip"]); ?></td>
+                                                <td><?php echo ($rows["public_ip_address"]); ?></td>
+                                                <td><?php echo ($rows["private_customer_ip"]); ?></td>
                                                 <td>
                                                     <?php
                                                     if (function_exists('get_customer_services')) {

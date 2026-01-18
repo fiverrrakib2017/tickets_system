@@ -17,7 +17,8 @@ if(isset($_GET['clid'])){
             c.*, 
             COALESCE(ct.name, 'N/A') AS type_name,
             COALESCE(pb.name, 'N/A') AS pop_branch_name,
-            GROUP_CONCAT(DISTINCT cp.phone_number SEPARATOR '<br>') AS phones
+            GROUP_CONCAT(DISTINCT cp.phone_number SEPARATOR '<br>') AS phones,
+            GROUP_CONCAT(DISTINCT ci.ip_address SEPARATOR '<br>') AS public_ip_address
 
         FROM customers c
         LEFT JOIN customer_type ct 
@@ -26,6 +27,8 @@ if(isset($_GET['clid'])){
             ON c.pop_id = pb.id
         LEFT JOIN customer_phones cp
             ON c.id = cp.customer_id
+        LEFT JOIN customer_public_ip_address ci
+            ON c.id = ci.customer_id
         WHERE c.id = '$clid'
         ORDER BY c.id DESC 
         LIMIT 1";
@@ -240,7 +243,7 @@ require 'Head.php';
                                                         </p>
                                                         <a href="customers.php?public_ip=<?php echo htmlspecialchars($customer['customer_ip'] ?? 'N/A'); ?>" class="text-decoration-none">
                                                             <span class="fw-semibold text-dark">
-                                                                <?php echo htmlspecialchars($customer['customer_ip'] ?? 'N/A'); ?>
+                                                                <?php echo ($customer['public_ip_address'] ?? 'N/A'); ?>
                                                             </span>
                                                         </a>
                                                     </div>
@@ -326,10 +329,19 @@ require 'Head.php';
                                                             <span class="fw-bold">Service Type:</span>
                                                         </p>
                                                         <span class="fw-semibold text-dark">
+                                                            
                                                             <?php 
-                                                                echo ($customer['service_type'] === 'NTTN') 
-                                                                    ? '<span class="badge bg-info">NTTN</span>' 
-                                                                    : '<span class="badge bg-warning text-dark">Overhead</span>'; 
+                                                            if($customer['service_type']==='NNTN'){
+                                                                echo '<span class="badge bg-info">NTTN</span>'; 
+                                                            }else if($customer['service_type']==='Overhead'){
+                                                                echo '<span class="badge bg-warning text-dark">Overhead</span>';
+                                                            }else if($customer['service_type']==='Both'){
+                                                                echo '<span class="badge bg-success">Both</span>';
+                                                            }else{
+                                                                echo '<span class="badge bg-danger">N/A</span>';
+                                                            }
+                                                            
+                                                            
                                                             ?>
                                                         </span>
                                                     </div>

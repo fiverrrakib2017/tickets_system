@@ -10,6 +10,42 @@ require 'datatable.php';
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
 
+
+/*------------Update Customer Ping IP--------------*/
+if(isset($_GET['update_customer_ping_ip']) && $_SERVER['REQUEST_METHOD']==='POST'){
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    $customer_id = isset($input['customer_id']) ? (int)$input['customer_id'] : 0;
+    $customer_ping_ip = isset($input['customer_ping_ip']) ? trim($input['customer_ping_ip']) : '';
+
+    if($customer_id <= 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid Customer ID.'
+        ]);
+        exit();
+    }
+
+    /*-----------Update Customer Ping ip----------*/ 
+    $stmt = $con->prepare("UPDATE customers SET ping_ip = ? WHERE id = ?");
+    $stmt->bind_param('si', $customer_ping_ip, $customer_id);
+
+    if($stmt->execute()) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Customer IP Updated Successfully.'
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Database error: '.$stmt->error
+        ]);
+    }
+
+    exit();
+   
+}
+
 if(isset($_GET['update_customer_link']) && $_SERVER['REQUEST_METHOD']==='POST'){
     $input = json_decode(file_get_contents('php://input'), true);
 

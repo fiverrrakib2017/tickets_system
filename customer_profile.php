@@ -132,6 +132,8 @@ require 'Head.php';
                                         <div class="card border-0 rounded-4 shadow-sm">
                                             <div class="card-body p-0">
 
+                                                <!-- Customer IP -->
+                                                <?php include 'Component/customer_ip.php';?>
                                                 <!-- Customer Links -->
                                                 <?php include 'Component/customer_links.php';?>
                                                 <!-- Fullname -->

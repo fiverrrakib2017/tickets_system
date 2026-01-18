@@ -129,11 +129,82 @@ document.addEventListener('click', function (e) {
          value="<?= isset($customer['customer_vlan']) ? htmlspecialchars($customer['customer_vlan']) : '' ?>">
  </div>
 
- <div class="col-md-6 mb-3">
-     <label class="form-label">Public Address</label>
-     <input type="text" name="customer_ip" class="form-control" placeholder="Enter IP Address"
-         value="<?= isset($customer['customer_ip']) ? htmlspecialchars($customer['customer_ip']) : '' ?>">
- </div>
+ 
+<!---------- Phone public ip Section Start--------- -->
+<div class="col-md-6 mb-3">
+   <label class="form-label">Public Address</label>
+
+    <div id="public_ip_Wrapper">
+
+        <?php
+        $has_ip_address = false;
+
+        if (isset($customer['id'])) {
+            $stmt = $con->prepare("SELECT ip_address FROM customer_public_ip_address WHERE customer_id = ?");
+            $stmt->bind_param('i', $customer['id']);
+            $stmt->execute();
+            $objects = $stmt->get_result();
+
+            if ($objects->num_rows > 0) {
+                $has_ip_address = true;
+                while ($ip_address = $objects->fetch_assoc()) {
+            ?>
+                    <div class="input-group mb-2">
+                        <input type="text"
+                               name="customer_public_ip[]"
+                               class="form-control"
+                               placeholder="Enter Public IP Address"
+                               value="<?= htmlspecialchars($ip_address['ip_address']) ?>">
+
+                        <button type="button" class="btn btn-danger removeIP">
+                            <i class="mdi mdi-close"></i>
+                        </button>
+                    </div>
+            <?php
+                }
+            }
+        }
+        ?>
+        <div class="input-group mb-2">
+            <input type="text" 
+                    name="customer_public_ip[]"
+                    class="form-control"
+                    placeholder="Enter Public IP Address">
+
+            <button type="button" class="btn btn-primary" id="addIP">
+                <i class="mdi mdi-plus"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+document.getElementById('addIP').addEventListener('click', function () {
+    const wrapper = document.getElementById('public_ip_Wrapper');
+
+    const div = document.createElement('div');
+    div.className = 'input-group mb-2';
+
+    div.innerHTML = `
+        <input type="text"
+               name="customer_public_ip[]"
+               class="form-control"
+                placeholder="Enter Public IP Address">
+        <button type="button" class="btn btn-danger removeIP">
+            <i class="mdi mdi-close"></i>
+        </button>
+    `;
+
+    wrapper.appendChild(div);
+});
+
+/*-------Remove IP input------*/ 
+document.addEventListener('click', function (e) {
+    if (e.target.closest('.removeIP')) {
+        e.target.closest('.input-group').remove();
+    }
+});
+</script>
  <div class="col-md-6 mb-3">
      <label class="form-label">Private Address</label>
      <input type="text" name="private_customer_ip" class="form-control" placeholder="Enter IP Address"

@@ -108,7 +108,6 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $customer_type          = trim($_POST['customer_type']);
     $customer_pop_branch    = trim($_POST['customer_pop_branch']);
     $customer_vlan          = trim($_POST['customer_vlan']);
-    $customer_ip            = trim($_POST['customer_ip']);
     $private_customer_ip    = trim($_POST['private_customer_ip']);
     $service_type           = trim($_POST['service_type']); //nttn or overhead
     $customer_status        = trim($_POST['customer_status']);
@@ -126,7 +125,7 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     /* Insert into  table */
-    $result = $con->query("INSERT INTO customers(`customer_name`,`customer_email`,`pop_id`,`customer_type_id`,`customer_vlan`,`customer_ip`,`private_customer_ip`,`service_type`,`status`,`total`) VALUES('$customer_name','$customer_email','$customer_pop_branch','$customer_type','$customer_vlan','$customer_ip','$private_customer_ip','$service_type','$customer_status','$total_limit')");
+    $result = $con->query("INSERT INTO customers(`customer_name`,`customer_email`,`pop_id`,`customer_type_id`,`customer_vlan`,`private_customer_ip`,`service_type`,`status`,`total`) VALUES('$customer_name','$customer_email','$customer_pop_branch','$customer_type','$customer_vlan','$private_customer_ip','$service_type','$customer_status','$total_limit')");
 
     $get_customer_id=$con->insert_id;
 
@@ -147,6 +146,14 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         $customer_phones = $_POST['customer_phones'];
         foreach($customer_phones as $phone){
             $con->query("INSERT INTO customer_phones(`customer_id`,`phone_number`) VALUES($get_customer_id,'$phone')");
+        }
+    }
+    if(isset($_POST['customer_public_ip']) && is_array($_POST['customer_public_ip'])){
+        $customer_ip_address= $_POST['customer_public_ip'];
+        foreach($customer_ip_address as $ip_address){
+            if(!empty($ip_address)){
+                $con->query("INSERT INTO customer_public_ip_address(`customer_id`,`ip_address`)VALUES('$get_customer_id','$ip_address')");
+            }
         }
     }
 
@@ -172,7 +179,6 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     $customer_type          = trim($_POST['customer_type']);
     $customer_pop_branch    = trim($_POST['customer_pop_branch']);
     $customer_vlan          = trim($_POST['customer_vlan']);
-    $customer_ip            = trim($_POST['customer_ip']);
     $private_customer_ip    = trim($_POST['private_customer_ip']);
     $service_type           = trim($_POST['service_type']); //nttn or overhead
     $customer_status        = trim($_POST['customer_status']);
@@ -190,7 +196,7 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     }
 
     /* Update  table */
-    $result = $con->query("UPDATE customers SET `customer_name`='$customer_name',`customer_email`='$customer_email',`pop_id`='$customer_pop_branch',`customer_type_id`='$customer_type',`customer_vlan`='$customer_vlan',`customer_ip`='$customer_ip',`private_customer_ip`='$private_customer_ip',`service_type`='$service_type',`status`='$customer_status',`total`='$total_limit' WHERE id='$customer_id'");
+    $result = $con->query("UPDATE customers SET `customer_name`='$customer_name',`customer_email`='$customer_email',`pop_id`='$customer_pop_branch',`customer_type_id`='$customer_type',`customer_vlan`='$customer_vlan',`private_customer_ip`='$private_customer_ip',`service_type`='$service_type',`status`='$customer_status',`total`='$total_limit' WHERE id='$customer_id'");
    
     if(isset($_POST['customer_phones']) && is_array($_POST['customer_phones'])){
         /*-------------Delete Existing Phone Number----------------*/
@@ -199,6 +205,16 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
         foreach($customer_phones as $phone){
             if(!empty($phone)){
                 $con->query("INSERT INTO customer_phones(`customer_id`,`phone_number`) VALUES($customer_id,'$phone')");
+            }
+        }
+    }
+    if(isset($_POST['customer_public_ip']) && is_array($_POST['customer_public_ip'])){
+        /*-------------Delete Existing public ip address----------------*/
+        $con->query("DELETE  FROM  customer_public_ip_address WHERE customer_id='$customer_id'");
+        $customer_ip_address=$_POST['customer_public_ip'];
+        foreach($customer_ip_address as $ip_address){
+            if(!empty($ip_address)){
+                $con->query("INSERT INTO customer_public_ip_address(`customer_id`,`ip_address`)VALUES('$customer_id','$ip_address')");
             }
         }
     }

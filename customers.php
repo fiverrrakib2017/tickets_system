@@ -6,6 +6,30 @@ include 'include/functions.php';
 // ini_set('display_startup_errors', 1);
 // error_reporting(E_ALL);
 
+//   $sql = "SELECT 
+//             c.*, 
+//             COALESCE(ct.name, 'N/A') AS type_name,
+//             COALESCE(pb.name, 'N/A') AS pop_branch_name,
+//             GROUP_CONCAT(DISTINCT cp.phone_number SEPARATOR ',') AS phones
+//         FROM customers c
+//         LEFT JOIN customer_type ct 
+//             ON c.customer_type_id = ct.id
+//         LEFT JOIN pop_branch pb 
+//             ON c.pop_id = pb.id
+//         LEFT JOIN customer_phones cp
+//             ON c.id = cp.customer_id
+        
+//         GROUP BY c.id
+//         ORDER BY c.id DESC";
+
+//         $result = $con->query($sql);
+//         while($rows=$result->fetch_array()){
+//             echo '<pre>';
+//            echo nl2br(str_replace(', ', "\n", $rows['phones']));
+//             echo '</pre>';
+//         }
+//              exit;    
+
 ?>
 
 <!doctype html>
@@ -229,7 +253,8 @@ require 'Head.php';
                                                         ON c.id = cp.customer_id
                                                     $where_sql
                                                     GROUP BY c.id
-                                                    ORDER BY c.id DESC";
+                                                    ORDER BY c.id DESC
+                                                    ";
 
 
                                             $result = mysqli_query($con, $sql);

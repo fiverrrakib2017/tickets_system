@@ -188,15 +188,7 @@ require 'Head.php';
     <script>
         $(document).ready(function() {
            
-            $('#tickets_table').DataTable({
-                "order": [
-                    [0, "desc"]
-                ],
-                "columnDefs": [{
-                    "targets": [2],
-                    "orderable": false,
-                }],
-            });
+            $('#tickets_table').DataTable();
             /** Delete Script **/
             $(document).on('click', "button[name='delete_button']", function() {
                 var id = $(this).data('id');

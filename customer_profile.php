@@ -9,10 +9,8 @@ include 'include/functions.php';
 if(isset($_GET['clid'])){
     $clid = $_GET['clid'];
 
-    // Initialize
     $customer = [];
 
-    // Fetch customer data
    $sql = "SELECT 
             c.*, 
             COALESCE(ct.name, 'N/A') AS type_name,
@@ -38,12 +36,12 @@ if(isset($_GET['clid'])){
     if($customer_query->num_rows > 0){
         $customer = $customer_query->fetch_assoc();
     } else {
-        // Redirect if not found
+        /*----Redirect if not found------*/ 
         header("Location: customers.php");
         exit();
     }
 } else {
-    // Redirect if no clid
+    /*----Redirect if no clid------*/ 
     header("Location: customers.php");
     exit();
 }
@@ -120,20 +118,58 @@ require 'Head.php';
                                                         <!-- Action Buttons -->
                                                         <div class="mt-3">
                                                             <a href="customer_profile_edit.php?clid=<?php echo $clid; ?>"
-                                                                class="btn btn-primary btn-sm">
+                                                            class="btn btn-primary btn-sm">
                                                                 <i class="fas fa-edit"></i> Edit Profile
                                                             </a>
-
                                                         </div>
+                                                        <!-- Connection Status -->
+                                                        <div class="mt-4">
+
+                                                            <?php 
+                                                                $customer['ping_ip'] = trim($customer['ping_ip'] ?? '');
+                                                                $isOnline = (isset($customer['ping_ip_status']) && $customer['ping_ip_status'] === 'online');
+                                                            ?>
+
+                                                            <div class="card border-0 shadow-sm
+                                                                <?= $isOnline ? 'border-start border-4 border-success' : 'border-start border-4 border-danger'; ?>">
+
+                                                                <div class="card-body py-3">
+
+                                                                    <!-- Header -->
+                                                                    <div class="d-flex justify-content-between align-items-center mb-3">
+                                                                        <div class="d-flex align-items-center gap-2">
+                                                                            <span class="icon-circle 
+                                                                                <?= $isOnline ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'; ?>">
+                                                                                <i class="fas fa-network-wired"></i>
+                                                                            </span>
+                                                                            <strong class="text-dark">Connection Status</strong>
+                                                                        </div>
+
+                                                                        <span class="badge rounded-pill px-3 py-2
+                                                                            <?= $isOnline ? 'bg-success' : 'bg-danger'; ?>">
+                                                                            <?= $isOnline ? 'ONLINE' : 'OFFLINE'; ?>
+                                                                        </span>
+                                                                    </div>
+
+                                                                    <!-- IP Update Form -->
+                                                                     <?php include 'Component/customer_ip.php';?>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+
+
+
+
+
                                                     </div>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="card border-0 rounded-4 shadow-sm">
                                             <div class="card-body p-0">
-
-                                                <!-- Customer IP -->
-                                                <?php include 'Component/customer_ip.php';?>
+                                                
                                                 <!-- Customer Links -->
                                                 <?php include 'Component/customer_links.php';?>
                                                 <!-- Fullname -->

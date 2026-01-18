@@ -86,15 +86,7 @@ require 'Head.php';
     <?php include 'script.php'; ?>
     <script type="text/javascript"></script>
     <script>
-         $('#tickets_table').DataTable({
-                "order": [
-                    [0, "desc"]
-                ],
-                "columnDefs": [{
-                    "targets": [2],
-                    "orderable": false,
-                }],
-            });
+         $('#tickets_table').DataTable();
     </script>
 </body>
 

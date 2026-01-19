@@ -130,26 +130,11 @@ require 'Head.php';
                                                                 $isOnline = (isset($customer['ping_ip_status']) && $customer['ping_ip_status'] === 'online');
                                                             ?>
 
-                                                            <div class="card border-0 shadow-sm
-                                                                <?= $isOnline ? 'border-start border-4 border-success' : 'border-start border-4 border-danger'; ?>">
+                                                            <div class="card border-0 shadow-sm">
 
                                                                 <div class="card-body py-3">
 
-                                                                    <!-- Header -->
-                                                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                                                        <div class="d-flex align-items-center gap-2">
-                                                                            <span class="icon-circle 
-                                                                                <?= $isOnline ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger'; ?>">
-                                                                                <i class="fas fa-network-wired"></i>
-                                                                            </span>
-                                                                            <strong class="text-dark">Connection Status</strong>
-                                                                        </div>
-
-                                                                        <span class="badge rounded-pill px-3 py-2
-                                                                            <?= $isOnline ? 'bg-success' : 'bg-danger'; ?>">
-                                                                            <?= $isOnline ? 'ONLINE' : 'OFFLINE'; ?>
-                                                                        </span>
-                                                                    </div>
+                                      
 
                                                                     <!-- IP Update Form -->
                                                                      <?php include 'Component/customer_ip.php';?>

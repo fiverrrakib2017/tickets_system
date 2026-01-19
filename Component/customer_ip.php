@@ -23,6 +23,78 @@
     </div>
 
 </form>
+<div id="ping_result" class="mt-3">
+
+    <div class="card border shadow-sm">
+        <div class="card-body p-3">
+
+            <!-- Header -->
+            <div class="d-flex justify-content-between align-items-center mb-2">
+                <h6 class="mb-0 text-muted">
+                    <i class="mdi mdi-lan-connect me-1 text-primary"></i>
+                    Ping Status
+                </h6>
+
+                <span class="badge bg-success px-3 py-1">
+                    ONLINE
+                </span>
+            </div>
+
+            <hr class="my-2">
+
+            <!-- Packet Info -->
+            <div class="row text-center mb-2">
+                <div class="col-4">
+                    <div class="text-muted small">Sent</div>
+                    <div class="fw-bold">
+                        <?= $ping['sent'] ?? 'N/A'; ?>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="text-muted small">Received</div>
+                    <div class="fw-bold text-success">
+                        <?= $ping['received'] ?? 'N/A'; ?>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="text-muted small">Lost</div>
+                    <div class="fw-bold text-danger">
+                        <?= $ping['lost'] ?? 'N/A'; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Latency -->
+            <div class="row text-center">
+                <div class="col-4">
+                    <div class="text-muted small">Min (ms)</div>
+                    <div class="fw-semibold">
+                        <?= $ping['min'] ?? 'N/A'; ?>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="text-muted small">Max (ms)</div>
+                    <div class="fw-semibold">
+                        <?= $ping['max'] ?? 'N/A'; ?>
+                    </div>
+                </div>
+
+                <div class="col-4">
+                    <div class="text-muted small">Avg (ms)</div>
+                    <div class="fw-semibold text-primary">
+                        <?= $ping['avg'] ?? 'N/A'; ?>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
 
 
 <script>

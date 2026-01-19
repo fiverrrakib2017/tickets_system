@@ -1,5 +1,9 @@
 
 <?php
+$total_bandwidth=$con->query("
+    SELECT SUM(DISTINCT total) AS total_bandwidth 
+    FROM customers
+")->fetch_assoc()['total_bandwidth'];
 
 $total_ip = $con->query("
     SELECT COUNT(DISTINCT ping_ip) AS total 
@@ -19,10 +23,14 @@ $down_ip = $con->query("
 ")->fetch_assoc()['down_ip'];
 
 ?>
-
-
-
 <div class="d-flex align-items-center me-2 ip-status-wrap">
+    <!-- TOTAL Bandwidth -->
+    <div class="text-center px-3 border-end">
+        <div class="fw-bold text-dark">
+            <i class="mdi mdi-speedometer me-1"></i>
+            <a href="customers.php"><?php echo $total_bandwidth ?? 0; ?> </a><i style="font-size: 10px;">MBPS</i>
+        </div>
+    </div>
     <!-- TOTAL IP -->
     <div class="text-center px-3 border-end">
         <div class="fw-bold text-dark">

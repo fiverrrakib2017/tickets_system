@@ -333,6 +333,57 @@ if(!function_exists('get_tickets')){
         return $con->query($sql);
     }
 }
+/*-----------Function to ping IP and get statistics-----------*/ 
+function customer_ping_status($ip, $count = 4, $timeout = 1) {
+    $os = strtoupper(substr(PHP_OS, 0, 3));
+    $stats = [
+        'status' => 'offline',
+        'sent' => 0,
+        'received' => 0,
+        'lost' => 0,
+        'min_ms' => 0,
+        'max_ms' => 0,
+        'avg_ms' => 0,
+    ];
+
+    if ($os === 'WIN') {
+        $cmd = "ping -n $count -w " . ($timeout*1000) . " " . escapeshellarg($ip);
+    } else {
+        $cmd = "ping -c $count -W $timeout " . escapeshellarg($ip);
+    }
+
+    exec($cmd, $output, $result);
+
+    if ($result === 0 || $result === 1) {
+        $stats['status'] = ($result === 0) ? 'online' : 'offline';
+
+        $stats['sent'] = $count;
+
+        $outputStr = implode("\n", $output);
+
+        // Received / Lost
+        if (preg_match('/(\d+) received/i', $outputStr, $m)) {
+            $stats['received'] = (int)$m[1];
+        } elseif (preg_match('/Lost = (\d+)/i', $outputStr, $m)) { 
+            $stats['lost'] = (int)$m[1];
+            $stats['received'] = $count - $stats['lost'];
+        }
+
+        $stats['lost'] = $count - $stats['received'];
+
+        if (preg_match('/min\/avg\/max\/mdev = ([\d\.]+)\/([\d\.]+)\/([\d\.]+)/i', $outputStr, $m)) { 
+            $stats['min_ms'] = round((float)$m[1]);
+            $stats['avg_ms'] = round((float)$m[2]);
+            $stats['max_ms'] = round((float)$m[3]);
+        } elseif (preg_match('/Minimum = (\d+)ms, Maximum = (\d+)ms, Average = (\d+)ms/i', $outputStr, $m)) { 
+            $stats['min_ms'] = (int)$m[1];
+            $stats['max_ms'] = (int)$m[2];
+            $stats['avg_ms'] = (int)$m[3];
+        }
+    }
+
+    return $stats;
+}
 
 
 

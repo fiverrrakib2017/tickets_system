@@ -47,21 +47,21 @@
                 <div class="col-4">
                     <div class="text-muted small">Sent</div>
                     <div class="fw-bold">
-                        <?= $ping['sent'] ?? 'N/A'; ?>
+                        <?= $customer['ping_sent'] ?? 'N/A'; ?>
                     </div>
                 </div>
 
                 <div class="col-4">
                     <div class="text-muted small">Received</div>
                     <div class="fw-bold text-success">
-                        <?= $ping['received'] ?? 'N/A'; ?>
+                        <?= $customer['ping_received'] ?? 'N/A'; ?>
                     </div>
                 </div>
 
                 <div class="col-4">
                     <div class="text-muted small">Lost</div>
                     <div class="fw-bold text-danger">
-                        <?= $ping['lost'] ?? 'N/A'; ?>
+                        <?= $customer['ping_lost'] ?? 'N/A'; ?>
                     </div>
                 </div>
             </div>
@@ -71,21 +71,21 @@
                 <div class="col-4">
                     <div class="text-muted small">Min (ms)</div>
                     <div class="fw-semibold">
-                        <?= $ping['min'] ?? 'N/A'; ?>
+                        <?= $customer['ping_min_ms'] ?? 'N/A'; ?>
                     </div>
                 </div>
 
                 <div class="col-4">
                     <div class="text-muted small">Max (ms)</div>
                     <div class="fw-semibold">
-                        <?= $ping['max'] ?? 'N/A'; ?>
+                        <?= $customer['ping_max_ms'] ?? 'N/A'; ?>
                     </div>
                 </div>
 
                 <div class="col-4">
                     <div class="text-muted small">Avg (ms)</div>
                     <div class="fw-semibold text-primary">
-                        <?= $ping['avg'] ?? 'N/A'; ?>
+                        <?= $customer['ping_avg_ms'] ?? 'N/A'; ?>
                     </div>
                 </div>
             </div>

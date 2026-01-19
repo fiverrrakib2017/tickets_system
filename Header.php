@@ -37,11 +37,8 @@
 
 
                 <div class="d-flex">
-                    <div class="dropdown d-none d-lg-inline-block me-2">
-                            <button type="button" class="btn header-item toggle-search noti-icon waves-effect" data-target="#search-wrap">
-                                <i class="mdi mdi-magnify"></i>
-                            </button>
-                        </div>
+                    <!-- IP Status Summary -->
+                    <?php include 'Component/ip_status_summary.php';?>
                     <div class="dropdown d-none d-md-block me-2">
                         <button type="button" class="btn header-item waves-effect" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="font-size-16">
@@ -67,33 +64,7 @@
                         </div>
                     </div>
 
-                    <div class="dropdown d-inline-block me-2">
-                        <button type="button" class="btn header-item noti-icon waves-effect" id="page-header-notifications-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="ion ion-md-notifications"></i>
-                            <span class="badge bg-danger rounded-pill">0</span>
-                        </button>
-                        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-end p-0" aria-labelledby="page-header-notifications-dropdown">
-                            <div class="p-3">
-                                <div class="row align-items-center">
-                                    <div class="col">
-                                        <h5 class="m-0 font-size-16"> Notification 0 </h5>
-                                    </div>
-                                </div>
-                            </div>
-                            <div data-simplebar style="max-height: 230px;">
-
-                           
-
-                            </div>
-                            <!-- <div class="p-2 border-top">
-                                <div class="d-grid">
-                                    <a class="btn btn-sm btn-link font-size-14  text-center" href="javascript:void(0)">
-                                        View all
-                                    </a>
-                                </div>
-                            </div> -->
-                        </div>
-                    </div>
+                   
 
                 </div>
             </div>

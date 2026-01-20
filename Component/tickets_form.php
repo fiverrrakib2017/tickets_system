@@ -3,6 +3,7 @@
      <input type="text" name="ticket_id" class="form-control"
          value="<?= isset($ticket['id']) ? htmlspecialchars($ticket['id']) : '' ?>" >
  </div>
+
 <div class="col-md-6 mb-3">
     <label class="form-label">Customer Name</label>
     <select name="customer_id" class="form-select" required>
@@ -16,6 +17,41 @@
         ?>
     </select>
 </div>
+<div class="col-md-6 mb-3 d-none" id="show_customer_ip_div">
+    <label class="form-label">Customer IP</label>
+    <input name="text" id="show_customer_ip" class="form-control" value="">
+</div>
+
+<script src="assets/libs/jquery/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+       $(document).on('change', 'select[name="customer_id"]', function () {
+            let customer_id = $(this).val();
+            if (customer_id === '') {
+                $('#show_customer_ip').val('');
+                return;
+            }
+
+            $.ajax({
+                url: 'include/customer_server.php?get_customer_ping_ip=true',
+                type: 'GET',
+                data: { customer_id: customer_id },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        $("#show_customer_ip_div").removeClass('d-none');
+                        $('#show_customer_ip').val(response.ping_ip);
+                    } else {
+                        $('#show_customer_ip').val('');
+                    }
+                }
+            });
+        }); 
+    });
+    
+</script>
+
+
 <div class="col-md-6 mb-3">
     <label class="form-label">Assign To</label>
     <select name="assign_to" class="form-select" required>

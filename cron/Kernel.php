@@ -12,13 +12,13 @@ include 'scheduler.php';
 $scheduler = new Scheduler();
 
 /*----------1 Minute-----------*/
-$scheduler->everyMinute(__DIR__ . '/attendance_data_sync.php');
+$scheduler->everyMinute(__DIR__ . '/check_ping_status.php');
 
 /*----------Every Day 10AM-----------*/
-$scheduler->dailyAt('10:00', __DIR__ . '/send_auto_message.php');
+// $scheduler->dailyAt('10:00', __DIR__ . '/send_auto_message.php');
 
 /*----------Every Month 12AM-----------*/
-$scheduler->monthlyAt('00:00', __DIR__ . '/monthly_bill_collection_target.php');
+//$scheduler->monthlyAt('00:00', __DIR__ . '/monthly_bill_collection_target.php');
 
 /*----------task execute -----------*/
 $scheduler->run();

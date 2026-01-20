@@ -93,10 +93,32 @@ include("include/db_connect.php");
                                                     <tr>
                                                         <td><?php echo $rows['id']; ?></td>
                                                         <td>
-                                                            <a href="customers.php?pop_branch=<?php echo $rows['id']; ?>">
-                                                                <?php echo $rows['name']; ?>
-                                                            </a>
+                                                            <!-- Customer / POP Name -->
+                                                            <div class="fw-semibold mb-1">
+                                                                <a href="customers.php?pop_branch=<?php echo $rows['id']; ?>" class="text-decoration-none">
+                                                                    <?php echo htmlspecialchars($rows['name']); ?>
+                                                                </a>
+                                                            </div>
+
+                                                            <!-- Status + Ping -->
+                                                            <div class="d-flex align-items-center gap-2 small text-muted">
+                                                                <?php if ($rows['ping_ip_status'] === 'online') { ?>
+                                                                    <span class="badge bg-success">
+                                                                        <i class="fas fa-wifi me-1"></i> Online
+                                                                    </span>
+                                                                <?php } else { ?>
+                                                                    <span class="badge bg-danger">
+                                                                        <i class="fas fa-wifi-slash me-1"></i> Offline
+                                                                    </span>
+                                                                <?php } ?>
+
+                                                                <span>
+                                                                    <i class="fas fa-tachometer-alt me-1"></i>
+                                                                    <?php echo (int)$rows['ping_min_ms']; ?> ms
+                                                                </span>
+                                                            </div>
                                                         </td>
+
                                                         <td>
                                                             <?=$rows['manager_name'];?>
                                                         </td>

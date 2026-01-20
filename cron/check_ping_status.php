@@ -10,8 +10,7 @@ if (!isset($_SERVER['DOCUMENT_ROOT']) || $_SERVER['DOCUMENT_ROOT'] == '') {
 include $_SERVER['DOCUMENT_ROOT'] . '/include/db_connect.php';
 include $_SERVER['DOCUMENT_ROOT'] . '/include/functions.php';
 
-/*----GET Customer info------------*/
-
+/*----Check Customer ip ping status------------*/
 if($con->query("SELECT * FROM customers")){
     $customers = $con->query("SELECT * FROM customers")->fetch_all(MYSQLI_ASSOC);
     foreach ($customers as $customer) {
@@ -49,7 +48,45 @@ if($con->query("SELECT * FROM customers")){
         
     }
 }
+/*----Check Pop Branch  ip ping status------------*/
 
+if($con->query("SELECT * FROM pop_branch")){
+    $pop_branch = $con->query("SELECT * FROM pop_branch")->fetch_all(MYSQLI_ASSOC);
+    foreach ($pop_branch as $branch) {
+        $ping_ip = $branch['router_ip'];
+        $branch_id = $branch['id'];
+        /*-------Ping and get stats--------*/ 
+        if($ping_ip !== "" || $ping_ip !== null){
+            $pingStats = customer_ping_status($ping_ip);
+        }
+        /*-----Prepare SQL to update ping stats-------*/ 
+        $stmt = $con->prepare("UPDATE pop_branch SET 
+            ping_ip_status = ?,
+            ping_sent = ?,
+            ping_received = ?,
+            ping_lost = ?,
+            ping_min_ms = ?,
+            ping_max_ms = ?,
+            ping_avg_ms = ?
+            WHERE id = ?");
+
+        $stmt->bind_param(
+            "sssssssi",
+            $pingStats['status'],
+            $pingStats['sent'],
+            $pingStats['received'],
+            $pingStats['lost'],
+            $pingStats['min_ms'],
+            $pingStats['max_ms'],
+            $pingStats['avg_ms'],
+            $branch_id
+        );
+
+        $stmt->execute();
+        $stmt->close();
+        
+    }
+}
 
 
 ?>

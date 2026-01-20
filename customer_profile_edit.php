@@ -86,7 +86,6 @@ require 'Head.php';
                                            
                                             
                                             <?php include 'Component/customer_form.php'; ?>
-                                            <?php include 'Component/customer_service_section.php'; ?>
 
 
                                         </div>

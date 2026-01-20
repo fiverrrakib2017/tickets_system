@@ -64,9 +64,6 @@ require 'Head.php';
 
                                         <div class="row">
                                             <?php include 'Component/customer_form.php'; ?>
-                                            
-
-                                            <?php include 'Component/customer_service_section.php'; ?>
                                         </div>
 
                                     </div>

@@ -375,4 +375,20 @@ document.addEventListener("DOMContentLoaded", function () {
         height: 38px;
     }
 </style>
-<!----------------Customer Service Section Start------------------------>
+<!----------------Customer Service Section End------------------------>
+
+<!---------------- Customer NID And Service Agreement Section Start ------------------>
+<div class="col-md-6 mb-3">
+    <label class="form-label">Upload NID (PDF)</label>
+    <input type="file" name="nid_file"  class="form-control"  accept="application/pdf" >
+</div>
+
+<div class="col-md-6 mb-3">
+    <label class="form-label">Upload Service Agreement (PDF)</label>
+    <input type="file" name="service_agreement_file" class="form-control" accept="application/pdf">
+</div>
+<!---------------- Customer NID And Service Agreement Section End ------------------>
+
+
+
+

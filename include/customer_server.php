@@ -2,14 +2,16 @@
 if (!isset($_SESSION)) {
     session_start();
 }
-//date_default_timezone_set('Asia/Dhaka');
-include 'db_connect.php';
-include 'functions.php';
-require 'datatable.php';
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
-// error_reporting(E_ALL);
-
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+if (!isset($_SERVER['DOCUMENT_ROOT']) || $_SERVER['DOCUMENT_ROOT'] == '') {
+    $_SERVER['DOCUMENT_ROOT'] = dirname(__DIR__); 
+}
+include $_SERVER['DOCUMENT_ROOT'] . '/include/db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/include/functions.php';
+// include $_SERVER['DOCUMENT_ROOT'] . '/include/datatable.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/include/FileUploader.php';
 
 /*------------Update Customer Ping IP--------------*/
 if(isset($_GET['update_customer_ping_ip']) && $_SERVER['REQUEST_METHOD']==='POST'){
@@ -136,9 +138,8 @@ if(isset($_GET['get_customers_data']) && $_SERVER['REQUEST_METHOD']=='GET'){
     echo json_encode(SSP::complex($_GET, $sql_details, $table, $primaryKey, $columns));
     exit; 
 }
-/******** Add Customer  Script ******************/
+/*-------------------- Add Customer --------------------*/
 if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-   
     $customer_name          = trim($_POST['customer_name']);
     $customer_email         = trim($_POST['customer_email']);
     $customer_type          = trim($_POST['customer_type']);
@@ -159,6 +160,63 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             $total_limit += (int)$lim;
         }
     }
+    /*-------------NID PDF File Upload start------------- */
+    // if(isset($_FILES['nid_file']) && $_FILES['nid_file']['name'] != '') {
+    //     $upload_object = new FileUploader('../assets/customer',['pdf'],['application/pdf'],5000000 // 1MB
+    //     );
+    //     $nid_file_name = $upload_object->upload('nid_file');
+    //     echo '<pre>';
+    //     print_r($nid_file_name);
+    //     echo '</pre>';exit;
+        
+        
+       
+    //     $nid_file = $nid_file_name;
+        
+    // } else {
+    //     $nid_file = '';
+    // }
+    // exit; 
+    /*-------------Service Agreement File Upload start------------- */
+    // $service_agreement_file = $_FILES['service_agreement_file'];
+    // $service_agreement_file_name = $service_agreement_file['name'];
+    // $service_agreement_file_tmp = $service_agreement_file['tmp_name'];
+    // $service_agreement_file_size = $service_agreement_file['size'];
+    // $service_agreement_file_error = $service_agreement_file['error'];
+    // $service_agreement_file_type = $service_agreement_file['type'];
+
+    // $service_agreement_file_ext = explode('.', $service_agreement_file_name);
+    // $service_agreement_file_actual_ext = strtolower(end($service_agreement_file_ext));
+
+    // $allowed = array('pdf');
+    // echo '<pre>';
+    // print_r($service_agreement_file); 
+    // echo '</pre>';
+    // exit; 
+
+    // if (in_array($service_agreement_file_actual_ext, $allowed)) {
+    //     if ($service_agreement_file_error === 0) {
+    //         if ($service_agreement_file_size < 1000000) {
+    //             $service_agreement_file_name_new = uniqid('', true) . '.' . $service_agreement_file_actual_ext;
+    //             $service_agreement_file_destination = '../assets/service_agreement/' . $service_agreement_file_name_new;
+    //             move_uploaded_file($service_agreement_file_tmp, $service_agreement_file_destination);
+    //         } else {
+    //             echo json_encode([
+    //                 'success' => false,
+    //                 'message' => 'File size should be less than 1MB',
+    //             ]);
+    //             exit();
+    //         }
+    //     } else {
+    //         echo json_encode([
+    //             'success' => false,
+    //             'message' => 'There was an error uploading your file',
+    //         ]);
+    //         exit();
+    //     }
+    // }
+    // exit; 
+    /*-------------Service Agreement File Upload End------------- */
 
     /* Insert into  table */
     $result = $con->query("INSERT INTO customers(`customer_name`,`customer_email`,`pop_id`,`customer_type_id`,`customer_vlan`,`private_customer_ip`,`service_type`,`status`,`total`) VALUES('$customer_name','$customer_email','$customer_pop_branch','$customer_type','$customer_vlan','$private_customer_ip','$service_type','$customer_status','$total_limit')");

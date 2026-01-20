@@ -2,7 +2,7 @@
 date_default_timezone_set("Asia/Dhaka");
 
 /* Master Database Connection */
-$con = new mysqli("localhost", "root", "", "ticket_system",3307);
+$con = new mysqli("localhost", "root", "Root@2026", "ticket_system");
 
 /* Check connection */
 if ($con->connect_error) {
@@ -12,7 +12,7 @@ if ($con->connect_error) {
 /* SQL details (for DataTables / other libraries) */
 $sql_details = array(
     'user' => 'root',
-    'pass' => '',
+    'pass' => 'Root@2026',
     'db'   => 'ticket_system',
     'host' => 'localhost',
 );

@@ -51,41 +51,77 @@ if($con->query("SELECT * FROM customers")){
 /*----Check Pop Branch  ip ping status------------*/
 
 if($con->query("SELECT * FROM pop_branch")){
-    $pop_branch = $con->query("SELECT * FROM pop_branch")->fetch_all(MYSQLI_ASSOC);
-    foreach ($pop_branch as $branch) {
-        $ping_ip = $branch['router_ip'];
+    $branches = $con->query("SELECT * FROM pop_branch")->fetch_all(MYSQLI_ASSOC);
+
+    foreach ($branches as $branch) {
+
         $branch_id = $branch['id'];
-        /*-------Ping and get stats--------*/ 
-        if($ping_ip !== "" || $ping_ip !== null){
-            $pingStats = customer_ping_status($ping_ip);
+        $ping_ip   = $branch['router_ip'];
+        $old_status = $branch['ping_ip_status'];
+
+        if (empty($ping_ip)) {
+            continue;
         }
-        /*-----Prepare SQL to update ping stats-------*/ 
-        $stmt = $con->prepare("UPDATE pop_branch SET 
-            ping_ip_status = ?,
-            ping_sent = ?,
-            ping_received = ?,
-            ping_lost = ?,
-            ping_min_ms = ?,
-            ping_max_ms = ?,
-            ping_avg_ms = ?
-            WHERE id = ?");
+
+        $pingStats = customer_ping_status($ping_ip);
+        $new_status = $pingStats['status'];
+
+        $offline_since = $branch['offline_since'];
+        $offline_duration = $branch['offline_duration'];
+
+        /*--------- Status Change Logic ---------*/
+
+        if ($new_status === 'offline') {
+
+            if ($old_status !== 'offline') {
+                /*--------- First time offline-----*/
+                $offline_since = date('Y-m-d H:i:s');
+                $offline_duration = 0;
+            } else {
+                /*----Still offline → calculate duration-------*/ 
+                $offline_duration = time() - strtotime($offline_since);
+            }
+
+        } else {
+            /*----------Came back online → reset-------*/ 
+            $offline_since = null;
+            $offline_duration = 0;
+        }
+
+        /*--------- Update Database ---------*/
+
+        $stmt = $con->prepare("
+            UPDATE pop_branch SET 
+                ping_ip_status = ?,
+                ping_sent = ?,
+                ping_received = ?,
+                ping_lost = ?,
+                ping_min_ms = ?,
+                ping_max_ms = ?,
+                ping_avg_ms = ?,
+                offline_since = ?,
+                offline_duration = ?
+            WHERE id = ?
+        ");
 
         $stmt->bind_param(
-            "sssssssi",
-            $pingStats['status'],
+            "ssssssssii",
+            $new_status,
             $pingStats['sent'],
             $pingStats['received'],
             $pingStats['lost'],
             $pingStats['min_ms'],
             $pingStats['max_ms'],
             $pingStats['avg_ms'],
+            $offline_since,
+            $offline_duration,
             $branch_id
         );
 
         $stmt->execute();
         $stmt->close();
-        
     }
+
 }
 
 

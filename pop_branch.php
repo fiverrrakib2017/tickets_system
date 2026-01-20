@@ -72,7 +72,12 @@ include("include/db_connect.php");
                                                 <tr>
                                                     <th>ID</th>
                                                     <th>POP Branch</th>
-                                                    <th></th>
+                                                    <th>Manager Name</th>
+                                                    <th>Router/Switch IP</th>
+                                                    <th>Phone Number</th>
+                                                    <th>Battery</th>
+                                                    <th>IPS</th>
+                                                    <th>Action</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -91,6 +96,21 @@ include("include/db_connect.php");
                                                             <a href="customers.php?pop_branch=<?php echo $rows['id']; ?>">
                                                                 <?php echo $rows['name']; ?>
                                                             </a>
+                                                        </td>
+                                                        <td>
+                                                            <?=$rows['manager_name'];?>
+                                                        </td>
+                                                        <td>
+                                                            <?=$rows['router_ip'];?>
+                                                        </td>
+                                                        <td>
+                                                            <?=$rows['phone_number'];?>
+                                                        </td>
+                                                        <td>
+                                                            <?=$rows['battery'];?>
+                                                        </td>
+                                                        <td>
+                                                            <?=$rows['ips'];?>
                                                         </td>
 
                                                         <td style="text-align:right">
@@ -140,6 +160,26 @@ include("include/db_connect.php");
                                         <label>POP Branch</label>
                                         <input type="text" name="pop_branch_name" class="form-control" placeholder="Enter POP Branch">
                                     </div>
+                                    <div class="form-group mb-2">
+                                        <label>Manager Name</label>
+                                        <input type="text" name="manager_name" class="form-control" placeholder="Enter Manager Name">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label>Phone Number</label>
+                                        <input type="text" name="phone_number" class="form-control" placeholder="Enter Phone Number">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label>Battery</label>
+                                        <input type="number" name="battery" class="form-control" placeholder="Enter Battery Count">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label>IPS</label>
+                                        <input type="number" name="ips" class="form-control" placeholder="Enter Battery IPS">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label>Router/Switch IP</label>
+                                        <input type="text" name="router_ip" class="form-control" placeholder="Enter Router/Switch IP">
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -171,6 +211,26 @@ include("include/db_connect.php");
                                     <div class="form-group mb-2">
                                         <label>POP Branch</label>
                                         <input type="text" name="pop_branch_name" class="form-control" placeholder="Enter POP Branch">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label>Manager Name</label>
+                                        <input type="text" name="manager_name" class="form-control" placeholder="Enter Manager Name">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label>Phone Number</label>
+                                        <input type="text" name="phone_number" class="form-control" placeholder="Enter Phone Number">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label>Battery</label>
+                                        <input type="number" name="battery" class="form-control" placeholder="Enter Battery Count">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label>IPS</label>
+                                        <input type="number" name="ips" class="form-control" placeholder="Enter Battery IPS">
+                                    </div>
+                                    <div class="form-group mb-2">
+                                        <label>Router/Switch IP</label>
+                                        <input type="text" name="router_ip" class="form-control" placeholder="Enter Router/Switch IP">
                                     </div>
                                 </div>
                             </div>
@@ -285,6 +345,11 @@ include("include/db_connect.php");
                             $('#editModal').modal('show');
                             $('#editModal input[name="id"]').val(response.data.id);
                             $('#editModal input[name="pop_branch_name"]').val(response.data.name);
+                            $('#editModal input[name="manager_name"]').val(response.data.manager_name);
+                            $('#editModal input[name="phone_number"]').val(response.data.phone_number);
+                            $('#editModal input[name="battery"]').val(response.data.battery);
+                            $('#editModal input[name="ips"]').val(response.data.ips);
+                            $('#editModal input[name="router_ip"]').val(response.data.router_ip);
                         } else {
                             toastr.error("Error fetching data for edit: " + response.message);
                         }

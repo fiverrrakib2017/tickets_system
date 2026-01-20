@@ -1,6 +1,12 @@
 <?php
 include("include/security_token.php");
 include("include/db_connect.php");
+function _formate_duration($seconds) {
+    $h = floor($seconds / 3600);
+    $m = floor(($seconds % 3600) / 60);
+    return "{$h}h {$m}m";
+}
+
 ?>
 
 <!doctype html>
@@ -99,7 +105,12 @@ include("include/db_connect.php");
                                                                     <?php echo htmlspecialchars($rows['name']); ?>
                                                                 </a>
                                                             </div>
-
+                                                            <?php if ($rows['ping_ip_status'] === 'offline') { ?>
+                                                                <span class="text-danger small">
+                                                                    Offline for <?php echo _formate_duration($rows['offline_duration']); ?>
+                                                                </span>
+                                                            <?php } ?>
+    
                                                             <!-- Status + Ping -->
                                                             <div class="d-flex align-items-center gap-2 small text-muted">
                                                                 <?php if ($rows['ping_ip_status'] === 'online') { ?>

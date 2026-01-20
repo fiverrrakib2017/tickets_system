@@ -111,23 +111,59 @@ function _formate_duration($seconds) {
                                                                 </span>
                                                             <?php } ?>
     
-                                                            <!-- Status + Ping -->
-                                                            <div class="d-flex align-items-center gap-2 small text-muted">
-                                                                <?php if ($rows['ping_ip_status'] === 'online') { ?>
-                                                                    <span class="badge bg-success">
-                                                                        <i class="fas fa-wifi me-1"></i> Online
-                                                                    </span>
-                                                                <?php } else { ?>
-                                                                    <span class="badge bg-danger">
-                                                                        <i class="fas fa-wifi-slash me-1"></i> Offline
-                                                                    </span>
-                                                                <?php } ?>
+                                                           <!-- Status + Ping -->
+                                                            <div class="d-flex flex-column gap-1 small text-muted">
 
-                                                                <span>
-                                                                    <i class="fas fa-tachometer-alt me-1"></i>
-                                                                    <?php echo (int)$rows['ping_min_ms']; ?> ms
-                                                                </span>
+                                                                <!-- Online / Offline Status -->
+                                                                <div class="d-flex align-items-center gap-2">
+                                                                    <?php if ($rows['ping_ip_status'] === 'online') { ?>
+                                                                        <span class="badge bg-success">
+                                                                            <i class="fas fa-wifi me-1"></i> Online
+                                                                        </span>
+                                                                    <?php } else { ?>
+                                                                        <span class="badge bg-danger">
+                                                                            <i class="fas fa-wifi-slash me-1"></i> Offline
+                                                                        </span>
+                                                                    <?php } ?>
+                                                                </div>
+
+                                                                <!-- Ping Statistics -->
+                                                                <div class="d-flex flex-wrap gap-3">
+
+                                                                    <span>
+                                                                        <i class="fas fa-paper-plane text-primary me-1"></i>
+                                                                        Sent: <strong><?php echo (int)$rows['ping_sent']; ?></strong>
+                                                                    </span>
+
+                                                                    <span>
+                                                                        <i class="fas fa-check-circle text-success me-1"></i>
+                                                                        Recv: <strong><?php echo (int)$rows['ping_received']; ?></strong>
+                                                                    </span>
+
+                                                                    <span>
+                                                                        <i class="fas fa-times-circle text-danger me-1"></i>
+                                                                        Lost: <strong><?php echo (int)$rows['ping_lost']; ?></strong>
+                                                                    </span>
+
+                                                                    <span>
+                                                                        <i class="fas fa-arrow-down text-info me-1"></i>
+                                                                        Min: <strong><?php echo (int)$rows['ping_min_ms']; ?> ms</strong>
+                                                                    </span>
+
+                                                                    <span>
+                                                                        <i class="fas fa-arrow-up text-warning me-1"></i>
+                                                                        Max: <strong><?php echo (int)$rows['ping_max_ms']; ?> ms</strong>
+                                                                    </span>
+
+                                                                    <span>
+                                                                        <i class="fas fa-chart-line text-secondary me-1"></i>
+                                                                        Avg: <strong><?php echo (int)$rows['ping_avg_ms']; ?> ms</strong>
+                                                                    </span>
+
+                                                                </div>
+
                                                             </div>
+
                                                         </td>
 
                                                         <td>

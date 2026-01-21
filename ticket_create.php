@@ -58,7 +58,7 @@ require 'Head.php';
                                 </div>
 
                                 <form id="addTicketForm" action="include/tickets_server.php?add_ticket_data=true"
-                                    method="POST">
+                                    method="POST" enctype="multipart/form-data">
 
                                     <div class="card-body">
 
@@ -105,49 +105,45 @@ require 'Head.php';
         $('select').select2({
             width: '100%'
         });
+
         $('#addTicketForm').submit(function(e) {
             e.preventDefault();
-            /*Get the submit button*/
-            var submitBtn = $('#addTicketForm').find('button[type="submit"]');
 
-            /* Save the original button text*/
+            var submitBtn = $(this).find('button[type="submit"]');
             var originalBtnText = submitBtn.html();
 
-            /*Change button text to loading state*/
             submitBtn.html(
-                `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span><span class="visually-hidden">Loading...</span>`
-            );
-            var form = $(this);
-            var url = form.attr('action');
-            var formData = form.serialize();
+                `<span class="spinner-border spinner-border-sm" role="status"></span> Loading...`
+            ).prop('disabled', true);
+
+            var form = this;
+            var url = $(this).attr('action');
+
+            var formData = new FormData(form);
+
             $.ajax({
                 type: 'POST',
-                'url': url,
+                url: url,
                 data: formData,
+                processData: false,
+                contentType: false, 
                 dataType: 'json',
+
                 success: function(response) {
                     if (response.success) {
                         toastr.success(response.message);
-                        setTimeout(() => {
-                            location.reload();
-                        }, 500);
+                        setTimeout(() => location.reload(), 500);
                     } else {
                         toastr.error(response.message);
                     }
                 },
 
-
-                error: function(xhr, status, error) {
-                    /** Handle  errors **/
-                    if (xhr.status === 422) {
-                        var errors = xhr.responseJSON.errors;
-                        $.each(errors, function(key, value) {
-                            toastr.error(value[0]);
-                        });
-                    }
+                error: function(xhr) {
+                    toastr.error('Something went wrong');
                 },
+
                 complete: function() {
-                    submitBtn.html(originalBtnText);
+                    submitBtn.html(originalBtnText).prop('disabled', false);
                 }
             });
         });

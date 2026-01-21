@@ -3,12 +3,12 @@ include 'db_connect.php';
 
 /******** Add POP Branch Script ******************/
 if (isset($_GET['add_pop_branch_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-    $pop_branch      = trim($_POST['pop_branch_name']);
-    $manager_name    = trim($_POST['manager_name'] ?? '');
-    $phone_number    = trim($_POST['phone_number'] ?? '');
-    $battery         = trim($_POST['battery'] ?? 0);
-    $ips             = trim($_POST['ips'] ?? 0);
-    $router_ip       = trim($_POST['router_ip'] ?? '');
+    $pop_branch                 = trim($_POST['pop_branch_name']);
+    $manager_name               = trim($_POST['manager_name'] ?? '');
+    $phone_number               = trim($_POST['phone_number'] ?? '');
+    $battery                    = trim($_POST['battery'] ?? 0);
+    $ips                        = trim($_POST['ips'] ?? 0);
+    $router_ip                  = trim($_POST['router_ip'] ?? '');
 
     /* Validate POP Branch */
     __validate_input($pop_branch, 'POP Branch');
@@ -161,6 +161,7 @@ function __validate_input($value, $field)
         exit();
     }
 }
+
 
 
 

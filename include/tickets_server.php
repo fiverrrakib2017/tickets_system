@@ -11,14 +11,16 @@ if (!isset($_SESSION)) {
 /*----------- Add Ticket Data------------------*/
 if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
    
-    $customer_id = isset($_POST['customer_id']) ? trim($_POST['customer_id']) : '';
-    $ticket_for = isset($_POST['ticket_for']) ? trim($_POST['ticket_for']) : '';
-    $complain_type = isset($_POST['complain_type']) ? trim($_POST['complain_type']) : '';
-    $assign_to = isset($_POST['assign_to']) ? trim($_POST['assign_to']) : '';
-    $note = isset($_POST['notes']) ? trim($_POST['notes']) : '';
-    $priority = isset($_POST['ticket_priority']) ? trim($_POST['ticket_priority']) : '';
-    $customer_note = isset($_POST['customer_note']) ? trim($_POST['customer_note']) : '';
-    $noc_note = isset($_POST['noc_note']) ? trim($_POST['noc_note']) : '';
+    $customer_id            = isset($_POST['customer_id']) ? trim($_POST['customer_id']) : '';
+    $ticket_for             = isset($_POST['ticket_for']) ? trim($_POST['ticket_for']) : '';
+    $complain_type          = isset($_POST['complain_type']) ? trim($_POST['complain_type']) : '';
+    $assign_to              = isset($_POST['assign_to']) ? trim($_POST['assign_to']) : '';
+    $note                   = isset($_POST['notes']) ? trim($_POST['notes']) : '';
+    $priority               = isset($_POST['ticket_priority']) ? trim($_POST['ticket_priority']) : '';
+    $customer_note          = isset($_POST['customer_note']) ? trim($_POST['customer_note']) : '';
+    $noc_note               = isset($_POST['noc_note']) ? trim($_POST['noc_note']) : '';
+    $customer_subject       = isset($_POST['customer_subject']) ? trim($_POST['customer_subject']) : '';
+    $customer_description   = isset($_POST['customer_description']) ? trim($_POST['customer_description']) : '';
 
     /* ---------- Validation ---------- */
     if(empty((int)$customer_id)) {
@@ -76,7 +78,10 @@ if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
         exit();
     }
 
+    /*-------------Upload Ticket File-------------*/
+    $ticket_file = __upload_file($_FILES['customer_attachments'] ?? null);
     
+
     /* ---------- Get Customer POP ---------- */
     $popStmt = $con->prepare("SELECT pop_id FROM customers WHERE id = ?");
     $popStmt->bind_param('i', $customer_id);
@@ -103,10 +108,13 @@ if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
             priority,
             customer_note,
             noc_note,
+            subject,
+            description,
+            attachments,
             create_date
         )
         VALUES (
-            ?, 'Active', ?, ?, ?, ?, ?, NULL, '0%', ?, ?, ?, ?
+            ?, 'Active', ?, ?, ?, ?, ?, NULL, '0%', ?, ?, ?, ?, ?, ?, ?
         )
     ");
 
@@ -114,7 +122,7 @@ if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
     $startDate = date('Y-m-d H:i:s');
 
     $insert->bind_param(
-        'iissssssss',
+        'iisssssssssss',
         $customer_id,
         $assign_to,
         $ticket_for,
@@ -124,6 +132,9 @@ if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
         $priority,
         $customer_note,
         $noc_note,
+        $customer_subject,
+        $customer_description,
+        $ticket_file,
         $create_date
     );
     $result = $insert->execute();
@@ -143,68 +154,56 @@ if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
 }
 /*----------- update Ticket Data------------------*/
 if (isset($_GET['update_ticket_data']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $ticket_id = isset($_POST['ticket_id']) ? trim($_POST['ticket_id']) : '';
-    $customer_id = isset($_POST['customer_id']) ? trim($_POST['customer_id']) : '';
-    $ticket_for = isset($_POST['ticket_for']) ? trim($_POST['ticket_for']) : '';
-    $complain_type = isset($_POST['complain_type']) ? trim($_POST['complain_type']) : '';
-    $assign_to = isset($_POST['assign_to']) ? trim($_POST['assign_to']) : '';
-    $note = isset($_POST['notes']) ? trim($_POST['notes']) : '';
-    $priority = isset($_POST['ticket_priority']) ? trim($_POST['ticket_priority']) : '';
-    $customer_note = isset($_POST['customer_note']) ? trim($_POST['customer_note']) : '';
-    $noc_note = isset($_POST['noc_note']) ? trim($_POST['noc_note']) : '';
+
+    $ticket_id              = (int)($_POST['ticket_id'] ?? 0);
+    $customer_id            = (int)($_POST['customer_id'] ?? 0);
+    $ticket_for             = trim($_POST['ticket_for'] ?? '');
+    $complain_type          = (int)($_POST['complain_type'] ?? 0);
+    $assign_to              = (int)($_POST['assign_to'] ?? 0);
+    $priority               = (int)($_POST['ticket_priority'] ?? 0);
+    $customer_note          = trim($_POST['customer_note'] ?? '');
+    $noc_note               = trim($_POST['noc_note'] ?? '');
+    $customer_subject       = trim($_POST['customer_subject'] ?? '');
+    $customer_description   = trim($_POST['customer_description'] ?? '');
 
     /* ---------- Validation ---------- */
-    if(empty((int)$customer_id)) {
-       echo json_encode([
-            'success' => false,
-            'message'  =>  'Customer ID is required.'
-        ]);
-        exit();
+    if ($ticket_id <= 0 || $customer_id <= 0) {
+        echo json_encode(['success' => false, 'message' => 'Invalid ticket or customer']);
+        exit;
     }
-    if(empty($ticket_for)) {
-       echo json_encode([
-            'success' => false,
-            'message'  =>  'Ticket For is required.'
-        ]);
-        exit();
+
+    /* ---------- Get old attachment ---------- */
+    $old = $con->prepare("SELECT attachments FROM ticket WHERE id=?");
+    $old->bind_param("i", $ticket_id);
+    $old->execute();
+    $oldFile = $old->get_result()->fetch_assoc()['attachments'] ?? null;
+
+    /* ---------- Upload file ---------- */
+    if (isset($_FILES['customer_attachments']) && $_FILES['customer_attachments']['error'] === 0) {
+        $ticket_file = __upload_file($_FILES['customer_attachments'], $oldFile);
+    } else {
+        $ticket_file = $oldFile;
     }
-    if(empty($complain_type)) {
-       echo json_encode([
-            'success' => false,
-            'message'  =>  'Complain Type is required.'
-        ]);
-        exit();
-    }
-    if(empty($assign_to)) {
-       echo json_encode([
-            'success' => false,
-            'message'  =>  'Assign To is required.'
-        ]);
-        exit();
-    }
-    if(empty($priority)) {
-       echo json_encode([
-            'success' => false,
-            'message'  =>  'Ticket Priority is required.'
-        ]);
-        exit();
-    }
-    /* ---------- Update Ticket ---------- */
-    $update = $con->prepare("
-        UPDATE ticket 
-        SET 
-            customer_id = ?,
-            ticketfor = ?,
-            asignto = ?,
-            complain_type = ?,
-            priority = ?,
-            customer_note = ?,
-            noc_note = ?
-        WHERE id = ?
+
+    /* ---------- Update ---------- */
+    $stmt = $con->prepare("
+        UPDATE ticket SET
+            customer_id=?,
+            ticketfor=?,
+            asignto=?,
+            complain_type=?,
+            priority=?,
+            customer_note=?,
+            noc_note=?,
+            subject=?,
+            description=?,
+            attachments=?,
+            create_date=NOW()
+        WHERE id=?
     ");
 
-    $update->bind_param(
-        'isssssss',
+    $stmt->bind_param(
+        "isiiisssssi",
         $customer_id,
         $ticket_for,
         $assign_to,
@@ -212,23 +211,27 @@ if (isset($_GET['update_ticket_data']) && $_SERVER['REQUEST_METHOD'] === 'POST')
         $priority,
         $customer_note,
         $noc_note,
+        $customer_subject,
+        $customer_description,
+        $ticket_file,
         $ticket_id
     );
-    $result = $update->execute();
-    if($result){
+
+    if ($stmt->execute()) {
         echo json_encode([
             'success' => true,
-            'message'  =>  'Ticket updated successfully.'
+            'message' => 'Ticket updated successfully'
         ]);
     } else {
         echo json_encode([
             'success' => false,
-            'message'  =>  'Error: ' . $update->error
+            'message' => 'Database error'
         ]);
     }
 
     exit;
 }
+
 if (isset($_POST['get_complain_type']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $result = $con->query('SELECT id,topic_name FROM ticket_topic WHERE user_type=1');
     $data = [];
@@ -636,4 +639,36 @@ function __validate_input($value, $field)
         ]);
         exit();
     }
+}
+
+
+
+
+function __upload_file($file, $oldFile = null)
+{
+    
+    if (!isset($file) || $file['error'] !== 0) {
+        return $oldFile;
+    }
+
+    $allowed = ['jpg','jpeg','png','pdf'];
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+    if (!in_array($ext, $allowed)) {
+        return $oldFile;
+    }
+
+    if ($file['size'] > 2 * 1024 * 1024) {
+        return $oldFile;
+    }
+
+    $newName = uniqid('ticket_', true) . '.' . $ext;
+    $destination = '../assets/tickets/' . $newName;
+    move_uploaded_file($file['tmp_name'], $destination);
+
+    if ($oldFile && file_exists('../assets/tickets/'.$oldFile)) {
+        unlink('../assets/tickets/'.$oldFile);
+    }
+
+    return $newName;
 }

@@ -130,13 +130,27 @@
 
 <div class="col-md-6 mb-3">
     <label  class="form-label">Customer Note</label>
-    <input id="notes" type="text" name="customer_note" class="form-control" value="<?= isset($ticket['customer_note']) ? $ticket['customer_note'] : '' ?>" placeholder="Enter Your Note">
+    <input  type="text" name="customer_note" class="form-control" value="<?= isset($ticket['customer_note']) ? $ticket['customer_note'] : '' ?>" placeholder="Enter Your Note">
 </div>
 <div class="col-md-6 mb-3">
     <label  class="form-label">NOC Note</label>
-    <input id="notes" type="text" name="noc_note" class="form-control" value="<?= isset($ticket['noc_note']) ? $ticket['noc_note'] : '' ?>" placeholder="Enter Your NOC Note">
+    <input  type="text" name="noc_note" class="form-control" value="<?= isset($ticket['noc_note']) ? $ticket['noc_note'] : '' ?>" placeholder="Enter Your NOC Note">
 </div>
 
+<div class="col-md-6 mb-3">
+    <label  class="form-label">Subject</label>
+    <input  type="text" name="customer_subject" class="form-control" value="<?= isset($ticket['subject']) ? $ticket['subject'] : '' ?>" placeholder="Enter Your Subject">
+</div>
+
+<div class="col-md-6 mb-3">
+    <label  class="form-label">Description</label>
+    <textarea  type="text" name="customer_description" class="form-control" placeholder="Enter Description"><?= isset($ticket['description']) ? $ticket['description'] : '' ?></textarea>
+</div>
+
+<div class="col-md-6 mb-3">
+    <label  class="form-label">Attachments</label>
+    <input type="file" name="customer_attachments" class="form-control" value="<?= isset($ticket['attachments']) ? $ticket['attachments'] : '' ?>">
+</div>
 
 
 <script src="assets/libs/jquery/jquery.min.js"></script>

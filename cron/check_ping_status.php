@@ -10,46 +10,92 @@ if (!isset($_SERVER['DOCUMENT_ROOT']) || $_SERVER['DOCUMENT_ROOT'] == '') {
 include $_SERVER['DOCUMENT_ROOT'] . '/include/db_connect.php';
 include $_SERVER['DOCUMENT_ROOT'] . '/include/functions.php';
 
-/*----Check Customer ip ping status------------*/
-if($con->query("SELECT * FROM customers")){
-    $customers = $con->query("SELECT * FROM customers")->fetch_all(MYSQLI_ASSOC);
+/*------------- Check Customer IP Ping Status -------------*/
+
+$result = $con->query("SELECT * FROM customers");
+
+if ($result && $result->num_rows > 0) {
+
+    $customers = $result->fetch_all(MYSQLI_ASSOC);
+
     foreach ($customers as $customer) {
-        $ping_ip = $customer['ping_ip'];
-        $customer_id = $customer['id'];
-        /*-------Ping and get stats--------*/ 
-        if($ping_ip !== "" || $ping_ip !== null){
-            $pingStats = customer_ping_status($ping_ip);
+
+        $customer_id = (int)$customer['id'];
+        $ping_ip     = trim($customer['ping_ip']);
+
+        if (empty($ping_ip)) {
+            continue;
         }
-        /*-----Prepare SQL to update ping stats-------*/ 
-        $stmt = $con->prepare("UPDATE customers SET 
-            ping_ip_status = ?,
-            ping_sent = ?,
-            ping_received = ?,
-            ping_lost = ?,
-            ping_min_ms = ?,
-            ping_max_ms = ?,
-            ping_avg_ms = ?
-            WHERE id = ?");
+
+        $old_status = $customer['ping_ip_status'];
+
+        $pingStats = customer_ping_status($ping_ip);
+
+        $new_status = $pingStats['status'];
+
+        $offline_since    = $customer['offline_since'];
+        $offline_duration = (int)$customer['offline_duration'];
+
+        /*---------- Status Change Logic ----------*/
+
+        if ($new_status === 'offline') {
+
+            if ($old_status !== 'offline') {
+                $offline_since    = date('Y-m-d H:i:s');
+                $offline_duration = 0;
+            } else {
+                if (!empty($offline_since)) {
+                    $offline_duration = time() - strtotime($offline_since);
+                }
+            }
+
+        } else {
+            $offline_since    = null;
+            $offline_duration = 0;
+        }
+
+        /*---------- Update Database ----------*/
+
+        $stmt = $con->prepare("
+            UPDATE customers SET 
+                ping_ip_status   = ?,
+                ping_sent        = ?,
+                ping_received    = ?,
+                ping_lost        = ?,
+                ping_min_ms      = ?,
+                ping_max_ms      = ?,
+                ping_avg_ms      = ?,
+                offline_since    = ?,
+                offline_duration = ?
+            WHERE id = ?
+        ");
+
+        if (!$stmt) {
+            continue;
+        }
 
         $stmt->bind_param(
-            "sssssssi",
-            $pingStats['status'],
+            "ssssssssii",
+            $new_status,
             $pingStats['sent'],
             $pingStats['received'],
             $pingStats['lost'],
             $pingStats['min_ms'],
             $pingStats['max_ms'],
             $pingStats['avg_ms'],
+            $offline_since,
+            $offline_duration,
             $customer_id
         );
 
         $stmt->execute();
         $stmt->close();
-        
     }
 }
-/*----Check Pop Branch  ip ping status------------*/
 
+
+
+/*----Check Pop Branch  ip ping status------------*/
 if($con->query("SELECT * FROM pop_branch")){
     $branches = $con->query("SELECT * FROM pop_branch")->fetch_all(MYSQLI_ASSOC);
 

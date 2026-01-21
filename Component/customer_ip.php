@@ -23,78 +23,110 @@
     </div>
 
 </form>
-<div id="ping_result" class="mt-3">
+<?php
+$status = $customer['ping_ip_status'] ?? 'unknown';
+$isOnline = ($status === 'online');
 
-    <div class="card border shadow-sm">
+$badgeClass = $isOnline ? 'bg-success' : 'bg-danger';
+$iconClass  = $isOnline ? 'mdi-wifi' : 'mdi-wifi-off';
+$statusText = strtoupper($status);
+?>
+
+<div id="ping_result" class="mt-3">
+    <div class="">
         <div class="card-body p-3">
 
             <!-- Header -->
-            <div class="d-flex justify-content-between align-items-center mb-2">
-                <h6 class="mb-0 text-muted">
-                    <i class="mdi mdi-lan-connect me-1 text-primary"></i>
-                    Ping Status
-                </h6>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h6 class="mb-0 fw-semibold text-secondary">
+                        <i class="mdi mdi-lan-connect me-1 text-primary"></i>
+                        Ping Status
+                    </h6>
+                    <small class="text-muted">Real-time connectivity check</small>
+                </div>
 
-                <span class="badge bg-success px-3 py-1">
-                    ONLINE
+                <span class="badge <?= $badgeClass; ?> px-3 py-2 d-flex align-items-center gap-1">
+                    <i class="mdi <?= $iconClass; ?>"></i>
+                    <?= $statusText; ?>
                 </span>
             </div>
 
-            <hr class="my-2">
-
             <!-- Packet Info -->
-            <div class="row text-center mb-2">
+            <div class="row text-center g-2 mb-3">
                 <div class="col-4">
-                    <div class="text-muted small">Sent</div>
-                    <div class="fw-bold">
-                        <?= $customer['ping_sent'] ?? 'N/A'; ?>
+                    <div class="p-2 bg-light rounded">
+                        <div class="text-muted small">Sent</div>
+                        <div class="fw-bold">
+                            <?= htmlspecialchars($customer['ping_sent'] ?? 'N/A'); ?>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-4">
-                    <div class="text-muted small">Received</div>
-                    <div class="fw-bold text-success">
-                        <?= $customer['ping_received'] ?? 'N/A'; ?>
+                    <div class="p-2 bg-light rounded">
+                        <div class="text-muted small">Received</div>
+                        <div class="fw-bold text-success">
+                            <?= htmlspecialchars($customer['ping_received'] ?? 'N/A'); ?>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-4">
-                    <div class="text-muted small">Lost</div>
-                    <div class="fw-bold text-danger">
-                        <?= $customer['ping_lost'] ?? 'N/A'; ?>
+                    <div class="p-2 bg-light rounded">
+                        <div class="text-muted small">Lost</div>
+                        <div class="fw-bold text-danger">
+                            <?= htmlspecialchars($customer['ping_lost'] ?? 'N/A'); ?>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Latency -->
-            <div class="row text-center">
+            <div class="row text-center g-2">
                 <div class="col-4">
-                    <div class="text-muted small">Min (ms)</div>
-                    <div class="fw-semibold">
-                        <?= $customer['ping_min_ms'] ?? 'N/A'; ?>
+                    <div class="p-2 border rounded">
+                        <div class="text-muted small">Min</div>
+                        <div class="fw-semibold">
+                            <?= htmlspecialchars($customer['ping_min_ms'] ?? 'N/A'); ?> ms
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-4">
-                    <div class="text-muted small">Max (ms)</div>
-                    <div class="fw-semibold">
-                        <?= $customer['ping_max_ms'] ?? 'N/A'; ?>
+                    <div class="p-2 border rounded">
+                        <div class="text-muted small">Max</div>
+                        <div class="fw-semibold">
+                            <?= htmlspecialchars($customer['ping_max_ms'] ?? 'N/A'); ?> ms
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-4">
-                    <div class="text-muted small">Avg (ms)</div>
-                    <div class="fw-semibold text-primary">
-                        <?= $customer['ping_avg_ms'] ?? 'N/A'; ?>
+                    <div class="p-2 border rounded bg-soft-primary">
+                        <div class="text-muted small">Avg</div>
+                        <div class="fw-bold text-primary">
+                            <?= htmlspecialchars($customer['ping_avg_ms'] ?? 'N/A'); ?> ms
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Offline Duration -->
+            <?php if (!$isOnline && !empty($customer['offline_since'])): ?>
+                <div class="alert alert-danger mt-3 py-2 small text-center mb-0">
+                    <i class="mdi mdi-alert-circle-outline me-1"></i>
+                    <strong>Offline Since:</strong>
+                    <?= htmlspecialchars($customer['offline_since']); ?>
+                    <br>
+                    <strong>Duration:</strong>
+                    <?= gmdate("H:i:s", (int)$customer['offline_duration']); ?>
+                </div>
+            <?php endif; ?>
+
         </div>
     </div>
-
 </div>
-
 
 
 <script>

@@ -125,29 +125,14 @@ require 'Head.php';
                                                         <!-- Connection Status -->
                                                         <div class="mt-4">
 
-                                                            <?php 
-                                                                $customer['ping_ip'] = trim($customer['ping_ip'] ?? '');
-                                                                $isOnline = (isset($customer['ping_ip_status']) && $customer['ping_ip_status'] === 'online');
-                                                            ?>
-
                                                             <div class="card border-0 shadow-sm">
-
                                                                 <div class="card-body py-3">
-
-                                      
-
                                                                     <!-- IP Update Form -->
                                                                      <?php include 'Component/customer_ip.php';?>
 
                                                                 </div>
                                                             </div>
                                                         </div>
-
-
-
-
-
-
                                                     </div>
                                                 </div>
                                             </div>

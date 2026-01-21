@@ -22,34 +22,7 @@
     <input name="text" id="show_customer_ip" class="form-control" value="">
 </div>
 
-<script src="assets/libs/jquery/jquery.min.js"></script>
-<script type="text/javascript">
-    $(document).ready(function () {
-       $(document).on('change', 'select[name="customer_id"]', function () {
-            let customer_id = $(this).val();
-            if (customer_id === '') {
-                $('#show_customer_ip').val('');
-                return;
-            }
 
-            $.ajax({
-                url: 'include/customer_server.php?get_customer_ping_ip=true',
-                type: 'GET',
-                data: { customer_id: customer_id },
-                dataType: 'json',
-                success: function (response) {
-                    if (response.success) {
-                        $("#show_customer_ip_div").removeClass('d-none');
-                        $('#show_customer_ip').val(response.ping_ip);
-                    } else {
-                        $('#show_customer_ip').val('');
-                    }
-                }
-            });
-        }); 
-    });
-    
-</script>
 
 
 <div class="col-md-6 mb-3">
@@ -80,6 +53,11 @@
         ?>
     </select>
 </div>
+<div class="col-md-6 mb-3 d-none" id="show_pop_branch_ip_div">
+    <label class="form-label">Router/Switch IP</label>
+    <input name="text" id="show_pop_branch_ip" class="form-control" value="">
+</div>
+
 <div class="col-md-6 mb-3">
     <label class="form-label">Ticket For</label>
     <select id="ticket_for" name="ticket_for" class="form-select" required>
@@ -160,3 +138,57 @@
 </div>
 
 
+
+<script src="assets/libs/jquery/jquery.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(document).on('change', 'select[name="customer_id"]', function () {
+            let customer_id = $(this).val();
+            if (customer_id === '') {
+                $('#show_customer_ip').val('');
+                return;
+            }
+
+            $.ajax({
+                url: 'include/customer_server.php?get_customer_ping_ip=true',
+                type: 'GET',
+                data: { customer_id: customer_id },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        if(response.ping_ip.length > 0){
+                            $("#show_customer_ip_div").removeClass('d-none');
+                             $('#show_customer_ip').val(response.ping_ip);
+                        } 
+                       
+                    } else {
+                        $('#show_customer_ip').val('');
+                    }
+                }
+            });
+        }); 
+       $(document).on('change', 'select[name="pop_branch"]', function () {
+            let pop_id = $(this).val();
+            if (pop_id === '') {
+                $('#show_pop_branch_ip').val('');
+                return;
+            }
+
+            $.ajax({
+                url: 'include/pop_branch_server.php?get_pop_branch_ping_ip=true',
+                type: 'GET',
+                data: { pop_id: pop_id },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        $("#show_pop_branch_ip_div").removeClass('d-none');
+                        $('#show_pop_branch_ip').val(response.router_ip);
+                    } else {
+                        $('#show_pop_branch_ip').val('');
+                    }
+                }
+            });
+        }); 
+    });
+    
+</script>

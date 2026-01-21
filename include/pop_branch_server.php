@@ -118,6 +118,38 @@ if (isset($_GET['delete_pop_branch_data']) && $_SERVER['REQUEST_METHOD'] == 'POS
 
 
 
+/*-----GET Customer Ping IP-----*/
+if(isset($_GET['get_pop_branch_ping_ip']) && $_SERVER['REQUEST_METHOD']==='GET'){
+    $pop_id = isset($_GET['pop_id']) ? (int)$_GET['pop_id'] : 0;
+
+    if($pop_id <= 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid POP Branch ID.'
+        ]);
+        exit();
+    }
+
+    $stmt = $con->prepare("SELECT router_ip FROM pop_branch WHERE id = ?");
+    $stmt->bind_param('i', $pop_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if($result && $row = $result->fetch_assoc()) {
+        echo json_encode([
+            'success' => true,
+            'router_ip' => $row['router_ip']
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Database error: '.$stmt->error
+        ]);
+    }
+
+    exit();
+}
+
 
 function __validate_input($value, $field)
 {

@@ -26,9 +26,32 @@ if (isset($_GET['id'])) {
 
     $stmt->close();
 
-} else {
-    die('Invalid request.');
+} 
+
+
+/* -------- Ticket Attachment Download (Inline) -------- */
+if (isset($_GET['download_ticket_file'])) {
+
+    $file = basename($_GET['download_ticket_file']);
+    $path = __DIR__ . '/assets/tickets/' . $file;
+
+    if (!empty($file) && file_exists($path)) {
+
+        header('Content-Description: File Transfer');
+        header('Content-Type: application/octet-stream');
+        header('Content-Disposition: attachment; filename="' . $file . '"');
+        header('Content-Length: ' . filesize($path));
+        header('Pragma: public');
+        header('Cache-Control: must-revalidate');
+
+        readfile($path);
+        exit;
+    } else {
+        http_response_code(404);
+        exit('File not found');
+    }
 }
+
 
 
 ?>
@@ -246,6 +269,47 @@ require 'Head.php';
                                                     <?= htmlspecialchars($ticket['noc_note']); ?>
                                                 </span>
                                             </div>
+                                            <div class="list-group-item d-flex justify-content-between align-items-start">
+                                                <p class="mb-0">
+                                                    <i class="mdi mdi-text-box-outline text-warning me-2"></i>
+                                                    Subject:
+                                                </p>
+                                                <span class="text-dark fw-bold text-end">
+                                                    <?= htmlspecialchars($ticket['subject']); ?>
+                                                </span>
+                                            </div>
+                                            <div class="list-group-item">
+                                                <p class="mb-1">
+                                                    <i class="mdi mdi-text-long text-secondary me-2"></i>
+                                                    Description:
+                                                </p>
+                                                <div class="border rounded p-2 bg-light small text-dark">
+                                                    <?= nl2br(htmlspecialchars($ticket['description'])); ?>
+                                                </div>
+                                            </div>
+                                            <div class="list-group-item d-flex justify-content-between align-items-center">
+                                                <p class="mb-0">
+                                                    <i class="mdi mdi-paperclip text-danger me-2"></i>
+                                                    Attachment:
+                                                </p>
+
+                                                <?php if (!empty($ticket['attachments']) && file_exists('assets/tickets/' . $ticket['attachments'])) { ?>
+
+                                                    <a href="?download_ticket_file=<?= urlencode($ticket['attachments']); ?>"
+                                                    class="btn btn-sm btn-outline-primary">
+                                                        <i class="mdi mdi-download me-1"></i> Download
+                                                    </a>
+
+                                                <?php } else { ?>
+
+                                                    <span class="text-muted fst-italic">No attachment</span>
+
+                                                <?php } ?>
+                                            </div>
+
+
+
+
 
                                         </div>
                                     </div>

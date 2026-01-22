@@ -179,10 +179,16 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $customer_pop_branch    = trim($_POST['customer_pop_branch']);
     $customer_vlan          = trim($_POST['customer_vlan']);
     $private_customer_ip    = trim($_POST['private_customer_ip']);
-    $service_type           = trim($_POST['service_type']); //nttn or overhead
+    $service_type           = isset($_POST['service_type'])? trim($_POST['service_type']): null; 
     $customer_status        = trim($_POST['customer_status']);
+    $service_customer_type  = trim($_POST['service_customer_type']);
     
 
+    
+    // echo '<pre>';
+    // print_r($_POST);
+    // echo '</pre>';
+    // exit;
     /* Validate Customer Name */
     __validate_input($customer_name, 'Customer Name');
 
@@ -252,21 +258,55 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     /*-------------Service Agreement File Upload End------------- */
 
     /* Insert into  table */
-    $result = $con->query("INSERT INTO customers(`customer_name`,`customer_email`,`pop_id`,`customer_type_id`,`customer_vlan`,`private_customer_ip`,`service_type`,`status`,`total`) VALUES('$customer_name','$customer_email','$customer_pop_branch','$customer_type','$customer_vlan','$private_customer_ip','$service_type','$customer_status','$total_limit')");
+    $result = $con->query("INSERT INTO customers(`customer_name`,`customer_email`,`pop_id`,`customer_type_id`,`customer_vlan`,`private_customer_ip`,`service_type`,`status`,`total`,`service_customer_type`) VALUES('$customer_name','$customer_email','$customer_pop_branch','$customer_type','$customer_vlan','$private_customer_ip','$service_type','$customer_status','$total_limit','$service_customer_type')");
 
     $get_customer_id=$con->insert_id;
 
-    if(isset($_POST['service_id']) && is_array($_POST['service_id'])){
-        $service_ids = $_POST['service_id'];
-        $limits = $_POST['limit'];
-        $service_type = $_POST['service_type'];
+    /*------------- Bandwidth Service------------- */
+    if(isset($_POST['service_customer_type'])==1){
+        $service_ids = $_POST['service_id'] ??[];
+        $limits = $_POST['limit'] ?? [];
         $total_limit = 0;
         foreach($limits as $lim){
             $total_limit += (int)$lim;
         }
+        /*-------------Check Validation-------------*/
+
+        if(count($service_ids) != count($limits)){
+            /*-------DELETE Customer And service data-----------*/
+            $con->query("DELETE FROM customers WHERE id='$get_customer_id'");
+            $con->query("DELETE FROM customer_invoice WHERE customer_id='$get_customer_id'");
+            echo json_encode([
+                'success' => false,
+                'message' => 'Service and Limit mismatch!',
+            ]);
+            exit();
+
+        }
         foreach($service_ids as $index => $service_id){
             $limit = isset($limits[$index]) ? (int)$limits[$index] : 0;
             $con->query("INSERT INTO customer_invoice(`customer_id`,`service_id`,`customer_limit`) VALUES($get_customer_id,'$service_id','$limit')");
+        }
+    }
+    /*------------- Mac Reseller Service------------- */
+    if(isset($_POST['service_customer_type'])==2){
+        $service_mac_reseller_packages = $_POST['service_mac_reseller_package'];
+        $service_mac_reseller_customer_counts = $_POST['service_mac_reseller_customer_count'];
+        /*-------------Check Validation-------------*/
+        if(count($service_mac_reseller_packages) != count($service_mac_reseller_customer_counts)){
+            /*-------DELETE Customer And service data-----------*/
+            $con->query("DELETE FROM customers WHERE id='$get_customer_id'");
+            $con->query("DELETE FROM customer_invoice WHERE customer_id='$get_customer_id'");
+            echo json_encode([
+                'success' => false,
+                'message' => 'Mac Reseller Package and Customer Count mismatch!',
+            ]);
+            exit();
+
+        }
+        foreach($service_mac_reseller_packages as $index => $package){
+            $customer_count = isset($service_mac_reseller_customer_counts[$index]) ? (int)$service_mac_reseller_customer_counts[$index] : 0;
+            $con->query("INSERT INTO mac_reseller_customer_inv(`customer_id`,`package_count`,`total_customer`) VALUES($get_customer_id,'$package','$customer_count')");
         }
     }
     if(isset($_POST['customer_phones']) && is_array($_POST['customer_phones'])){

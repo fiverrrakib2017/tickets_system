@@ -223,6 +223,72 @@ document.addEventListener('click', function (e) {
          } ?>>Inactive</option>
      </select>
  </div>
+ <div class="col-md-6 mb-3">
+     <label class="form-label">Customer Type</label>
+     <select name="service_customer_type" class="form-select" required>
+        <option value="">---Select---</option>
+         <option value="1" <?php if (isset($customer['customer_type']) && $customer['customer_type'] == 1) {
+             echo 'selected';
+         } ?>>Bandwidth</option>
+         <option value="2" <?php if (isset($customer['customer_type']) && $customer['customer_type'] == 2) {
+             echo 'selected';
+         } ?>>Mac Reseller</option>
+     </select>
+ </div>
+
+ <!-- Mac Reseller Customer Count -->
+<div class="col-12 mb-3 d-none" id="mac_reseller_box">
+    <label class="form-label">Services</label>
+
+    <div id="mac_reseller_container">
+
+            <div class="row mb-2 align-items-center">
+
+                <!-- Customer Package  -->
+                <div class="col-md-3">
+                    <input type="text" class="form-control" 
+                    name="service_mac_reseller_package[]" 
+                    placeholder="Customer Package">
+                </div>
+                 <!-- Unit -->
+                <div class="col-md-3">
+                    <input type="text"
+                        class="form-control"
+                        value="MBPS"
+                        readonly>
+                </div>
+
+                <!-- Limit -->
+                <div class="col-md-3">
+                    <input type="number"
+                           name="service_mac_reseller_customer_count[]"
+                           class="form-control mac_reseller_customer_count_input"
+                           value=""
+                           placeholder="Customer Count"
+                           min="0"
+                           step="any">
+                </div>
+                <!-- Limit -->
+                <div class="col-md-3">
+                  <button type="button" class="btn-sm btn btn-success add_reseller_column">
+                        <i class="mdi mdi-plus"></i>
+                    </button>
+                </div>
+
+            </div>
+    </div>
+    <!-- Total & Service Type -->
+    <div class="d-flex justify-content-between align-items-center mt-2 p-2 border-top">
+
+        <div>
+            <strong class="text-muted text-success">Total Customers:</strong>
+            <span id="mac_reseller_total">0</span> 
+        </div>
+
+    </div>
+
+</div>
+
 
 <!----------------Customer Service Section Start------------------------>
  <?php
@@ -246,7 +312,7 @@ if (!empty($customer_id) && (int)$customer_id > 0) {
 
 
 
-<div class="col-12 mb-3">
+<div class="col-12 mb-3 d-none" id="bandwidth_services_box">
     <label class="form-label">Services</label>
 
     <div id="servicesContainer">
@@ -309,7 +375,7 @@ if (!empty($customer_id) && (int)$customer_id > 0) {
                        name="service_type"
                        value="NTTN"
                        <?= (($customer['service_type'] ?? '') === 'NTTN') ? 'checked' : ''; ?>
-                       required>
+                       >
                 <label class="form-check-label">NTTN</label>
             </div>
 
@@ -338,7 +404,92 @@ if (!empty($customer_id) && (int)$customer_id > 0) {
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+    /*---------- MAC Reseller Section Script----------------*/  
+    const _customer_type_selected = document.querySelector('select[name="service_customer_type"]');
+    const bandwidthBox = document.getElementById('bandwidth_services_box');
+    const macBox = document.getElementById('mac_reseller_box');
+    function _toggle_customer_type_boxes() {
+        const _select_type = _customer_type_selected.value;
+         if (_select_type === '1') {
+            // Bandwidth
+            bandwidthBox.classList.remove('d-none');
+            macBox.classList.add('d-none');
+        }else if (_select_type === '2') {
+            // Mac Reseller
+            bandwidthBox.classList.add('d-none');
+            macBox.classList.remove('d-none');
+        }else {
+            bandwidthBox.classList.add('d-none');
+            macBox.classList.add('d-none');
+        }
+    }
+    _toggle_customer_type_boxes();
+    _customer_type_selected.addEventListener('change',_toggle_customer_type_boxes);
 
+    /*--------- Add Reseller Column----------*/ 
+    document.querySelectorAll('.add_reseller_column').forEach(button => {
+        button.addEventListener('click', function () {
+            const container = document.getElementById('mac_reseller_container');
+
+            const div = document.createElement('div');
+            div.className = 'row mb-2 align-items-center';
+
+            div.innerHTML = `
+                <div class="col-md-3">
+                    <input type="text" class="form-control" name="service_mac_reseller_package[]" placeholder="Customer Package" >
+                </div>
+                 <div class="col-md-3">
+                    <input type="text"
+                        class="form-control"
+                        value="MBPS"
+                        readonly>
+                </div>
+                <div class="col-md-3">
+                    <input type="number"
+                           name="service_mac_reseller_customer_count[]"
+                           class="form-control mac_reseller_customer_count_input"
+                           value=""
+                           placeholder="Customer Count"
+                           min="0"
+                           step="any">
+                </div>
+                <div class="col-md-3">
+                  <button type="button" class="btn-sm btn btn-danger remove_reseller_column">
+                        <i class="mdi mdi-close"></i>
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(div);
+        });
+    });
+    /*---------Remove Reseller Column----------*/ 
+    document.addEventListener('click', function (e) {
+        if (e.target.closest('.remove_reseller_column')) {
+            e.target.closest('.row').remove();
+        }
+    });
+    /*------------Update Total Customers------------*/ 
+    const mac_reseller_total_element = document.getElementById('mac_reseller_total');
+    function _update_mac_reseller_total() {
+        let total = 0;
+        document.querySelectorAll('.mac_reseller_customer_count_input').forEach(input => {
+            let v = parseInt(input.value);
+            if (!isNaN(v)) total += v;
+        });
+        mac_reseller_total_element.textContent = total.toLocaleString();
+    }
+    _update_mac_reseller_total();
+    document.getElementById('mac_reseller_container').addEventListener('input', function(e){
+        if(e.target.classList.contains('mac_reseller_customer_count_input')){
+            _update_mac_reseller_total();
+        }
+    });
+
+
+
+
+    /*----------Service Section Script----------------*/       
     const servicesContainer = document.getElementById('servicesContainer');
     const totalEl = document.getElementById('servicesTotal');
 

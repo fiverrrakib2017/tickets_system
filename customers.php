@@ -29,6 +29,11 @@ include 'include/functions.php';
 //             echo '</pre>';
 //         }
 //              exit;    
+function _formate_duration($seconds) {
+    $h = floor($seconds / 3600);
+    $m = floor(($seconds % 3600) / 60);
+    return "{$h}h {$m}m";
+}
 
 ?>
 
@@ -268,10 +273,77 @@ require 'Head.php';
                                             <tr>
                                                 <td><?php echo $rows['id']; ?></td>
                                                 <td>
-                                                    <a href="customer_profile.php?clid=<?php echo $rows['id']; ?>">
-                                                        <?php echo htmlspecialchars($rows["customer_name"]); ?>
-                                                    </a>
+
+                                                    <!-- Customer Name -->
+                                                    <div class="fw-semibold mb-1">
+                                                        <a href="customer_profile.php?clid=<?= (int)$rows['id']; ?>" class="text-decoration-none">
+                                                            <?= htmlspecialchars($rows['customer_name']); ?>
+                                                        </a>
+                                                    </div>
+
+                                                    <!-- Offline Duration -->
+                                                    <?php if ($rows['ping_ip_status'] === 'offline' && !empty($rows['offline_duration'])): ?>
+                                                        <div class="text-danger small mb-1">
+                                                            <i class="fas fa-clock me-1"></i>
+                                                            Offline for <?= _formate_duration((int)$rows['offline_duration']); ?>
+                                                        </div>
+                                                    <?php endif; ?>
+
+                                                    <!-- Status + Ping -->
+                                                    <div class="d-flex flex-column gap-1 small text-muted">
+
+                                                        <!-- Online / Offline Badge -->
+                                                        <div class="d-flex align-items-center gap-2">
+                                                            <?php if ($rows['ping_ip_status'] === 'online'): ?>
+                                                                <span class="badge bg-success">
+                                                                    <i class="fas fa-wifi me-1"></i> Online
+                                                                </span>
+                                                            <?php else: ?>
+                                                                <span class="badge bg-danger">
+                                                                    <i class="fas fa-wifi-slash me-1"></i> Offline
+                                                                </span>
+                                                            <?php endif; ?>
+                                                        </div>
+
+                                                        <!-- Ping Statistics -->
+                                                        <div class="d-flex flex-wrap gap-3">
+
+                                                            <span>
+                                                                <i class="fas fa-paper-plane text-primary me-1"></i>
+                                                                Sent: <strong><?= (int)$rows['ping_sent']; ?></strong>
+                                                            </span>
+
+                                                            <span>
+                                                                <i class="fas fa-check-circle text-success me-1"></i>
+                                                                Recv: <strong><?= (int)$rows['ping_received']; ?></strong>
+                                                            </span>
+
+                                                            <span>
+                                                                <i class="fas fa-times-circle text-danger me-1"></i>
+                                                                Lost: <strong><?= (int)$rows['ping_lost']; ?></strong>
+                                                            </span>
+
+                                                            <span>
+                                                                <i class="fas fa-arrow-down text-info me-1"></i>
+                                                                Min: <strong><?= (int)$rows['ping_min_ms']; ?> ms</strong>
+                                                            </span>
+
+                                                            <span>
+                                                                <i class="fas fa-arrow-up text-warning me-1"></i>
+                                                                Max: <strong><?= (int)$rows['ping_max_ms']; ?> ms</strong>
+                                                            </span>
+
+                                                            <span>
+                                                                <i class="fas fa-chart-line text-secondary me-1"></i>
+                                                                Avg: <strong><?= (int)$rows['ping_avg_ms']; ?> ms</strong>
+                                                            </span>
+
+                                                        </div>
+
+                                                    </div>
+
                                                 </td>
+
                                                 <td><?php echo htmlspecialchars($rows["customer_email"]); ?></td>
                                                 <td>
                                                     <?php echo $rows['phones'] ? $rows['phones'] : 'N/A'; ?>

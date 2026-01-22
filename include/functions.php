@@ -286,6 +286,47 @@ if(!function_exists('get_customer_services')) {
     }
     }
 }
+if(!function_exists('get_customer_mac_reseller_services')) {
+    function get_customer_mac_reseller_services($customer_id){
+        include 'db_connect.php';
+
+    $_result = $con->query("SELECT * FROM mac_reseller_customer_inv WHERE customer_id = '{$customer_id}'");
+
+    if ($_result->num_rows > 0) {
+        $customer_links = [];
+
+        while ($row = $_result->fetch_assoc()) {
+
+            $customer_id  = htmlspecialchars($row['customer_id']);
+            $package_count = (int)$row['package_count'];
+            $total_customer    = (int)$row['total_customer'];
+
+           $customer_links[] = '
+        <a href="customers.php"
+        class="text-decoration-none text-primary fw-semibold d-flex justify-content-between align-items-center w-100">
+
+            <span class="text-truncate">
+                '.$package_count.' MBPS
+            </span>
+
+            <span class="text-muted fw-normal fs-12 ms-3" style="white-space: nowrap;">
+                '.$total_customer.' Customers
+            </span>
+
+        </a>
+        ';
+
+
+
+
+        }
+        return implode('<br>', $customer_links);
+
+    } else {
+        return 'N/A';
+    }
+    }
+}
 
 if(!function_exists('get_tickets')){
     function get_tickets(mysqli $con, array $options = []){

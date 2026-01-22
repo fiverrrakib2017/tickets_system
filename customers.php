@@ -171,13 +171,14 @@ require 'Head.php';
                                                 <tr>
                                                     <th>ID</th>
                                                     <th>Name</th>
+                                                    <th>Bandwidth/Reseller</th>
                                                     <th>Email</th>
                                                     <th>Phone</th>
                                                     <th>POP/Area</th>
                                                     <th>Type</th>
                                                     <th>Public IP</th>
                                                     <th>Private IP</th>
-                                                    <th>Bandwidth</th>
+                                                  
                                                     <th>Capacity</th> 
                                                     <th>Status</th> 
                                                     <th>Action</th> 
@@ -306,42 +307,60 @@ require 'Head.php';
                                                         </div>
 
                                                         <!-- Ping Statistics -->
-                                                        <div class="d-flex flex-wrap gap-3">
+                                                        <div class=" flex-wrap gap-3">
 
                                                             <span>
                                                                 <i class="fas fa-paper-plane text-primary me-1"></i>
                                                                 Sent: <strong><?= (int)$rows['ping_sent']; ?></strong>
-                                                            </span>
+                                                            </span><br>
 
                                                             <span>
                                                                 <i class="fas fa-check-circle text-success me-1"></i>
                                                                 Recv: <strong><?= (int)$rows['ping_received']; ?></strong>
-                                                            </span>
+                                                            </span><br>
 
                                                             <span>
                                                                 <i class="fas fa-times-circle text-danger me-1"></i>
                                                                 Lost: <strong><?= (int)$rows['ping_lost']; ?></strong>
-                                                            </span>
+                                                            </span><br>
 
                                                             <span>
                                                                 <i class="fas fa-arrow-down text-info me-1"></i>
                                                                 Min: <strong><?= (int)$rows['ping_min_ms']; ?> ms</strong>
-                                                            </span>
+                                                            </span><br>
 
                                                             <span>
                                                                 <i class="fas fa-arrow-up text-warning me-1"></i>
                                                                 Max: <strong><?= (int)$rows['ping_max_ms']; ?> ms</strong>
-                                                            </span>
+                                                            </span><br>
 
                                                             <span>
                                                                 <i class="fas fa-chart-line text-secondary me-1"></i>
                                                                 Avg: <strong><?= (int)$rows['ping_avg_ms']; ?> ms</strong>
-                                                            </span>
+                                                            </span><br>
 
                                                         </div>
 
                                                     </div>
 
+                                                </td>
+                                                   <td>
+                                                    <?php 
+                                                        if($rows['service_customer_type'] == 1){
+                                                            /* Bandwidth Service */
+                                                        if(function_exists('get_customer_services')){
+                                                                print_r(get_customer_services($rows['id'])) ;
+                                                            }
+                                                        }elseif($rows['customer_type_id'] == 2){
+                                                            /* Mac Reseller Service */
+                                                            if(function_exists('get_customer_mac_reseller_services')){
+                                                                print_r(get_customer_mac_reseller_services($rows['id'])) ;
+                                                            }
+                                                        } else {
+                                                            echo 'N/A';
+                                                        }
+                                                            
+                                                    ?>
                                                 </td>
 
                                                 <td><?php echo htmlspecialchars($rows["customer_email"]); ?></td>
@@ -354,15 +373,7 @@ require 'Head.php';
                                                 <td><?php echo htmlspecialchars($rows["type_name"]); ?></td>
                                                 <td><?php echo ($rows["public_ip_address"]); ?></td>
                                                 <td><?php echo ($rows["private_customer_ip"]); ?></td>
-                                                <td>
-                                                    <?php
-                                                    if (function_exists('get_customer_services')) {
-                                                        echo get_customer_services($rows['id']);
-                                                    } else {
-                                                        echo 'N/A';
-                                                    }
-                                                    ?>
-                                                </td>
+                                             
                                                 <td><?php echo (int)$rows["total"]; ?> MBPS</td>
                                                 <td>
                                                     <?php echo ($rows["status"] == 1)

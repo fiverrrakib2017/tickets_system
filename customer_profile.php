@@ -115,6 +115,12 @@ require 'Head.php';
                                                             );
                                                             ?>
                                                         </small>
+                                                        <!-- Client Type -->
+                                                        <p class="text-muted mb-1">
+                                                            <span class="badge bg-success">
+                                                                <?php if($customer['service_customer_type'] == 1) echo "Bandwidth"; elseif($customer['customer_type_id'] == 2) echo "Mac Reseller"; else echo "Customer"; ?>
+                                                            </span>
+                                                        </p>
                                                         <!-- Action Buttons -->
                                                         <div class="mt-3">
                                                             <a href="customer_profile_edit.php?clid=<?php echo $clid; ?>"
@@ -250,13 +256,23 @@ require 'Head.php';
                                                         </a>
                                                    
                                                         <span class="fw-semibold text-dark">
-                                                            <?php    
-                                                                if(function_exists('get_customer_services')){
+                                                            
+                                                        <?php 
+                                                            if($customer['service_customer_type'] == 1){
+                                                                /* Bandwidth Service */
+                                                            if(function_exists('get_customer_services')){
                                                                     print_r(get_customer_services($customer['id'])) ;
-                                                                } else {
-                                                                    echo 'N/A';
-                                                                }  
-                                                            ?>
+                                                                }
+                                                            }elseif($customer['customer_type_id'] == 2){
+                                                                /* Mac Reseller Service */
+                                                                if(function_exists('get_customer_mac_reseller_services')){
+                                                                    print_r(get_customer_mac_reseller_services($customer['id'])) ;
+                                                                }
+                                                            } else {
+                                                                echo 'N/A';
+                                                            }
+                                                            
+                                                        ?>
                                                         </span>
                                                           
                                                     </div>

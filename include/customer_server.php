@@ -230,12 +230,7 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         save_customer_phones($con, $get_customer_id, $_POST['customer_phones']);
     }
     if(isset($_POST['customer_public_ip']) && is_array($_POST['customer_public_ip'])){
-        $customer_ip_address= $_POST['customer_public_ip'];
-        foreach($customer_ip_address as $ip_address){
-            if(!empty($ip_address)){
-                $con->query("INSERT INTO customer_public_ip_address(`customer_id`,`ip_address`)VALUES('$get_customer_id','$ip_address')");
-            }
-        }
+        save_customer_public_ip($con, $get_customer_id, $_POST['customer_public_ip']);
     }
 
     if ($result) {
@@ -278,77 +273,25 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
 
     /* Update  table */
     $result = $con->query("UPDATE customers SET `customer_name`='$customer_name',`customer_email`='$customer_email',`pop_id`='$customer_pop_branch',`customer_type_id`='$customer_type',`customer_vlan`='$customer_vlan',`private_customer_ip`='$private_customer_ip',`service_type`='$service_type',`status`='$customer_status',`total`='$total_limit' WHERE id='$customer_id'");
-    /*-----------------Update Mac Reseller-------------------*/
-    if(isset($_POST['service_customer_type'])==2){
-        /*------- Delete existing services------*/
-        $con->query("DELETE FROM mac_reseller_customer_inv WHERE customer_id='$customer_id'");
-        $service_mac_reseller_packages = $_POST['service_mac_reseller_package'];
-        $service_mac_reseller_customer_counts = $_POST['service_mac_reseller_customer_count'];
-        /*-------------Check Validation-------------*/
-        if(count($service_mac_reseller_packages) != count($service_mac_reseller_customer_counts)){
-            /*-------DELETE Customer And service data-----------*/
-            $con->query("DELETE FROM customers WHERE id='$customer_id'");
-            $con->query("DELETE FROM customer_invoice WHERE customer_id='$customer_id'");
-            echo json_encode([
-                'success' => false,
-                'message' => 'Mac Reseller Package and Customer Count mismatch!',
-            ]);
-            exit();
-
-        }
-        foreach($service_mac_reseller_packages as $index => $package){
-            $customer_count = isset($service_mac_reseller_customer_counts[$index]) ? (int)$service_mac_reseller_customer_counts[$index] : 0;
-            $con->query("INSERT INTO mac_reseller_customer_inv(`customer_id`,`package_count`,`total_customer`) VALUES($customer_id,'$package','$customer_count')");
+    /*------------- Bandwidth Service------------- */
+    if($_POST['service_customer_type'] == 1){
+        if(!save_bandwidth_service( $con,  $customer_id, $_POST['service_id'] ?? [],$_POST['limit'] ?? [])){
+            rollback_customer($con, $customer_id, 'Service mismatch');
         }
     }
-    /*------------- Update Bandwidth Service------------- */
-    if(isset($_POST['service_customer_type'])==1){
-         /*------- Delete existing services------*/
-        $con->query("DELETE FROM customer_invoice WHERE customer_id='$customer_id'");
-        $service_ids = $_POST['service_id'] ??[];
-        $limits = $_POST['limit'] ?? [];
-        $total_limit = 0;
-        foreach($limits as $lim){
-            $total_limit += (int)$lim;
-        }
-        /*-------------Check Validation-------------*/
-
-        if(count($service_ids) != count($limits)){
-            /*-------DELETE Customer And service data-----------*/
-            $con->query("DELETE FROM customers WHERE id='$customer_id'");
-            $con->query("DELETE FROM customer_invoice WHERE customer_id='$customer_id'");
-            echo json_encode([
-                'success' => false,
-                'message' => 'Service and Limit mismatch!',
-            ]);
-            exit();
-
-        }
-        foreach($service_ids as $index => $service_id){
-            $limit = isset($limits[$index]) ? (int)$limits[$index] : 0;
-            $con->query("INSERT INTO customer_invoice(`customer_id`,`service_id`,`customer_limit`) VALUES($customer_id,'$service_id','$limit')");
+   
+    /*------------- Mac Reseller Service------------- */
+    if($_POST['service_customer_type'] == 2){
+        if(!save_mac_reseller_service( $con, $customer_id, $_POST['service_mac_reseller_package'], $_POST['service_mac_reseller_customer_count'])){
+            rollback_customer($con, $customer_id, 'Mac reseller mismatch');
         }
     }
     /*-------------Update Phone Numbers-------------*/
     if(isset($_POST['customer_phones']) && is_array($_POST['customer_phones'])){
-        /*-------------Delete Existing Phone Number----------------*/
-        $con->query("DELETE FROM customer_phones WHERE customer_id='$customer_id'");
-        $customer_phones = $_POST['customer_phones'];
-        foreach($customer_phones as $phone){
-            if(!empty($phone)){
-                $con->query("INSERT INTO customer_phones(`customer_id`,`phone_number`) VALUES($customer_id,'$phone')");
-            }
-        }
+        save_customer_phones($con, $customer_id, $_POST['customer_phones']);
     }
     if(isset($_POST['customer_public_ip']) && is_array($_POST['customer_public_ip'])){
-        /*-------------Delete Existing public ip address----------------*/
-        $con->query("DELETE  FROM  customer_public_ip_address WHERE customer_id='$customer_id'");
-        $customer_ip_address=$_POST['customer_public_ip'];
-        foreach($customer_ip_address as $ip_address){
-            if(!empty($ip_address)){
-                $con->query("INSERT INTO customer_public_ip_address(`customer_id`,`ip_address`)VALUES('$customer_id','$ip_address')");
-            }
-        }
+        save_customer_public_ip($con, $customer_id, $_POST['customer_public_ip']);
     }
 
     if ($result) {

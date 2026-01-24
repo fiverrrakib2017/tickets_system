@@ -338,7 +338,21 @@ if(!function_exists('save_customer_phones')){
         return true;
     }
 }
+/*----------Save Customer Public IP-------------*/
+if(!function_exists('save_customer_public_ip')){
+    function save_customer_public_ip($con, $customer_id, $public_ips){
+        $con->query("DELETE FROM customer_public_ip_address WHERE customer_id='$customer_id'");
 
+        foreach($public_ips as $public_ip){
+            $public_ip = $con->real_escape_string(trim($public_ip));
+            if(!empty($public_ip)){
+                $con->query(" INSERT INTO customer_public_ip_address(customer_id, ip_address)
+                    VALUES('$customer_id','$public_ip') ");
+            }
+        }
+        return true;
+    }
+}
 /*--------------Rollback Customer Service-------------*/
 if(!function_exists('rollback_customer')){
     function rollback_customer($con,$customer_id,$message='Operation failed'){

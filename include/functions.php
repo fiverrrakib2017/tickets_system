@@ -323,6 +323,22 @@ if(!function_exists('save_mac_reseller_service')){
     }
 }
 
+/*----------Save Customer Phone Number-------------*/
+if(!function_exists('save_customer_phones')){
+    function save_customer_phones($con, $customer_id, $phone_numbers){
+        $con->query("DELETE FROM customer_phones WHERE customer_id='$customer_id'");
+
+        foreach($phone_numbers as $phone_number){
+            $phone_number = $con->real_escape_string(trim($phone_number));
+            if(!empty($phone_number)){
+                $con->query(" INSERT INTO customer_phones(customer_id, phone_number)
+                    VALUES('$customer_id','$phone_number') ");
+            }
+        }
+        return true;
+    }
+}
+
 /*--------------Rollback Customer Service-------------*/
 if(!function_exists('rollback_customer')){
     function rollback_customer($con,$customer_id,$message='Operation failed'){

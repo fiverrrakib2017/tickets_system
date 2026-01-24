@@ -227,10 +227,7 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     }
     /*-------------Insert Phone Numbers-------------*/
     if(isset($_POST['customer_phones']) && is_array($_POST['customer_phones'])){
-        $customer_phones = $_POST['customer_phones'];
-        foreach($customer_phones as $phone){
-            $con->query("INSERT INTO customer_phones(`customer_id`,`phone_number`) VALUES($get_customer_id,'$phone')");
-        }
+        save_customer_phones($con, $get_customer_id, $_POST['customer_phones']);
     }
     if(isset($_POST['customer_public_ip']) && is_array($_POST['customer_public_ip'])){
         $customer_ip_address= $_POST['customer_public_ip'];

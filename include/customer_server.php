@@ -199,63 +199,8 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             $total_limit += (int)$lim;
         }
     }
-    /*-------------NID PDF File Upload start------------- */
-    // if(isset($_FILES['nid_file']) && $_FILES['nid_file']['name'] != '') {
-    //     $upload_object = new FileUploader('../assets/customer',['pdf'],['application/pdf'],5000000 // 1MB
-    //     );
-    //     $nid_file_name = $upload_object->upload('nid_file');
-    //     echo '<pre>';
-    //     print_r($nid_file_name);
-    //     echo '</pre>';exit;
-        
-        
-       
-    //     $nid_file = $nid_file_name;
-        
-    // } else {
-    //     $nid_file = '';
-    // }
-    // exit; 
-    /*-------------Service Agreement File Upload start------------- */
-    // $service_agreement_file = $_FILES['service_agreement_file'];
-    // $service_agreement_file_name = $service_agreement_file['name'];
-    // $service_agreement_file_tmp = $service_agreement_file['tmp_name'];
-    // $service_agreement_file_size = $service_agreement_file['size'];
-    // $service_agreement_file_error = $service_agreement_file['error'];
-    // $service_agreement_file_type = $service_agreement_file['type'];
-
-    // $service_agreement_file_ext = explode('.', $service_agreement_file_name);
-    // $service_agreement_file_actual_ext = strtolower(end($service_agreement_file_ext));
-
-    // $allowed = array('pdf');
-    // echo '<pre>';
-    // print_r($service_agreement_file); 
-    // echo '</pre>';
-    // exit; 
-
-    // if (in_array($service_agreement_file_actual_ext, $allowed)) {
-    //     if ($service_agreement_file_error === 0) {
-    //         if ($service_agreement_file_size < 1000000) {
-    //             $service_agreement_file_name_new = uniqid('', true) . '.' . $service_agreement_file_actual_ext;
-    //             $service_agreement_file_destination = '../assets/service_agreement/' . $service_agreement_file_name_new;
-    //             move_uploaded_file($service_agreement_file_tmp, $service_agreement_file_destination);
-    //         } else {
-    //             echo json_encode([
-    //                 'success' => false,
-    //                 'message' => 'File size should be less than 1MB',
-    //             ]);
-    //             exit();
-    //         }
-    //     } else {
-    //         echo json_encode([
-    //             'success' => false,
-    //             'message' => 'There was an error uploading your file',
-    //         ]);
-    //         exit();
-    //     }
-    // }
-    // exit; 
-    /*-------------Service Agreement File Upload End------------- */
+    /*-------------NID PDF File Upload ------------- */
+    /*-------------Service Agreement File Upload ------------- */
 
     /* Insert into  table */
     $result = $con->query("INSERT INTO customers(`customer_name`,`customer_email`,`pop_id`,`customer_type_id`,`customer_vlan`,`private_customer_ip`,`service_type`,`status`,`total`,`service_customer_type`) VALUES('$customer_name','$customer_email','$customer_pop_branch','$customer_type','$customer_vlan','$private_customer_ip','$service_type','$customer_status','$total_limit','$service_customer_type')");
@@ -263,31 +208,12 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $get_customer_id=$con->insert_id;
 
     /*------------- Bandwidth Service------------- */
-    if(isset($_POST['service_customer_type'])==1){
-        $service_ids = $_POST['service_id'] ??[];
-        $limits = $_POST['limit'] ?? [];
-        $total_limit = 0;
-        foreach($limits as $lim){
-            $total_limit += (int)$lim;
-        }
-        /*-------------Check Validation-------------*/
-
-        if(count($service_ids) != count($limits)){
-            /*-------DELETE Customer And service data-----------*/
-            $con->query("DELETE FROM customers WHERE id='$get_customer_id'");
-            $con->query("DELETE FROM customer_invoice WHERE customer_id='$get_customer_id'");
-            echo json_encode([
-                'success' => false,
-                'message' => 'Service and Limit mismatch!',
-            ]);
-            exit();
-
-        }
-        foreach($service_ids as $index => $service_id){
-            $limit = isset($limits[$index]) ? (int)$limits[$index] : 0;
-            $con->query("INSERT INTO customer_invoice(`customer_id`,`service_id`,`customer_limit`) VALUES($get_customer_id,'$service_id','$limit')");
+    if($_POST['service_customer_type'] == 1){
+        if(!save_bandwidth_service( $con,  $get_customer_id, $_POST['service_id'] ?? [],$_POST['limit'] ?? [])){
+            rollback_customer($con, $get_customer_id, 'Service mismatch');
         }
     }
+    exit; 
     /*------------- Mac Reseller Service------------- */
     if(isset($_POST['service_customer_type'])==2){
         $service_mac_reseller_packages = $_POST['service_mac_reseller_package'];
@@ -309,6 +235,7 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             $con->query("INSERT INTO mac_reseller_customer_inv(`customer_id`,`package_count`,`total_customer`) VALUES($get_customer_id,'$package','$customer_count')");
         }
     }
+    /*-------------Insert Phone Numbers-------------*/
     if(isset($_POST['customer_phones']) && is_array($_POST['customer_phones'])){
         $customer_phones = $_POST['customer_phones'];
         foreach($customer_phones as $phone){
@@ -347,7 +274,7 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     $customer_pop_branch    = trim($_POST['customer_pop_branch']);
     $customer_vlan          = trim($_POST['customer_vlan']);
     $private_customer_ip    = trim($_POST['private_customer_ip']);
-    $service_type           = trim($_POST['service_type']); //nttn or overhead
+    $service_type           = isset($_POST['service_type'])? trim($_POST['service_type']): null; 
     $customer_status        = trim($_POST['customer_status']);
     
 
@@ -364,7 +291,58 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
 
     /* Update  table */
     $result = $con->query("UPDATE customers SET `customer_name`='$customer_name',`customer_email`='$customer_email',`pop_id`='$customer_pop_branch',`customer_type_id`='$customer_type',`customer_vlan`='$customer_vlan',`private_customer_ip`='$private_customer_ip',`service_type`='$service_type',`status`='$customer_status',`total`='$total_limit' WHERE id='$customer_id'");
-   
+    /*-----------------Update Mac Reseller-------------------*/
+    if(isset($_POST['service_customer_type'])==2){
+        /*------- Delete existing services------*/
+        $con->query("DELETE FROM mac_reseller_customer_inv WHERE customer_id='$customer_id'");
+        $service_mac_reseller_packages = $_POST['service_mac_reseller_package'];
+        $service_mac_reseller_customer_counts = $_POST['service_mac_reseller_customer_count'];
+        /*-------------Check Validation-------------*/
+        if(count($service_mac_reseller_packages) != count($service_mac_reseller_customer_counts)){
+            /*-------DELETE Customer And service data-----------*/
+            $con->query("DELETE FROM customers WHERE id='$customer_id'");
+            $con->query("DELETE FROM customer_invoice WHERE customer_id='$customer_id'");
+            echo json_encode([
+                'success' => false,
+                'message' => 'Mac Reseller Package and Customer Count mismatch!',
+            ]);
+            exit();
+
+        }
+        foreach($service_mac_reseller_packages as $index => $package){
+            $customer_count = isset($service_mac_reseller_customer_counts[$index]) ? (int)$service_mac_reseller_customer_counts[$index] : 0;
+            $con->query("INSERT INTO mac_reseller_customer_inv(`customer_id`,`package_count`,`total_customer`) VALUES($customer_id,'$package','$customer_count')");
+        }
+    }
+    /*------------- Update Bandwidth Service------------- */
+    if(isset($_POST['service_customer_type'])==1){
+         /*------- Delete existing services------*/
+        $con->query("DELETE FROM customer_invoice WHERE customer_id='$customer_id'");
+        $service_ids = $_POST['service_id'] ??[];
+        $limits = $_POST['limit'] ?? [];
+        $total_limit = 0;
+        foreach($limits as $lim){
+            $total_limit += (int)$lim;
+        }
+        /*-------------Check Validation-------------*/
+
+        if(count($service_ids) != count($limits)){
+            /*-------DELETE Customer And service data-----------*/
+            $con->query("DELETE FROM customers WHERE id='$customer_id'");
+            $con->query("DELETE FROM customer_invoice WHERE customer_id='$customer_id'");
+            echo json_encode([
+                'success' => false,
+                'message' => 'Service and Limit mismatch!',
+            ]);
+            exit();
+
+        }
+        foreach($service_ids as $index => $service_id){
+            $limit = isset($limits[$index]) ? (int)$limits[$index] : 0;
+            $con->query("INSERT INTO customer_invoice(`customer_id`,`service_id`,`customer_limit`) VALUES($customer_id,'$service_id','$limit')");
+        }
+    }
+    /*-------------Update Phone Numbers-------------*/
     if(isset($_POST['customer_phones']) && is_array($_POST['customer_phones'])){
         /*-------------Delete Existing Phone Number----------------*/
         $con->query("DELETE FROM customer_phones WHERE customer_id='$customer_id'");
@@ -383,17 +361,6 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
             if(!empty($ip_address)){
                 $con->query("INSERT INTO customer_public_ip_address(`customer_id`,`ip_address`)VALUES('$customer_id','$ip_address')");
             }
-        }
-    }
-    /*------- Delete existing services------*/
-    $con->query("DELETE FROM customer_invoice WHERE customer_id='$customer_id'");
-
-    if(isset($_POST['service_id']) && is_array($_POST['service_id'])){
-        $service_ids = $_POST['service_id'];
-        $limits = $_POST['limit'];
-        foreach($service_ids as $index => $service_id){
-            $limit = isset($limits[$index]) ? (int)$limits[$index] : 0;
-            $con->query("INSERT INTO customer_invoice(`customer_id`,`service_id`,`customer_limit`) VALUES($customer_id,'$service_id','$limit')");
         }
     }
 

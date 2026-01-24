@@ -277,6 +277,9 @@ document.addEventListener('click', function (e) {
                         <button type="button" class="btn-sm btn btn-success add_reseller_column">
                             <i class="mdi mdi-plus"></i>
                         </button>
+                        <button type="button" class="btn-sm btn btn-danger remove_reseller_column">
+                            <i class="mdi mdi-minus"></i>
+                        </button>
                     </div>
                 </div>
                 <?php endwhile; ?>
@@ -495,7 +498,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
                 <div class="col-md-3">
                   <button type="button" class="btn-sm btn btn-danger remove_reseller_column">
-                        <i class="mdi mdi-close"></i>
+                        <i class="mdi mdi-minus"></i>
                     </button>
                 </div>
             `;

@@ -286,6 +286,46 @@ if(!function_exists('get_customer_services')) {
     }
     }
 }
+
+/*-----------Save Bandwidth Service-------------*/
+if(!function_exists('save_bandwidth_service')){
+    function save_bandwidth_service($con, $customer_id,$service_ids,$limits){
+       
+        if(count($service_ids) != count($limits)){
+            return false;
+        }
+
+        $con->query("DELETE FROM customer_invoice WHERE customer_id='$customer_id'");
+
+        foreach($service_ids as $index => $service_id){
+            $limit = (int)($limits[$index] ?? 0);
+            $con->query(" INSERT INTO customer_invoice(customer_id, service_id, customer_limit)
+                VALUES('$customer_id','$service_id','$limit') ");
+        }
+        return true;
+    }
+}
+
+/*--------------Rollback Customer Service-------------*/
+if(!function_exists('rollback_customer')){
+    function rollback_customer($con,$customer_id,$message='Operation failed'){
+        /*-----------------delete related data first------------------*/ 
+        $con->query("DELETE FROM customer_invoice WHERE customer_id='$customer_id'");
+        $con->query("DELETE FROM mac_reseller_customer_inv WHERE customer_id='$customer_id'");
+        $con->query("DELETE FROM customer_phones WHERE customer_id='$customer_id'");
+        $con->query("DELETE FROM customer_public_ip_address WHERE customer_id='$customer_id'");
+
+        // delete main customer
+        $con->query("DELETE FROM customers WHERE id='$customer_id'");
+
+        echo json_encode([
+            'success' => false,
+            'message' => $message
+        ]);
+        exit;
+    }
+}
+
 if(!function_exists('get_customer_mac_reseller_services')) {
     function get_customer_mac_reseller_services($customer_id){
         include 'db_connect.php';

@@ -213,26 +213,16 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
             rollback_customer($con, $get_customer_id, 'Service mismatch');
         }
     }
-    exit; 
+   
     /*------------- Mac Reseller Service------------- */
-    if(isset($_POST['service_customer_type'])==2){
-        $service_mac_reseller_packages = $_POST['service_mac_reseller_package'];
-        $service_mac_reseller_customer_counts = $_POST['service_mac_reseller_customer_count'];
-        /*-------------Check Validation-------------*/
-        if(count($service_mac_reseller_packages) != count($service_mac_reseller_customer_counts)){
-            /*-------DELETE Customer And service data-----------*/
-            $con->query("DELETE FROM customers WHERE id='$get_customer_id'");
-            $con->query("DELETE FROM customer_invoice WHERE customer_id='$get_customer_id'");
-            echo json_encode([
-                'success' => false,
-                'message' => 'Mac Reseller Package and Customer Count mismatch!',
-            ]);
-            exit();
-
-        }
-        foreach($service_mac_reseller_packages as $index => $package){
-            $customer_count = isset($service_mac_reseller_customer_counts[$index]) ? (int)$service_mac_reseller_customer_counts[$index] : 0;
-            $con->query("INSERT INTO mac_reseller_customer_inv(`customer_id`,`package_count`,`total_customer`) VALUES($get_customer_id,'$package','$customer_count')");
+    if($_POST['service_customer_type'] == 2){
+        if(!save_mac_reseller_service(
+            $con,
+            $get_customer_id,
+            $_POST['service_mac_reseller_package'],
+            $_POST['service_mac_reseller_customer_count']
+        )){
+            rollback_customer($con, $get_customer_id, 'Mac reseller mismatch');
         }
     }
     /*-------------Insert Phone Numbers-------------*/

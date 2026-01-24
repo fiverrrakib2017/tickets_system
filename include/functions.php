@@ -306,6 +306,23 @@ if(!function_exists('save_bandwidth_service')){
     }
 }
 
+if(!function_exists('save_mac_reseller_service')){
+    function save_mac_reseller_service($con, $customer_id, $packages, $counts){
+        if(count($packages) != count($counts)){
+            return false;
+        }
+
+        $con->query("DELETE FROM mac_reseller_customer_inv WHERE customer_id='$customer_id'");
+
+        foreach($packages as $i => $package){
+            $count = (int)($counts[$i] ?? 0);
+            $con->query(" INSERT INTO mac_reseller_customer_inv(customer_id, package_count, total_customer)
+                VALUES('$customer_id','$package','$count')");
+        }
+        return true;
+    }
+}
+
 /*--------------Rollback Customer Service-------------*/
 if(!function_exists('rollback_customer')){
     function rollback_customer($con,$customer_id,$message='Operation failed'){

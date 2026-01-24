@@ -258,6 +258,7 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     $private_customer_ip    = trim($_POST['private_customer_ip']);
     $service_type           = isset($_POST['service_type'])? trim($_POST['service_type']): null; 
     $customer_status        = trim($_POST['customer_status']);
+    $service_customer_type  = trim($_POST['service_customer_type']);
     
 
     /* Validate Customer Name */
@@ -272,7 +273,7 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     }
 
     /* Update  table */
-    $result = $con->query("UPDATE customers SET `customer_name`='$customer_name',`customer_email`='$customer_email',`pop_id`='$customer_pop_branch',`customer_type_id`='$customer_type',`customer_vlan`='$customer_vlan',`private_customer_ip`='$private_customer_ip',`service_type`='$service_type',`status`='$customer_status',`total`='$total_limit' WHERE id='$customer_id'");
+    $result = $con->query("UPDATE customers SET `customer_name`='$customer_name',`customer_email`='$customer_email',`pop_id`='$customer_pop_branch',`customer_type_id`='$customer_type',`customer_vlan`='$customer_vlan',`private_customer_ip`='$private_customer_ip',`service_type`='$service_type',`status`='$customer_status',`total`='$total_limit', service_customer_type='$service_customer_type' WHERE id='$customer_id'");
     /*------------- Bandwidth Service------------- */
     if($_POST['service_customer_type'] == 1){
         if(!save_bandwidth_service( $con,  $customer_id, $_POST['service_id'] ?? [],$_POST['limit'] ?? [])){

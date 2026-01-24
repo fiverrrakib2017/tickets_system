@@ -295,6 +295,7 @@ if(!function_exists('save_bandwidth_service')){
             return false;
         }
 
+        $con->query("DELETE FROM mac_reseller_customer_inv WHERE customer_id='$customer_id'");
         $con->query("DELETE FROM customer_invoice WHERE customer_id='$customer_id'");
 
         foreach($service_ids as $index => $service_id){
@@ -313,6 +314,7 @@ if(!function_exists('save_mac_reseller_service')){
         }
 
         $con->query("DELETE FROM mac_reseller_customer_inv WHERE customer_id='$customer_id'");
+        $con->query("DELETE FROM customer_invoice WHERE customer_id='$customer_id'");
 
         foreach($packages as $i => $package){
             $count = (int)($counts[$i] ?? 0);

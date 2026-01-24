@@ -236,90 +236,68 @@ document.addEventListener('click', function (e) {
      </select>
  </div>
 
- <!-- Mac Reseller Customer Count -->
-<div class="col-12 mb-3 d-none" id="mac_reseller_box">
-    <label class="form-label">Services</label>
+    <!--------------- Mac Reseller Customer Count ---------------->
+    <div class="col-12 mb-3 d-none" id="mac_reseller_box">
+        <label class="form-label">Services</label>
 
-    <div id="mac_reseller_container">
-        <?php if(isset($customer_id) && $customer_id > 0):?>
-                <?php
-                    $reseller_services = $con->query("SELECT * FROM mac_reseller_customer_inv WHERE customer_id = $customer_id");
-                    while($service = $reseller_services->fetch_assoc()):
-                ?>
-                <div class="row mb-2 align-items-center">
-                    <!-- Customer Package  -->
-                    <div class="col-md-3">
-                        <input type="text" class="form-control" 
-                        name="service_mac_reseller_package[]" 
+        <div id="mac_reseller_container">
+            <?php
+            $rows = [];
+
+            if(isset($customer_id) && $customer_id > 0){
+                $res = $con->query("SELECT * FROM mac_reseller_customer_inv WHERE customer_id = $customer_id");
+                while($row = $res->fetch_assoc()){
+                    $rows[] = $row;
+                }
+            }
+
+            /*---------No Data Empty Row---------*/
+            if(count($rows) === 0){
+                $rows[] = [
+                    'package_count' => '',
+                    'total_customer' => ''
+                ];
+            }
+
+            foreach($rows as $service):
+            ?>
+            <div class="row mb-2 align-items-center reseller-row">
+                <div class="col-md-3">
+                    <input type="text"
+                        class="form-control"
+                        name="service_mac_reseller_package[]"
                         placeholder="Customer Package"
-                        value="<?php echo isset($service['package_count']) ? htmlspecialchars($service['package_count']) : ''; ?>">
-                    </div>
-                        <!-- Unit -->
-                    <div class="col-md-3">
-                        <input type="text"
-                            class="form-control"
-                            value="MBPS"
-                            readonly>
-                    </div>
-
-                    <!-- Limit -->
-                    <div class="col-md-3">
-                        <input type="number"
-                                name="service_mac_reseller_customer_count[]"
-                                class="form-control mac_reseller_customer_count_input"
-                                value="<?php echo isset($service['total_customer']) ? htmlspecialchars($service['total_customer']) : ''; ?>"
-                                placeholder="Customer Count"
-                                min="0"
-                                step="any">
-                    </div>
-                    <!-- Button -->
-                    <div class="col-md-3">
-                        <button type="button" class="btn-sm btn btn-success add_reseller_column">
-                            <i class="mdi mdi-plus"></i>
-                        </button>
-                        <button type="button" class="btn-sm btn btn-danger remove_reseller_column">
-                            <i class="mdi mdi-minus"></i>
-                        </button>
-                    </div>
-                </div>
-                <?php endwhile; ?>
-        <?php else: ?>
-            <div class="row mb-2 align-items-center">
-                    <!-- Customer Package  -->
-                    <div class="col-md-3">
-                        <input type="text" class="form-control" 
-                        name="service_mac_reseller_package[]" 
-                        placeholder="Customer Package"
-                        value="">
-                    </div>
-                        <!-- Unit -->
-                    <div class="col-md-3">
-                        <input type="text"
-                            class="form-control"
-                            value="MBPS"
-                            readonly>
-                    </div>
-
-                    <!-- Limit -->
-                    <div class="col-md-3">
-                        <input type="number"
-                                name="service_mac_reseller_customer_count[]"
-                                class="form-control mac_reseller_customer_count_input"
-                                value=""
-                                placeholder="Customer Count"
-                                min="0"
-                                step="any">
-                    </div>
-                    <!-- Button -->
-                    <div class="col-md-3">
-                        <button type="button" class="btn-sm btn btn-success add_reseller_column">
-                            <i class="mdi mdi-plus"></i>
-                        </button>
-                    </div>
+                        value="<?php echo htmlspecialchars($service['package_count']); ?>">
                 </div>
 
-        <?php endif; ?>
-    </div>
+                <div class="col-md-3">
+                    <input type="text" class="form-control" value="MBPS" readonly>
+                </div>
+
+                <div class="col-md-3">
+                    <input type="number"
+                        name="service_mac_reseller_customer_count[]"
+                        class="form-control mac_reseller_customer_count_input"
+                        placeholder="Customer Count"
+                        value="<?php echo htmlspecialchars($service['total_customer']); ?>"
+                        min="0">
+                </div>
+
+                <div class="col-md-3">
+                    <button type="button" class="btn-sm btn btn-success add_reseller_column">
+                        <i class="mdi mdi-plus"></i>
+                    </button>
+
+                    <?php if(count($rows) > 1): ?>
+                    <button type="button" class="btn-sm btn btn-danger remove_reseller_column">
+                        <i class="mdi mdi-minus"></i>
+                    </button>
+                    <?php endif; ?>
+                </div>
+            </div>
+            <?php endforeach; ?>
+        </div>
+
     <!-- Total & Service Type -->
     <div class="d-flex justify-content-between align-items-center mt-2 p-2 border-top">
 
@@ -451,6 +429,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const _customer_type_selected = document.querySelector('select[name="service_customer_type"]');
     const bandwidthBox = document.getElementById('bandwidth_services_box');
     const macBox = document.getElementById('mac_reseller_box');
+    
     function _toggle_customer_type_boxes() {
         const _select_type = _customer_type_selected.value;
          if (_select_type === '1') {

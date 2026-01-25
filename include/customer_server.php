@@ -200,10 +200,12 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
     /*-------------NID PDF File Upload ------------- */
+    $nid_file = __upload_file($_FILES['nid_file'] ?? null);
     /*-------------Service Agreement File Upload ------------- */
+    $service_agreement_file = __upload_file($_FILES['service_agreement_file'] ?? null);
 
     /* Insert into  table */
-    $result = $con->query("INSERT INTO customers(`customer_name`,`customer_email`,`pop_id`,`customer_type_id`,`customer_vlan`,`private_customer_ip`,`service_type`,`status`,`total`,`service_customer_type`) VALUES('$customer_name','$customer_email','$customer_pop_branch','$customer_type','$customer_vlan','$private_customer_ip','$service_type','$customer_status','$total_limit','$service_customer_type')");
+    $result = $con->query("INSERT INTO customers(`customer_name`,`customer_email`,`pop_id`,`customer_type_id`,`customer_vlan`,`private_customer_ip`,`service_type`,`status`,`total`,`nid_file`,`service_agreement_file`,`service_customer_type`) VALUES('$customer_name','$customer_email','$customer_pop_branch','$customer_type','$customer_vlan','$private_customer_ip','$service_type','$customer_status','$total_limit','$nid_file','$service_agreement_file','$service_customer_type')");
 
     $get_customer_id=$con->insert_id;
 
@@ -261,9 +263,27 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     $service_customer_type  = trim($_POST['service_customer_type']);
     
 
-    /* Validate Customer Name */
-    //__validate_input($customer_name, 'Customer Name');
-
+    /* ---------- Get old attachment ---------- */
+    $old_nid_File = '';
+    $old_service_agreement_file = '';
+    $old_attachments_query = $con->query("SELECT nid_file, service_agreement_file FROM customers WHERE id='$customer_id'");
+    if ($old_attachments_query && $old_attachments_query->num_rows > 0) {
+        $old_attachments = $old_attachments_query->fetch_assoc();
+        $old_nid_File = $old_attachments['nid_file'];
+        $old_service_agreement_file = $old_attachments['service_agreement_file'];
+    }
+    
+    /* ---------- Upload file ---------- */
+    if (isset($_FILES['nid_file']) && $_FILES['nid_file']['error'] === 0) {
+        $nid_file = __upload_file($_FILES['nid_file'], $old_nid_File);
+    } else {
+        $nid_file = $old_nid_File;
+    }
+    if (isset($_FILES['service_agreement_file']) && $_FILES['service_agreement_file']['error'] === 0) {
+        $service_agreement_file = __upload_file($_FILES['service_agreement_file'], $old_service_agreement_file);
+    } else {
+        $service_agreement_file = $old_service_agreement_file;
+    }
     /* get  customer total */
     $total_limit = 0;
     if(isset($_POST['limit']) && is_array($_POST['limit'])){
@@ -273,7 +293,7 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     }
 
     /* Update  table */
-    $result = $con->query("UPDATE customers SET `customer_name`='$customer_name',`customer_email`='$customer_email',`pop_id`='$customer_pop_branch',`customer_type_id`='$customer_type',`customer_vlan`='$customer_vlan',`private_customer_ip`='$private_customer_ip',`service_type`='$service_type',`status`='$customer_status',`total`='$total_limit', service_customer_type='$service_customer_type' WHERE id='$customer_id'");
+    $result = $con->query("UPDATE customers SET `customer_name`='$customer_name',`customer_email`='$customer_email',`pop_id`='$customer_pop_branch',`customer_type_id`='$customer_type',`customer_vlan`='$customer_vlan',`private_customer_ip`='$private_customer_ip',`service_type`='$service_type',`status`='$customer_status',`total`='$total_limit', service_customer_type='$service_customer_type', `nid_file`='$nid_file', `service_agreement_file`='$service_agreement_file' WHERE id='$customer_id'");
     /*------------- Bandwidth Service------------- */
     if($_POST['service_customer_type'] == 1){
         if(!save_bandwidth_service( $con,  $customer_id, $_POST['service_id'] ?? [],$_POST['limit'] ?? [])){
@@ -577,6 +597,35 @@ function __validate_input($value, $field)
         ]);
         exit();
     }
+}
+
+function __upload_file($file, $oldFile = null)
+{
+    
+    if (!isset($file) || $file['error'] !== 0) {
+        return $oldFile;
+    }
+
+    $allowed = ['jpg','jpeg','png','pdf'];
+    $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+
+    if (!in_array($ext, $allowed)) {
+        return $oldFile;
+    }
+
+    if ($file['size'] > 2 * 1024 * 1024) {
+        return $oldFile;
+    }
+
+    $newName = uniqid('ticket_', true) . '.' . $ext;
+    $destination = '../assets/customer/' . $newName;
+    move_uploaded_file($file['tmp_name'], $destination);
+
+    if ($oldFile && file_exists('../assets/customer/'.$oldFile)) {
+        unlink('../assets/customer/'.$oldFile);
+    }
+
+    return $newName;
 }
 
 

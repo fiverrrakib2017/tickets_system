@@ -552,16 +552,98 @@ document.addEventListener("DOMContentLoaded", function () {
 <!----------------Customer Service Section End------------------------>
 
 <!---------------- Customer NID And Service Agreement Section Start ------------------>
+
 <div class="col-md-6 mb-3">
     <label class="form-label">Upload NID (PDF)</label>
-    <input type="file" name="nid_file"  class="form-control"  accept="application/pdf" >
+    <input type="file"
+           name="nid_file"
+           id="nid_file"
+           class="form-control"
+           onchange="_preview_file_generate(this, 'nid_preview')">
+
+    <div id="nid_preview" class="mt-2 d-none"></div>
 </div>
 
 <div class="col-md-6 mb-3">
     <label class="form-label">Upload Service Agreement (PDF)</label>
-    <input type="file" name="service_agreement_file" class="form-control" accept="application/pdf">
+    <input type="file"
+           name="service_agreement_file"
+           id="service_file"
+           class="form-control"
+           onchange="_preview_file_generate(this, 'service_preview')">
+
+    <div id="service_preview" class="mt-2 d-none"></div>
 </div>
+
 <!---------------- Customer NID And Service Agreement Section End ------------------>
+<script>
+function _preview_file_generate(input, previewId) {
+    const preview = document.getElementById(previewId);
+    preview.innerHTML = '';
+
+    if (!input.files || !input.files[0]) {
+        preview.classList.add('d-none');
+        return;
+    }
+
+    const file = input.files[0];
+    const fileType = file.type;
+    let html = '';
+
+    if (fileType.startsWith('image/')) {
+        // Image preview
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            html = `
+                <div class="border rounded p-2 d-flex justify-content-between align-items-center bg-light">
+                    <div class="d-flex align-items-center gap-2">
+                        <img src="${e.target.result}" class="img-thumbnail" style="width:50px;height:50px;object-fit:cover;">
+                        <span class="small">${file.name}</span>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-danger"
+                            onclick="_remove_file('${input.id}', '${previewId}')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            preview.innerHTML = html;
+            preview.classList.remove('d-none');
+        };
+        reader.readAsDataURL(file);
+
+    } else {
+        /*----------------------Other files (PDF, DOC, etc.)----------------------*/
+        let iconClass = 'fa-file';
+        if (fileType === 'application/pdf') iconClass = 'fa-file-pdf text-danger';
+        else if (fileType.includes('word')) iconClass = 'fa-file-word text-primary';
+        else if (fileType.includes('excel')) iconClass = 'fa-file-excel text-success';
+        else if (fileType.includes('zip')) iconClass = 'fa-file-zipper text-warning';
+
+        html = `
+            <div class="border rounded p-2 d-flex justify-content-between align-items-center bg-light">
+                <div class="d-flex align-items-center gap-2">
+                    <i class="fas ${iconClass} fs-4"></i>
+                    <span class="small">${file.name}</span>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-danger"
+                        onclick="_remove_file('${input.id}', '${previewId}')">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+
+        preview.innerHTML = html;
+        preview.classList.remove('d-none');
+    }
+}
+
+function _remove_file(inputId, previewId) {
+    document.getElementById(inputId).value = '';
+    const preview = document.getElementById(previewId);
+    preview.innerHTML = '';
+    preview.classList.add('d-none');
+}
+</script>
 
 
 

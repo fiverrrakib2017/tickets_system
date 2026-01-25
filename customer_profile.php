@@ -333,7 +333,42 @@ require 'Head.php';
                                                         </span>
                                                     </div>
                                                 </div>
-
+                                                <!------Nid File ---------->
+                                                <div class="col-12 bg-white p-0">
+                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3">
+                                                        <p class="mb-0 text-muted">
+                                                            <i class="mdi mdi-shield-check-outline me-2 text-success fs-5"></i>
+                                                            <span class="fw-bold">Nid File:</span>
+                                                        </p>
+                                                        <span class="fw-semibold text-dark">
+                                                            <?php 
+                                                                if(!empty($customer['nid_file'])){
+                                                                    echo '<a href="assets/customer/'.$customer['nid_file'].'" target="_blank" class="btn btn-sm btn-outline-primary">View File</a>';
+                                                                } else {
+                                                                    echo 'N/A';
+                                                                }
+                                                            ?>
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                                <!------Service Agreement File ---------->
+                                                <div class="col-12 bg-white p-0">
+                                                    <div class="d-flex justify-content-between align-items-center py-3 px-3">
+                                                        <p class="mb-0 text-muted">
+                                                            <i class="mdi mdi-shield-check-outline me-2 text-success fs-5"></i>
+                                                            <span class="fw-bold">Service Agreement File:</span>
+                                                        </p>
+                                                        <span class="fw-semibold text-dark">
+                                                            <?php 
+                                                                if(!empty($customer['service_agreement_file'])){
+                                                                    echo '<a href="assets/customer/'.$customer['service_agreement_file'].'" target="_blank" class="btn btn-sm btn-outline-primary">View File</a>';
+                                                                } else {
+                                                                    echo 'N/A';
+                                                                }
+                                                            ?>
+                                                        </span>
+                                                    </div>
+                                                </div>
 
                                             </div>
                                         </div>

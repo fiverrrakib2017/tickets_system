@@ -417,28 +417,50 @@ if(!function_exists('get_customer_mac_reseller_services')) {
     }
 }
 
-if(!function_exists('get_tickets')){
-    function get_tickets(mysqli $con, array $options = []){
+
+/*----------------Get Tickets-----------------------*/
+if (!function_exists('get_tickets')) {
+    function get_tickets(mysqli $con, array $options = []) {
+
         $where = [];
         $limit = '';
         $order = 'ORDER BY t.id DESC';
 
-        /*---- Filters ----*/
+        /*---- Customer Filter ----*/
         if (!empty($options['customer_id'])) {
-            $customer_id = (int)$options['customer_id'];
-            $where[] = "t.customer_id = $customer_id";
+            $where[] = "t.customer_id = " . (int)$options['customer_id'];
         }
 
+        /*---- Status Filter ----*/
         if (!empty($options['status'])) {
-            $status = $con->real_escape_string($options['status']);
-            $where[] = "t.ticket_type = '$status'";
+            switch ($options['status']) {
+                case 'open':
+                    $where[] = "t.ticket_type = 'Active'";
+                    break;
+
+                case 'pending':
+                    $where[] = "t.ticket_type = 'Pending'";
+                    break;
+
+                case 'resolved':
+                    $where[] = "t.ticket_type = 'Complete'";
+                    break;
+            }
         }
 
+        /*---- Today Filter ----*/
+        if (!empty($options['today'])) {
+            $where[] = "DATE(t.create_date) = CURDATE()";
+        }
+
+        /*---- Limit ----*/
         if (!empty($options['limit'])) {
             $limit = "LIMIT " . (int)$options['limit'];
         }
 
-        $where_sql = !empty($where) ? 'WHERE ' . implode(' AND ', $where) : '';
+        $where_sql = !empty($where)
+            ? 'WHERE ' . implode(' AND ', $where)
+            : '';
 
         $sql = "
             SELECT 
@@ -463,6 +485,7 @@ if(!function_exists('get_tickets')){
         return $con->query($sql);
     }
 }
+
 /*-----------Function to ping IP and get statistics-----------*/ 
 if(!function_exists('customer_ping_status')){
     function customer_ping_status($ip, $count = 4, $timeout = 1) {

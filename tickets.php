@@ -85,40 +85,17 @@ require 'Head.php';
                                           <tbody id="tickets-list">
                                             <?php
 
-                                                $conditions = [];
-                                                $whereSql = '';
+                                                $options = [];
                                                 /*------------- Status Filter -------------------*/
                                                 if (isset($_GET['status']) && $_GET['status'] != '') {
-                                                    switch ($_GET['status']) {
-                                                        case 'open':
-                                                            $conditions[] = "t.ticket_type = 'Active'";
-                                                            break;
-
-                                                        case 'pending':
-                                                            $conditions[] = "t.ticket_type = 'Pending'";
-                                                            break;
-
-                                                        case 'resolved':
-                                                            $conditions[] = "t.ticket_type = 'Complete'";
-                                                            break;
-                                                    }
-                                                    /*------------- Today Filter -------------------*/
-                                                    $conditions[] = "DATE(t.create_date) = CURDATE()";
-                                                    /*------------- Build WHERE Clause -------------*/
-                                                
-                                                    if (!empty($conditions)) {
-                                                        $whereSql = 'WHERE ' . implode(' AND ', $conditions);
-                                                    }
+                                                   $options['status'] = $_GET['status'];
+                                                   $options['today'] = true;
                                                 }
 
-                                                echo '<pre>';
-                                                print_r($whereSql);
-                                                echo '</pre>';exit; 
+                                               
 
                                                 /*------------- Final Query --------------------*/
-                                                $tickets = get_tickets($con, [
-                                                    'whereSql' => $whereSql
-                                                ]);
+                                                $tickets = get_tickets($con, $options);
                                                 include 'Table/tickets.php';
 
                                             ?>

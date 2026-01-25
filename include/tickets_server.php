@@ -8,6 +8,34 @@ if (!isset($_SESSION)) {
     session_start();
 }
 
+/*----------- Mark Ticket Completed------------------*/
+if(isset($_GET['mark_ticket_completed']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
+    $ticket_id = isset($_POST['ticket_id']) ? trim($_POST['ticket_id']) : '';
+
+    /* Validate Ticket ID */
+    __validate_input($ticket_id, 'Ticket ID');
+
+    /* Update Ticket Status */
+    $end_date = date('Y-m-d H:i:s');
+    $update = $con->prepare("UPDATE ticket SET ticket_type='Complete',parcent='100%', enddate=? WHERE id=?");
+    $update->bind_param('si', $end_date, $ticket_id);
+    $result = $update->execute();
+
+    if($result){
+        echo json_encode([
+            'success' => true,
+            'message'  =>  'Ticket marked as completed successfully.'
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message'  =>  'Error: ' . $update->error
+        ]);
+    }
+
+    exit;
+}
+
 /*----------- Add Ticket Data------------------*/
 if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
    
@@ -154,12 +182,13 @@ if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
 }
 /*----------- update Ticket Data------------------*/
 if (isset($_GET['update_ticket_data']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-
+     
     $ticket_id              = (int)($_POST['ticket_id'] ?? 0);
     $customer_id            = (int)($_POST['customer_id'] ?? 0);
     $ticket_for             = trim($_POST['ticket_for'] ?? '');
     $complain_type          = (int)($_POST['complain_type'] ?? 0);
     $assign_to              = (int)($_POST['assign_to'] ?? 0);
+    $pop_branch             = (int)($_POST['pop_branch'] ?? 0);
     $priority               = (int)($_POST['ticket_priority'] ?? 0);
     $customer_note          = trim($_POST['customer_note'] ?? '');
     $noc_note               = trim($_POST['noc_note'] ?? '');
@@ -190,6 +219,7 @@ if (isset($_GET['update_ticket_data']) && $_SERVER['REQUEST_METHOD'] === 'POST')
         UPDATE ticket SET
             customer_id=?,
             ticketfor=?,
+            pop_id=?,
             asignto=?,
             complain_type=?,
             priority=?,
@@ -203,9 +233,10 @@ if (isset($_GET['update_ticket_data']) && $_SERVER['REQUEST_METHOD'] === 'POST')
     ");
 
     $stmt->bind_param(
-        "isiiisssssi",
+        "isiiiisssssi",
         $customer_id,
         $ticket_for,
+        $pop_branch,
         $assign_to,
         $complain_type,
         $priority,

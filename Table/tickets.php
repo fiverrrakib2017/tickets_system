@@ -21,6 +21,8 @@ while ($row = $tickets->fetch_assoc()):
                 echo '<span class="badge bg-warning">New</span>';
             }else if($row['ticket_type']=='Close'){
                 echo '<span class="badge bg-danger">Close</span>';
+            }else if($row['ticket_type']=='Pending'){
+                echo '<span class="badge bg-danger">Pending</span>';
             }else{
                 echo '-----';
             }
@@ -90,6 +92,40 @@ while ($row = $tickets->fetch_assoc()):
         <a href="ticket_view.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-success">
             <i class="fas fa-eye"></i>
         </a>
+        <?php if (in_array($row['ticket_type'], ['Pending', 'Active'])): ?>
+            <button class="btn btn-sm btn-secondary" onclick="_mark_as_completed(<?= $row['id']; ?>)">
+                <i class="fas fa-check-circle"></i>
+            </button>
+        <?php endif; ?>
     </td>
 </tr>
 <?php endwhile; ?>
+
+
+<script>
+    function _mark_as_completed(ticket_id) {
+        if (!confirm('Are you sure you want to mark this ticket as completed?')) {
+            return;
+        }
+
+        $.ajax({
+            url: 'include/tickets_server.php?mark_ticket_completed=true',
+            type: 'POST',
+            data: { ticket_id: ticket_id },
+            dataType: 'json',
+            success: function (response) {
+                if (response.success) {
+                    toastr.success(response.message);
+                    setTimeout(function () {
+                        location.reload();
+                    }, 1500);
+                } else {
+                    toastr.error('Error: ' + response.message);
+                }
+            },
+            error: function () {
+                toastr.error('An unexpected error occurred.');
+            }
+        });
+    }
+</script>

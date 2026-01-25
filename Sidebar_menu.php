@@ -1,3 +1,16 @@
+<?php
+/* Fetch Others Links from Database */
+$others_links = [];
+$result = $con->query("SELECT name, link FROM others_link ORDER BY id ASC");
+
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $others_links[] = $row;
+    }
+}
+?>
+
+
 <div id="sidebar-menu">
     <ul class="metismenu list-unstyled" id="side-menu">
        
@@ -107,6 +120,30 @@
                 </a>
             </li>
         <?php } ?>
+        <li>
+            <a href="others_link.php" class="waves-effect">
+                <i class="mdi mdi-account-multiple-outline"></i>
+                <span>Others Link</span>
+            </a>
+        </li>
+
+        <?php if (!empty($others_links)): ?>
+
+<li class="menu-title">Useful Links</li>
+
+<?php foreach ($others_links as $link): ?>
+    <li>
+        <a href="<?php echo htmlspecialchars($link['link']); ?>"
+           target="_blank"
+           class="waves-effect d-flex align-items-center">
+            <i class="mdi mdi-open-in-new me-2"></i>
+            <span><?php echo htmlspecialchars($link['name']); ?></span>
+        </a>
+    </li>
+<?php endforeach; ?>
+
+<?php endif; ?>
+
 
 
     </ul>

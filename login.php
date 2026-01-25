@@ -73,106 +73,174 @@ if (isset($_SESSION["uid"])) {
 
 ?>
 
-
 <!doctype html>
 <html lang="en">
-    <head>
-    
-        <meta charset="utf-8">
-        <title>Login | ISP-BILLING-SOFTWARE</title>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
-        <!-- Bootstrap Css -->
-        <link href="assets/css/bootstrap.min.css" id="bootstrap-style" rel="stylesheet" type="text/css">
-       
-        <!-- App Css-->
-        <link href="assets/css/app.min.css" id="app-style" rel="stylesheet" type="text/css">
-        <link rel="stylesheet" type="text/css" href="css/toastr/toastr.min.css">
-    </head>
+<head>
+    <meta charset="utf-8">
+    <title>Login | ISP-BILLING SOFTWARE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <body>
+    <!-- Bootstrap CSS -->
+    <link href="assets/css/bootstrap.min.css" rel="stylesheet">
 
-        <!-- Loader -->
-            <div id="preloader"><div id="status"><div class="spinner"></div></div></div>
+    <style>
+        :root {
+            --primary-clr: #0a58ca;
+            --primary-clr-lite: #3d8bfd;
+            --secondary-clr: #20c997;
+            --secondary-clr-lite: #6ee7b7;
+        }
 
-         <!-- Begin page -->
-         <div class="accountbg" style="background: url('assets/images/logo-it.png');background-size: cover;background-position: center;"></div>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", Tahoma, sans-serif;
+        }
 
-        <div class="account-pages mt-2 pt-5">
-            <div class="container">
-                <div class="row justify-content-center">
-                    <div class="col-md-8 col-lg-5 col-xl-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="text-center mt-4">
-                                    <div class="mb-3">
-                                        <a href="#"><img src="assets/images/it-fast.png" height="30" alt="logo"></a>
-                                    </div>
-                                </div>
-                                <div class="p-3">
-                                    <h4 class="font-size-18 mt-2 text-center">Welcome Back !</h4>
-                                    <p class="text-muted text-center mb-4">Sign in to continue to ISP-BILLING-SOFTWARE</p>
-    
-                                    <form method="POST" action="<?php $_SERVER['PHP_SELF']; ?>">
-    
-                                        <div class="mb-3">
-                                            <label class="form-label" for="username">Username</label>
-                                            <input type="text" class="form-control" id="username" name="username" placeholder="Enter username">
-                                        </div>
-    
-                                        <div class="mb-3">
-                                            <label class="form-label" for="password">Password</label>
-                                            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password">
-                                        </div>
-                                        <div>
-                                            <?php if (isset($wrong_info)) {
-                                                echo '<p style="color:red;">'.$wrong_info.'</p>';
-                                            } ?>
-                                        </div>
-    
-                                        <div class="row mt-4">
-                                            <div class="col-sm-6">
-                                                <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" id="customControlInline">
-                                                    <label class="form-check-label" for="customControlInline">
-                                                        Remember me
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="col-sm-6 text-end">
-                                                <button name="login" class="btn btn-primary w-md waves-effect waves-light" type="submit">Log In</button>
-                                            </div>
-                                        </div>
-    
-                                        <div class="mb-0 row">
-                                            <div class="col-12 mt-4">
-                                                <a href="#" class="text-muted"><i class="mdi mdi-lock"></i> Forgot your password?</a>
-                                            </div>
-                                        </div>
-                                    </form>
-    
-                                </div>
-    
-                            </div>
+        /*---------------- Animated Gradient Background --------------*/
+        .body-wrapper {
+            min-height: 100vh;
+            background: linear-gradient(
+                120deg,
+                var(--primary-clr),
+                var(--primary-clr-lite),
+                var(--secondary-clr),
+                var(--secondary-clr-lite)
+            );
+            background-size: 400% 400%;
+            animation: gradient-animation 15s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes gradient-animation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* ---------------- Login Card ----------------- */
+        .login-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 12px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+            border: none;
+        }
+
+        .login-card h4 {
+            font-weight: 600;
+        }
+
+        /* ----------- Inputs ------------ */
+        .form-control {
+            border-radius: 8px;
+            padding: 10px 12px;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-clr-lite);
+            box-shadow: 0 0 0 0.15rem rgba(13,110,253,.25);
+        }
+
+        /*------------ Gradient Button -------------*/
+        .btn-login {
+            background: linear-gradient(
+                to right,
+                var(--primary-clr),
+                var(--secondary-clr)
+            );
+            border: none;
+            border-radius: 8px;
+            padding: 10px;
+            font-weight: 500;
+            color: #fff;
+            transition: 0.3s;
+        }
+
+        .btn-login:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /*-------------- Footer Link -------------*/
+        .forgot-link {
+            text-decoration: none;
+        }
+
+        .forgot-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="body-wrapper">
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-5 col-xl-4">
+
+                <div class="card login-card">
+                    <div class="card-body p-4">
+
+                        <div class="text-center mb-4">
+                            <img src="assets/images/it-fast.png" height="40" alt="logo">
                         </div>
-    
+
+                        <h4 class="text-center mb-2">Welcome Back</h4>
+                        <p class="text-muted text-center mb-4">
+                            Sign in to continue to ISP Billing System
+                        </p>
+
+                        <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">
+
+                            <div class="mb-3">
+                                <label class="form-label">Username</label>
+                                <input type="text" name="username" class="form-control" placeholder="Enter Username" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Password</label>
+                                <input type="password" name="password" placeholder="Enter Password" class="form-control" required>
+                            </div>
+
+                            <?php if (isset($wrong_info)): ?>
+                                <p class="text-danger text-center mb-3">
+                                    <?php echo $wrong_info; ?>
+                                </p>
+                            <?php endif; ?>
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="remember">
+                                    <label class="form-check-label" for="remember">
+                                        Remember me
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-login w-100" name="login">
+                                Log In
+                            </button>
+
+                            <div class="text-center mt-3">
+                                <a href="#" class="text-muted small forgot-link">
+                                    Forgot password?
+                                </a>
+                            </div>
+
+                        </form>
+
                     </div>
                 </div>
+
             </div>
         </div>
+    </div>
 
-                             
-        <!-- JAVASCRIPT -->
-        <script src="assets/libs/jquery/jquery.min.js"></script>
-        <script src="assets/libs/bootstrap/js/bootstrap.bundle.min.js"></script>
-        <script src="assets/libs/metismenu/metisMenu.min.js"></script>
-        <script src="assets/libs/simplebar/simplebar.min.js"></script>
-        <script src="assets/libs/node-waves/waves.min.js"></script>
+</div>
 
-        <script src="assets/js/app.js"></script>
-
-        <script src="js/toastr/toastr.min.js"></script>
-        <script src="js/toastr/toastr.init.js"></script>
-
-    </body>
+</body>
 </html>

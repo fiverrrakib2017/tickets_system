@@ -111,6 +111,10 @@ require 'Head.php';
                                                     }
                                                 }
 
+                                                echo '<pre>';
+                                                print_r($whereSql);
+                                                echo '</pre>';exit; 
+
                                                 /*------------- Final Query --------------------*/
                                                 $tickets = get_tickets($con, [
                                                     'whereSql' => $whereSql

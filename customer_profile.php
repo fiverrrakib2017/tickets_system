@@ -417,7 +417,7 @@ require 'Head.php';
                                                     </div>
                                                 </div>
                                             </div>
-                                           
+                                            <?php include 'Table/value_added_service.php'; ?>
 
 
                                         </div>    

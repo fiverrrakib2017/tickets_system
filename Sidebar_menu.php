@@ -121,6 +121,13 @@ if ($result && $result->num_rows > 0) {
             </li>
         <?php } ?>
         <li>
+            <a href="value_add_service.php" class="waves-effect">
+                <i class="mdi mdi-account-multiple-outline"></i>
+                <span>Value Added Service</span>
+            </a>
+        </li>
+        <!-- Others Links -->
+        <li>
             <a href="others_link.php" class="waves-effect">
                 <i class="mdi mdi-account-multiple-outline"></i>
                 <span>Others Link</span>
@@ -129,20 +136,20 @@ if ($result && $result->num_rows > 0) {
 
         <?php if (!empty($others_links)): ?>
 
-<li class="menu-title">Useful Links</li>
+        <li class="menu-title">Useful Links</li>
 
-<?php foreach ($others_links as $link): ?>
-    <li>
-        <a href="<?php echo htmlspecialchars($link['link']); ?>"
-           target="_blank"
-           class="waves-effect d-flex align-items-center">
-            <i class="mdi mdi-open-in-new me-2"></i>
-            <span><?php echo htmlspecialchars($link['name']); ?></span>
-        </a>
-    </li>
-<?php endforeach; ?>
+        <?php foreach ($others_links as $link): ?>
+            <li>
+                <a href="<?php echo htmlspecialchars($link['link']); ?>"
+                target="_blank"
+                class="waves-effect d-flex align-items-center">
+                    <i class="mdi mdi-open-in-new me-2"></i>
+                    <span><?php echo htmlspecialchars($link['name']); ?></span>
+                </a>
+            </li>
+        <?php endforeach; ?>
 
-<?php endif; ?>
+        <?php endif; ?>
 
 
 

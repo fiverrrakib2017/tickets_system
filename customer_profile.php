@@ -3,9 +3,9 @@ date_default_timezone_set('Asia/Dhaka');
 include "include/security_token.php";
 include "include/db_connect.php";
 include 'include/functions.php';
-// ini_set('display_errors', 1);
-// ini_set('display_startup_errors', 1);
-// error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 if(isset($_GET['clid'])){
     $clid = $_GET['clid'];
 
@@ -47,7 +47,6 @@ if(isset($_GET['clid'])){
 }
 
 ?>
-<!doctype html>
 <!doctype html>
 <html lang="en">
 <?php 
@@ -418,6 +417,9 @@ require 'Head.php';
                                                     </div>
                                                 </div>
                                             </div>
+                                           
+
+
                                         </div>    
                                     </div>
                                 </div>

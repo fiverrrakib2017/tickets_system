@@ -33,6 +33,13 @@ if ($result && $result->num_rows > 0) {
             </a>
         </li>
         <li>
+            <a href="mac_reseller_customer.php" class="waves-effect">
+                <i class="mdi mdi-account-multiple-outline"></i>
+                <span>Mac Reseller</span>
+            </a>
+        </li>
+        
+        <li>
             <a href="create_customer.php" class="waves-effect">
                 <i class="mdi mdi-account-plus-outline"></i>
                 <span>Create Customer</span>

@@ -38,6 +38,12 @@ if ($result && $result->num_rows > 0) {
                 <span>Mac Reseller</span>
             </a>
         </li>
+        <li>
+            <a href="bandwidth_customer.php" class="waves-effect">
+                <i class="mdi mdi-account-multiple-outline"></i>
+                <span>Bandwidth Customer</span>
+            </a>
+        </li>
         
         <li>
             <a href="create_customer.php" class="waves-effect">

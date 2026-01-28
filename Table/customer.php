@@ -78,7 +78,33 @@
                     $customer_ids[] = (int)$row['id'];
                 }
             }
-
+            /*-------------Request Total Ip Customer---------------*/
+            if(isset($_GET['total_ip']) && $_GET['total_ip'] == 1){
+                $total_ip_query = $con->query(
+                    "SELECT  *  FROM customers  WHERE ping_ip IS NOT NULL AND ping_ip != ''"
+                );
+                while ($row = $total_ip_query->fetch_assoc()) {
+                    $customer_ids[] = (int)$row['id'];
+                }
+            }
+            /*-------------Request Total Online ip Customer---------------*/
+            if(isset($_GET['online_ip']) && $_GET['online_ip'] == 'true'){
+                $online_ip_query = $con->query(
+                    "SELECT  `id`  FROM customers  WHERE ping_ip_status = 'online'"
+                );
+                while ($row = $online_ip_query->fetch_assoc()) {
+                    $customer_ids[] = (int)$row['id'];
+                }
+            }
+            /*-------------Request Total OFFLINE ip Customer---------------*/
+            if(isset($_GET['offline_ip']) && $_GET['offline_ip'] == 'true'){
+                $offline_ip_query = $con->query(
+                    "SELECT   `id`   FROM customers  WHERE ping_ip_status = 'offline'"
+                );
+                while ($row = $offline_ip_query->fetch_assoc()) {
+                    $customer_ids[] = (int)$row['id'];
+                }
+            }
             /*---- Remove duplicate IDs ----*/
             $customer_ids = array_unique($customer_ids);
 

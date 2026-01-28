@@ -327,7 +327,7 @@ require 'Head.php';
                                                         <span class="fw-semibold text-dark">
                                                             
                                                             <?php 
-                                                            if($customer['service_type']==='NNTN'){
+                                                            if($customer['service_type']==='NTTN'){
                                                                 echo '<span class="badge bg-info">NTTN</span>'; 
                                                             }else if($customer['service_type']==='Overhead'){
                                                                 echo '<span class="badge bg-warning text-dark">Overhead</span>';

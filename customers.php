@@ -144,6 +144,21 @@ require 'Head.php';
                                                 ?>
                                             </p>
                                             <?php endif; ?>
+                                            <?php if(isset($_GET['total_ip'])): ?>
+                                            <p class="text-primary mb-0 hover-cursor">
+                                                &nbsp;/&nbsp; Total IP Addresses (<?= $total_ip ?? 0 ?>)
+                                            </p>
+                                            <?php endif; ?>
+                                            <?php if(isset($_GET['online_ip'])): ?>
+                                            <p class="text-primary mb-0 hover-cursor">
+                                                &nbsp;/&nbsp; Online IP (<?= $up_ip ?? 0 ?>)
+                                            </p>
+                                            <?php endif; ?>
+                                            <?php if(isset($_GET['offline_ip'])): ?>
+                                            <p class="text-primary mb-0 hover-cursor">
+                                                &nbsp;/&nbsp; Offline IP (<?= $down_ip ?? 0 ?>)
+                                            </p>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                     <br>

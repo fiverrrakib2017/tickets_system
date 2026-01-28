@@ -12,20 +12,20 @@ $total_bandwidth=$con->query("
 ")->fetch_assoc()['total_bandwidth'];
 
 $total_ip = $con->query("
-    SELECT COUNT(DISTINCT ping_ip) AS total 
+    SELECT COUNT(ping_ip) AS total 
     FROM customers
 ")->fetch_assoc()['total'];
 
 $up_ip = $con->query("
-    SELECT COUNT(DISTINCT ping_ip) AS up_ip
+    SELECT COUNT(ping_ip) AS up_ip
     FROM customers
     WHERE ping_ip_status = 'online'
 ")->fetch_assoc()['up_ip'];
 
 $down_ip = $con->query("
-    SELECT COUNT(DISTINCT ping_ip) AS down_ip
+    SELECT COUNT(ping_ip) AS down_ip
     FROM customers
-    WHERE ping_ip_status != 'online'
+    WHERE ping_ip_status = 'offline'
 ")->fetch_assoc()['down_ip'];
 
 ?>

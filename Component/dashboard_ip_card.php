@@ -1,46 +1,9 @@
-<style>
-    .stat-card {
-        border: 0;
-        border-radius: 12px;
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.04);
-        transition: all 0.3s ease;
-    }
-
-    .stat-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-    }
-
-    .stat-title {
-        font-size: 13px;
-        font-weight: 600;
-        text-transform: uppercase;
-        color: #6c757d;
-        margin-bottom: 4px;
-    }
-
-    .stat-value {
-        font-weight: 700;
-        margin-bottom: 2px;
-    }
-
-    .stat-icon {
-        width: 52px;
-        height: 52px;
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #fff;
-        font-size: 22px;
-    }
-</style>
 
 
 <div class="row">
     <!-- Total Bandwidth -->
     <div class="col-xl-3 col-md-6">
-        <a href="tickets.php?status=total">
+        <a href="bandwidth_customer.php?status=total">
             <div class="card stat-card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -60,7 +23,7 @@
 
     <!-- Total IP -->
     <div class="col-xl-3 col-md-6">
-        <a href="tickets.php?status=open">
+        <a href="customers.php?total_ip=1">
             <div class="card stat-card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -80,7 +43,7 @@
 
     <!-- Online IP -->
     <div class="col-xl-3 col-md-6">
-        <a href="tickets.php?status=pending">
+        <a href="customers.php?online_ip=true">
             <div class="card stat-card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -100,7 +63,7 @@
 
     <!-- Offline IP -->
     <div class="col-xl-3 col-md-6">
-        <a href="tickets.php?status=resolved">
+        <a href="customers.php?offline_ip=true">
             <div class="card stat-card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">

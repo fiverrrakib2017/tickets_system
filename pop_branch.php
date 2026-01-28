@@ -374,8 +374,6 @@ function _formate_duration($seconds) {
     <?php include 'script.php'; ?>
     <script type="text/javascript">
         $(document).ready(function() {
-
-           
             $('#ticket_topic_datatable').DataTable({
                 "order": [
                     [0, "desc"]
@@ -549,17 +547,7 @@ function _formate_duration($seconds) {
                         }
                     });
                 });
-            });
-            // $(document).on('click', '.telnetBtn', function () {
-            //     let ip = $(this).data('ip');
-
-            //     window.open(
-            //         'telnet.php?ip=' + ip,
-            //         '_blank',
-            //         'width=900,height=600'
-            //     );
-            // });       
-
+            }); 
         });
     </script>
     <script>
@@ -568,7 +556,7 @@ function _formate_duration($seconds) {
             window.open(
                 'http://103.112.206.139:7681',
                 '_blank',
-                'width=400,height=300'
+                'width=600,height=300'
             );
         });
     });

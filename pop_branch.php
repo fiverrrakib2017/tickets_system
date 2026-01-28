@@ -186,7 +186,16 @@ function _formate_duration($seconds) {
 
                                                             <button type="button" name="edit_button" data-id="<?php echo $rows['id']; ?>" class="btn-sm btn btn-info"><i class="fas fa-edit"></i></button>
                                                             <button type="button" name="delete_button" data-id="<?php echo $rows['id']; ?>" class="btn-sm btn btn-danger"><i class="fas fa-trash"></i></button>
-                                                         
+                                                            <button 
+                                                                    type="button"
+                                                                    class="btn-sm btn btn-dark terminal-btn"
+                                                                    data-ip="<?= $rows['router_ip'] ?>?>"
+                                                                >
+                                                                    <i class="fas fa-terminal"></i> Terminal
+                                                                </button>
+
+
+
 
                                                         </td>
                                                     </tr>
@@ -312,7 +321,31 @@ function _formate_duration($seconds) {
                 </form>
             </div>
         </div>
-    </div>                                       
+    </div>     
+    <!-- Modal -->
+        <!-- Modal -->
+        <div class="modal fade" id="terminalModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Router Terminal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-2">
+                    <input type="text" id="telnetUsername" class="form-control mb-1" placeholder="Username">
+                    <input type="password" id="telnetPassword" class="form-control" placeholder="Password">
+                    <button id="telnetConnectBtn" class="btn btn-primary btn-sm mt-2">Connect</button>
+                </div>
+
+                <pre id="terminalBody" style="height:400px; background:#000; color:#0f0; padding:10px; overflow:auto;"></pre>
+                <input type="text" id="terminalInput" class="form-control mt-2" placeholder="Type command & press Enter" disabled>
+            </div>
+            </div>
+        </div>
+        </div>
+
+                                  
     <!-- Delete Modal -->
     <div id="deleteModal" class="modal fade">
         <div class="modal-dialog modal-confirm">
@@ -517,8 +550,31 @@ function _formate_duration($seconds) {
                     });
                 });
             });
+            // $(document).on('click', '.telnetBtn', function () {
+            //     let ip = $(this).data('ip');
+
+            //     window.open(
+            //         'telnet.php?ip=' + ip,
+            //         '_blank',
+            //         'width=900,height=600'
+            //     );
+            // });       
+
         });
     </script>
+    <script>
+    document.querySelectorAll('.terminal-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            window.open(
+                'http://103.112.206.139:7681',
+                '_blank',
+                'width=400,height=300'
+            );
+        });
+    });
+    </script>
+
+
 </body>
 
 </html>

@@ -177,7 +177,34 @@ require 'Head.php';
                                                             <span class="fw-bold">Phone:</span>
                                                         </p>
                                                         <span class="fw-semibold text-dark">
-                                                             <?php echo $customer['phones'] ? $customer['phones'] : 'N/A'; ?>
+                                                            <?php 
+
+                                                            $get_all_customer_phone_number = $con->query("SELECT * FROM customer_phones WHERE customer_id = '".$customer['id']."'");
+
+                                                            if($get_all_customer_phone_number && $get_all_customer_phone_number->num_rows > 0){
+                                                                while($phone_row = $get_all_customer_phone_number->fetch_array()){
+                                                                    $rawPhone = $phone_row['phone_number'];
+                                                                    $cleanPhone = preg_replace('/[^0-9+]/', '', $rawPhone); 
+
+                                                                    echo '<div class="mb-1 d-flex align-items-center">';
+                                                                    /*-------Phone Number---------*/
+                                                                    echo '<span class="me-2">'.$rawPhone.'</span>';
+                                                                    /*------- Phone Call Icon---------*/
+                                                                    echo '<a href="tel:'.$cleanPhone.'" class="me-2" title="Call '.$rawPhone.'">
+                                                                            <i class="mdi mdi-phone fs-5 text-success"></i>
+                                                                        </a>';
+                                                                    echo '<a href="https://wa.me/'.$cleanPhone.'" target="_blank" class="me-2" title="WhatsApp '.$rawPhone.'">
+                                                                            <i class="mdi mdi-whatsapp fs-5 text-success"></i>
+                                                                        </a>';
+                                                                    echo '</div>';
+                                                                }
+                                                            } else {
+                                                                echo 'N/A';
+                                                            }
+                                                            ?>
+
+
+
                                                         </span>
                                                     </div>
                                                 </div>

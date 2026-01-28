@@ -11,7 +11,7 @@
             id="ping_ip"
             class="form-control"
             placeholder="e.g. 192.168.1.1"
-            value="<?= htmlspecialchars($customer['ping_ip']); ?>">
+            value="<?= htmlspecialchars($customer['ping_ip'] ?? ''); ?>">
     </div>
 
     <div class="col-md-4 text-end">

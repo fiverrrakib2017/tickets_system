@@ -444,9 +444,25 @@ require 'Head.php';
                                                     </div>
                                                 </div>
                                             </div>
-                                            <?php include 'Table/value_added_service.php'; ?>
-
-
+                                            <!----------------Value Added Service--------------------->
+                                            <div class="row">
+                                                <div class="card">
+                                                    <div class="card-body">
+                                                         <?php include 'Table/value_added_service.php'; ?>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!---------------- Customer Mikrotik Graph--------------------->
+                                            <div class="row">
+                                                <div class="card">
+                                                    <div class="card-header">
+                                                        <h4 class="card-title mb-0">MikroTik Bandwidth Usage</h4>
+                                                    </div>
+                                                    <div class="card-body">
+                                                         <?php include 'Component/mikrotik_graph.php'; ?>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>    
                                     </div>
                                 </div>

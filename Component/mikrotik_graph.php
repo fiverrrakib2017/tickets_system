@@ -48,13 +48,21 @@
 
         <!-- Daily -->
         <div class="card mb-4 shadow-sm">
-          <div class="card-header bg-primary text-white py-2">
-            <strong>Daily Traffic</strong>
-          </div>
-          <div class="card-body text-center">
-            <img id="graph_day" class="img-fluid rounded">
-          </div>
+            <div class="card-header bg-primary text-white py-2">
+                <strong>Daily Traffic</strong>
+            </div>
+
+            <div class="card-body text-center">
+                <img id="graph_day" class="img-fluid rounded mb-2">
+
+                <!-- 👇 Daily Graph Text -->
+                <div id="graph_day_info"
+                    class="small text-start text-muted border-top pt-2">
+                Loading...
+                </div>
+            </div>
         </div>
+
 
         <!-- Weekly -->
         <div class="card mb-4 shadow-sm">
@@ -63,6 +71,10 @@
           </div>
           <div class="card-body text-center">
             <img id="graph_week" class="img-fluid rounded">
+                <div id="graph_week_info"
+                        class="small text-start text-muted border-top pt-2">
+                    Loading...
+                </div>
           </div>
         </div>
 
@@ -73,6 +85,10 @@
           </div>
           <div class="card-body text-center">
             <img id="graph_month" class="img-fluid rounded">
+               <div id="graph_month_info"
+                        class="small text-start text-muted border-top pt-2">
+                    Loading...
+                </div>
           </div>
         </div>
 
@@ -83,8 +99,14 @@
           </div>
           <div class="card-body text-center">
             <img id="graph_year" class="img-fluid rounded">
+                <div id="graph_year_info"
+                            class="small text-start text-muted border-top pt-2">
+                      Loading...
+                 </div>
           </div>
         </div>
+
+
 
       </div>
 
@@ -218,7 +240,7 @@ document.addEventListener('click', function(e){
         chartInterval = setInterval(updateGraph, 1000);
     }
 });
-document.addEventListener('click', function(e){
+document.addEventListener('click', function (e) {
     const btn = e.target.closest('.show_graph');
     if (!btn) return;
 
@@ -228,24 +250,40 @@ document.addEventListener('click', function(e){
     document.getElementById('graphTitle').innerText =
         iface + ' Bandwidth Graphs';
 
+    // ===== Graph Images =====
     document.getElementById('graph_day').src =
-        'http://103.112.206.139/include/graph_proxy.php?interface=' +
-        encodeURIComponent(iface) + '&file=daily.gif';
+        'include/graph_proxy.php?interface=' + iface + '&file=daily.gif';
 
     document.getElementById('graph_week').src =
-        'http://103.112.206.139/include/graph_proxy.php?interface=' +
-        encodeURIComponent(iface) + '&file=weekly.gif';
+        'include/graph_proxy.php?interface=' + iface + '&file=weekly.gif';
 
     document.getElementById('graph_month').src =
-        'http://103.112.206.139/include/graph_proxy.php?interface=' +
-        encodeURIComponent(iface) + '&file=monthly.gif';
+        'include/graph_proxy.php?interface=' + iface + '&file=monthly.gif';
 
     document.getElementById('graph_year').src =
-        'http://103.112.206.139/include/graph_proxy.php?interface=' +
-        encodeURIComponent(iface) + '&file=yearly.gif';
+        'include/graph_proxy.php?interface=' + iface + '&file=yearly.gif';
+
+    // ===== Graph Text (per graph) =====
+    fetch('include/graph_text_proxy.php?interface=' + iface + '&period=day')
+        .then(r => r.text())
+        .then(t => document.getElementById('graph_day_info').innerHTML = t);
+
+    fetch('include/graph_text_proxy.php?interface=' + iface + '&period=week')
+        .then(r => r.text())
+        .then(t => document.getElementById('graph_week_info').innerHTML = t);
+
+    fetch('include/graph_text_proxy.php?interface=' + iface + '&period=month')
+        .then(r => r.text())
+        .then(t => document.getElementById('graph_month_info').innerHTML = t);
+
+    fetch('include/graph_text_proxy.php?interface=' + iface + '&period=year')
+        .then(r => r.text())
+        .then(t => document.getElementById('graph_year_info').innerHTML = t);
 
     new bootstrap.Modal(document.getElementById('graphModal')).show();
 });
+
+
 
 
 /*---------------- Initialize ----------------*/ 

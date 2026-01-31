@@ -29,6 +29,81 @@
         </div>
     </div>
 </div>
+<!-- Graph Modal -->
+<div class="modal fade" id="graphModal" tabindex="-1">
+  <div class="modal-dialog  modal-dialog-scrollable">
+    <div class="modal-content  border-0">
+
+      <!-- Header -->
+      <div class="modal-header bg-dark text-white py-2">
+        <h5 class="modal-title" id="graphTitle">
+            Interface Bandwidth Graphs
+        </h5>
+        <button type="button" class="btn-close btn-close-white"
+                data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body bg-light">
+
+        <!-- Daily -->
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header bg-primary text-white py-2">
+            <strong>Daily Traffic</strong>
+          </div>
+          <div class="card-body text-center">
+            <img id="graph_day" class="img-fluid rounded">
+          </div>
+        </div>
+
+        <!-- Weekly -->
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header bg-info text-white py-2">
+            <strong>Weekly Traffic</strong>
+          </div>
+          <div class="card-body text-center">
+            <img id="graph_week" class="img-fluid rounded">
+          </div>
+        </div>
+
+        <!-- Monthly -->
+        <div class="card mb-4 shadow-sm">
+          <div class="card-header bg-success text-white py-2">
+            <strong>Monthly Traffic</strong>
+          </div>
+          <div class="card-body text-center">
+            <img id="graph_month" class="img-fluid rounded">
+          </div>
+        </div>
+
+        <!-- Yearly -->
+        <div class="card mb-2 shadow-sm">
+          <div class="card-header bg-secondary text-white py-2">
+            <strong>Yearly Traffic</strong>
+          </div>
+          <div class="card-body text-center">
+            <img id="graph_year" class="img-fluid rounded">
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer bg-white">
+        <small class="text-muted">
+            Bandwidth data generated from router (SNMP / MRTG)
+        </small>
+        <button type="button" class="btn btn-outline-danger btn-sm"
+                data-bs-dismiss="modal">
+            Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -46,13 +121,16 @@ function _load_in_interface() {
         .then(data => {
             let html = '';
             data.forEach(iface => {
+                const graphUrl = `http://103.112.204.48:8082/graphs/iface/${iface}/`;
+                
                 html += `
                     <li class="list-group-item d-flex justify-content-between align-items-center interface-item"
-                        data-interface="${iface}">
+                        data-interface="${iface}" data-graph-url="${graphUrl}">
                         ${iface}
-                        <button type="button" class="btn btn-sm btn-primary"><i class="fas fa-eye"></i></button>
+                        <button type="button" class="btn btn-sm btn-primary show_graph"><i class="fas fa-eye"></i></button>
                     </li>`;
             });
+
             document.getElementById('_interface_list').innerHTML = html;
         })
         .catch(err => console.error('Interface load error:', err));
@@ -140,6 +218,35 @@ document.addEventListener('click', function(e){
         chartInterval = setInterval(updateGraph, 1000);
     }
 });
+document.addEventListener('click', function(e){
+    const btn = e.target.closest('.show_graph');
+    if (!btn) return;
+
+    const li = btn.closest('.interface-item');
+    const iface = li.dataset.interface;
+
+    document.getElementById('graphTitle').innerText =
+        iface + ' Bandwidth Graphs';
+
+    document.getElementById('graph_day').src =
+        'http://103.112.206.139/include/graph_proxy.php?interface=' +
+        encodeURIComponent(iface) + '&file=daily.gif';
+
+    document.getElementById('graph_week').src =
+        'http://103.112.206.139/include/graph_proxy.php?interface=' +
+        encodeURIComponent(iface) + '&file=weekly.gif';
+
+    document.getElementById('graph_month').src =
+        'http://103.112.206.139/include/graph_proxy.php?interface=' +
+        encodeURIComponent(iface) + '&file=monthly.gif';
+
+    document.getElementById('graph_year').src =
+        'http://103.112.206.139/include/graph_proxy.php?interface=' +
+        encodeURIComponent(iface) + '&file=yearly.gif';
+
+    new bootstrap.Modal(document.getElementById('graphModal')).show();
+});
+
 
 /*---------------- Initialize ----------------*/ 
 _load_in_interface();

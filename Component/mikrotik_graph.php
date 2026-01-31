@@ -55,7 +55,7 @@
             <div class="card-body text-center">
                 <img id="graph_day" class="img-fluid rounded mb-2">
 
-                <!-- 👇 Daily Graph Text -->
+                <!--  Daily Graph Text -->
                 <div id="graph_day_info"
                     class="small text-start text-muted border-top pt-2">
                 Loading...
@@ -143,7 +143,7 @@ function _load_in_interface() {
         .then(data => {
             let html = '';
             data.forEach(iface => {
-                const graphUrl = `http://103.112.204.48:8082/graphs/iface/${iface}/`;
+                const graphUrl = `<?php echo $customer['ping_ip']. ':'. $customer['port'] ?>:/graphs/iface/${iface}/`;
                 
                 html += `
                     <li class="list-group-item d-flex justify-content-between align-items-center interface-item"
@@ -250,33 +250,33 @@ document.addEventListener('click', function (e) {
     document.getElementById('graphTitle').innerText =
         iface + ' Bandwidth Graphs';
 
-    // ===== Graph Images =====
+    /*----------------Graph Images-------------*/ 
     document.getElementById('graph_day').src =
-        'include/graph_proxy.php?interface=' + iface + '&file=daily.gif';
+        'include/graph_proxy.php?interface=' + iface + '&file=daily.gif&customer_id=<?= (int)$customer['id'] ?>';
 
     document.getElementById('graph_week').src =
-        'include/graph_proxy.php?interface=' + iface + '&file=weekly.gif';
+        'include/graph_proxy.php?interface=' + iface + '&file=weekly.gif&customer_id=<?= (int)$customer['id'] ?>';
 
     document.getElementById('graph_month').src =
-        'include/graph_proxy.php?interface=' + iface + '&file=monthly.gif';
+        'include/graph_proxy.php?interface=' + iface + '&file=monthly.gif&customer_id=<?= (int)$customer['id'] ?>';
 
     document.getElementById('graph_year').src =
-        'include/graph_proxy.php?interface=' + iface + '&file=yearly.gif';
+        'include/graph_proxy.php?interface=' + iface + '&file=yearly.gif&customer_id=<?= (int)$customer['id'] ?>';
 
-    // ===== Graph Text (per graph) =====
-    fetch('include/graph_text_proxy.php?interface=' + iface + '&period=day')
+     /*----------------Graph Text -------------*/ 
+    fetch('include/graph_text_proxy.php?interface=' + iface + '&period=day&customer_id=<?= (int)$customer['id'] ?>')
         .then(r => r.text())
         .then(t => document.getElementById('graph_day_info').innerHTML = t);
 
-    fetch('include/graph_text_proxy.php?interface=' + iface + '&period=week')
+    fetch('include/graph_text_proxy.php?interface=' + iface + '&period=week&customer_id=<?= (int)$customer['id'] ?>')
         .then(r => r.text())
         .then(t => document.getElementById('graph_week_info').innerHTML = t);
 
-    fetch('include/graph_text_proxy.php?interface=' + iface + '&period=month')
+    fetch('include/graph_text_proxy.php?interface=' + iface + '&period=month&customer_id=<?= (int)$customer['id'] ?>')
         .then(r => r.text())
         .then(t => document.getElementById('graph_month_info').innerHTML = t);
 
-    fetch('include/graph_text_proxy.php?interface=' + iface + '&period=year')
+    fetch('include/graph_text_proxy.php?interface=' + iface + '&period=year&customer_id=<?= (int)$customer['id'] ?>')
         .then(r => r.text())
         .then(t => document.getElementById('graph_year_info').innerHTML = t);
 

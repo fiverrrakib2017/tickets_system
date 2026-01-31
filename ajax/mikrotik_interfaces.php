@@ -26,12 +26,13 @@ $snmp = @snmpwalk($router_ip, $community, $oid);
 $interfaces = [];
 if ($snmp !== false) {
     foreach ($snmp as $line) {
-        preg_match('/"([^"]+)"/', $line, $match);
-        if (!empty($match[1])) {
-            $interfaces[] = [
-                'name' => $match[1]
-            ];
-        }
+        // preg_match('/"([^"]+)"/', $line, $match);
+        // if (!empty($match[1])) {
+        //     $interfaces[] = [
+        //         'name' => $match[1]
+        //     ];
+        // }
+        $interfaces[] = trim(str_replace('STRING:', '', $line), '" ');
     }
 }
 echo json_encode($interfaces);

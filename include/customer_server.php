@@ -48,6 +48,42 @@ if(isset($_GET['update_customer_ping_ip']) && $_SERVER['REQUEST_METHOD']==='POST
    
 }
 
+/*------------update_mikrotik_info--------------*/
+if(isset($_GET['update_mikrotik_info']) && $_SERVER['REQUEST_METHOD']==='POST'){
+    $input = json_decode(file_get_contents('php://input'), true);
+
+    $customer_id = isset($input['customer_id']) ? (int)$input['customer_id'] : 0;
+    $mikrotik_ip = isset($input['mikrotik_ip']) ? trim($input['mikrotik_ip']) : '';
+    $mikrotik_port = isset($input['mikrotik_port']) ? trim($input['mikrotik_port']) : '';
+
+    if($customer_id <= 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid Customer ID.'
+        ]);
+        exit();
+    }
+
+    /*-----------Update Customer Mikrotik Info----------*/ 
+    $stmt = $con->prepare("UPDATE customers SET ping_ip = ?, port = ? WHERE id = ?");
+    $stmt->bind_param('ssi', $mikrotik_ip, $mikrotik_port, $customer_id);
+
+    if($stmt->execute()) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Customer Mikrotik Info Updated Successfully.'
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Database error: '.$stmt->error
+        ]);
+    }
+
+    exit();
+   
+}
+
 /*-----GET Customer Ping IP-----*/
 if(isset($_GET['get_customer_ping_ip']) && $_SERVER['REQUEST_METHOD']==='GET'){
     $customer_id = isset($_GET['customer_id']) ? (int)$_GET['customer_id'] : 0;

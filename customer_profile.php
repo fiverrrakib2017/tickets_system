@@ -455,9 +455,20 @@ require 'Head.php';
                                             <!---------------- Customer Mikrotik Graph--------------------->
                                             <div class="row">
                                                 <div class="card">
-                                                    <div class="card-header">
-                                                        <h4 class="card-title mb-0">MikroTik Bandwidth Usage</h4>
+                                                    <div class="card-header bg-white">
+                                                        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+
+                                                            <!-- Title -->
+                                                            <h4 class="card-title mb-0">
+                                                                MikroTik Bandwidth Usage
+                                                            </h4>
+
+                                                            <!-- Config Form -->
+                                                        <?php include 'Component/mikrotik_config_form.php'; ?>
+
+                                                        </div>
                                                     </div>
+
                                                     <div class="card-body">
                                                          <?php include 'Component/mikrotik_graph.php'; ?>
                                                     </div>

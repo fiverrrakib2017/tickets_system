@@ -541,4 +541,37 @@ if(!function_exists('customer_ping_status')){
 
 }
 
+/*------------Unque column-----------------*/
+if(!function_exists('is_unique_column')){
+    function is_unique_column($con, $table, $column, $value, $exclude=NULL)
+    {
+        $condition=""; 
+        $types = "s";
+        if(isset($exclude) && !empty($exclude)){
+            $condition ='AND id != ?'; 
+            $types .= "i"; 
+        }
+        
+    
+        $query = "SELECT COUNT(*) as count FROM $table WHERE $column = ? $condition ";
+        $stmt = $con->prepare($query);
+        if ($stmt) {
+            if (!empty($exclude)) {
+                $stmt->bind_param($types, $value, $exclude); 
+            } else {
+                $stmt->bind_param("s", $value); 
+            }
+            
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            return $row['count'] > 0;
+        }
+        return false;
+        exit; 
+    }
+}
+
+
+
 ?>

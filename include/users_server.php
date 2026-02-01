@@ -2,14 +2,15 @@
 if (!isset($_SESSION)) {
     session_start();
 }
- include("db_connect.php");
+if (!isset($_SERVER['DOCUMENT_ROOT']) || $_SERVER['DOCUMENT_ROOT'] == '') {
+    $_SERVER['DOCUMENT_ROOT'] = dirname(__DIR__); 
+}
+include $_SERVER['DOCUMENT_ROOT'] . '/include/db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/include/functions.php';
 	
 
 /*Add User Script*/
 if (isset($_GET['add_user']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    require 'functions.php';
-
     /* -------- Sanitize -------- */
     $fullname = trim($_POST['fullname'] ?? '');
     $username = trim($_POST['username'] ?? '');
@@ -44,12 +45,12 @@ if (isset($_GET['add_user']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     /* -------- Check username exists -------- */
-    if (isUniqueColumn($con, 'users', 'username', $username) === true) {
+    if (is_unique_column($con, 'users', 'username', $username) === true) {
         exit(json_encode(['success'=>false,'message'=>'Username already exists']));
     }
 
     /* -------- Check email exists -------- */
-    if (isUniqueColumn($con, 'users', 'email', $email) === true) {
+    if (is_unique_column($con, 'users', 'email', $email) === true) {
         exit(json_encode(['success'=>false,'message'=>'Email already exists']));
     }
 
@@ -177,14 +178,14 @@ if (isset($_GET['update_user']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
     /* -------- Duplicate Username Check -------- */
     if ($username !== $oldUser['username']) {
-        if (isUniqueColumn($con, 'users', 'username', $username)) {
+        if (is_unique_column($con, 'users', 'username', $username)) {
             exit(json_encode(['success'=>false,'message'=>'Username already exists']));
         }
     }
 
     /* -------- Duplicate Email Check -------- */
     if ($email !== $oldUser['email']) {
-        if (isUniqueColumn($con, 'users', 'email', $email)) {
+        if (is_unique_column($con, 'users', 'email', $email)) {
             exit(json_encode(['success'=>false,'message'=>'Email already exists']));
         }
     }

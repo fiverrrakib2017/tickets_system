@@ -96,7 +96,14 @@ require 'Head.php';
 
                                                     <!-- Profile Details -->
                                                     <div class="mt-3">
-                                                        <h4 class="text-primary fw-bold"><?php echo $customer['customer_name'] ?? 'N/A'; ?></h4>
+                                                        <h6 class="text-primary fw-bold"><?php echo $customer['customer_name'] ?? 'N/A'; ?>-<?php echo htmlspecialchars($customer['pop_branch_name'] ?? 'N/A'); ?></h6>
+
+                                                        <p class="text-muted mb-1">
+                                                            <span class="badge bg-success">
+                                                                <i class="fas fa-network-wired"></i> Connection Via
+                                                                <?php echo $customer['type_name'] ?? 'N/A'; ?>
+                                                            </span>
+                                                        </p>
                                                         <p class="text-muted mb-1">
                                                             <span class="badge bg-secondary">#
                                                                 <?php echo $customer['id']; ?></span>

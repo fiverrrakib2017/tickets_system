@@ -83,11 +83,11 @@ require 'Head.php';
     <div class="rightbar-overlay"></div>
 
 
-    <?php include 'modal/customer_modal.php'; ?>
     <?php include 'script.php'; ?>
     <script type="text/javascript"></script>
     <script>
          $('#tickets_table').DataTable();
+         $('#dashboard_customers_table').DataTable();
     </script>
 </body>
 

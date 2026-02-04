@@ -45,3 +45,73 @@
         </a>
     </div>
 </div>
+
+<style>
+     .noti-icon {
+        position: relative;
+    }
+
+    .noti-icon i {
+        font-size: 22px;
+        color: #495057;
+    }
+
+    .noti-dot {
+        position: absolute;
+        top: 10px;
+        right: 8px;
+        font-size: 11px;
+        padding: 2px 6px;
+    }
+
+
+    .chat-dropdown{
+        width:320px;
+        padding:0;
+    }
+
+    .chat-item{
+        display:flex;
+        align-items:center;
+        gap:10px;
+        padding:10px;
+    }
+
+    .chat-item:hover{
+        background:#f8f9fa;
+    }
+
+    .chat-avatar{
+        width:40px;
+        height:40px;
+        border-radius:50%;
+        object-fit:cover;
+    }
+
+    .chat-info{
+        flex:1;
+        overflow:hidden;
+    }
+
+    .chat-name{
+        font-weight:600;
+        font-size:14px;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+    }
+
+    .chat-text{
+        font-size:13px;
+        color:#6c757d;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+    }
+
+    .chat-time{
+        font-size:12px;
+        color:#adb5bd;
+    }
+
+</style>

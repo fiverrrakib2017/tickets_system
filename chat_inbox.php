@@ -192,6 +192,21 @@ body {
   z-index: 10;
 }
 
+
+.call-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.call-btn i {
+  font-size: 18px;
+}
+
+
 </style>
 <body data-sidebar="dark">
 
@@ -223,177 +238,199 @@ body {
 
                     <!-- LEFT -->
                     <div class="chat-users">
-                    <div class="chat-users-header">Messages</div>
+                        <div class="chat-users-header">Messages</div>
 
-                    <div class="chat-user active">
-                        <img src="https://i.pravatar.cc/100?img=12">
-                        <div>
-                        <h6>Rakib Mahmud</h6>
-                        <small class="text-muted">Internet slow...</small>
-                        </div>
-                    </div>
+                        <?php
+                        $_active_customer_id = null;
 
-                    <div class="chat-user">
-                        <img src="http://103.146.16.154/profileImages/1752565976_494636897_10163477787563103_7852121941522030832_n.jpg">
-                        <div>
-                        <h6>Shafiul Bashar Sumon</h6>
-                        <small class="text-muted">sir...Support lagbe...</small>
-                        </div>
-                    </div>
-                    <div class="chat-user">
-                        <img src="https://i.pravatar.cc/100?img=32">
-                        <div>
-                        <h6>Customer #102</h6>
-                        <small class="text-muted">Support lagbe...</small>
-                        </div>
-                    </div>
-                    </div>
+                        /*-------------Others Customers-------------*/
+                        if (
+                            isset($_GET['is_message'], $_GET['customer_id']) &&
+                            $_GET['is_message'] == true
+                        ) {
+                            $_active_customer_id = (int) $_GET['customer_id'];
 
-                    <!-- RIGHT -->
-                    <div class="chat-box">
+                            $sql = "
+                                SELECT 
+                                    c.id,
+                                    c.customer_name,
+                                    c.profile_image,
+                                    lc.message
+                                FROM customers c
+                                LEFT JOIN live_chats lc 
+                                    ON lc.customer_id = c.id
+                                WHERE c.id = $_active_customer_id
+                                ORDER BY lc.id DESC
+                                LIMIT 1
+                            ";
 
-                    <!-- HEADER -->
-                    <div class="chat-box-header">
-                        <img src="https://i.pravatar.cc/100?img=12">
-                        <div>
-                        <strong>Rakib Mahmud</strong><br>
-                        <small class="text-success">Online</small>
-                        </div>
-                    </div>
+                            $result = $con->query($sql);
+                            if ($result && $row = $result->fetch_assoc()):
+                        ?>
 
-                    <!-- BODY -->
-                    <div class="chat-box-body" id="chatBody">
+                            <div class="chat-user active">
+                                <img src="<?= !empty($row['profile_image']) 
+                                    ? 'profileImages/'.$row['profile_image'] 
+                                    : 'assets/images/avatar.png'; ?>">
 
-                        <div class="msg-row">
-                        <img class="avatar-xs" src="https://i.pravatar.cc/100?img=12">
-                        <div class="chat-message received">
-                            Hello bhai, internet slow
-                            <span class="meta">10:15 AM</span>
-                        </div>
-                        </div>
+                                <div>
+                                    <h6><?= htmlspecialchars($row['customer_name']) ?></h6>
+                                    <small class="text-muted">
+                                        <?= htmlspecialchars($row['message'] ?? 'No messages yet') ?>
+                                    </small>
+                                </div>
+                            </div>
 
-                        <div class="msg-row sent">
-                        <div class="chat-message">
-                            Router restart korechen?
-                            <span class="meta">10:16 AM</span>
-                        </div>
-                        </div>
+                        <?php
+                            endif;
+                        }
+                        ?>
 
-                        <div class="msg-row">
-                        <img class="avatar-xs" src="https://i.pravatar.cc/100?img=12">
-                        <div class="chat-message received">
-                            Ha korechi
-                            <span class="meta">10:17 AM</span>
-                        </div>
-                        </div>
+                        <?php
+                        /*-------------Others Customers-------------*/
+                        $sql = "
+                            SELECT 
+                                c.id,
+                                c.customer_name,
+                                c.profile_image,
+                                lc.message
+                            FROM live_chats lc
+                            JOIN customers c ON c.id = lc.customer_id
+                            JOIN (
+                                SELECT customer_id, MAX(id) last_id
+                                FROM live_chats
+                                GROUP BY customer_id
+                            ) x ON x.last_id = lc.id
+                        ";
 
-                        <div class="msg-row sent">
-                        <div class="chat-message">
-                            Router restart korechen?
-                            <span class="meta">10:16 AM</span>
-                        </div>
-                        </div>
-                        <div class="msg-row">
-                        <img class="avatar-xs" src="https://i.pravatar.cc/100?img=12">
-                        <div class="chat-message received">
-                            Ha korechi
-                            <span class="meta">10:17 AM</span>
-                        </div>
-                        </div>
-                        <div class="msg-row sent">
-                        <div class="chat-message">
-                            Router restart korechen?
-                            <span class="meta">10:16 AM</span>
-                        </div>
-                        </div>
-                        <div class="msg-row">
-                        <img class="avatar-xs" src="https://i.pravatar.cc/100?img=12">
-                        <div class="chat-message received">
-                            Ha korechi
-                            <span class="meta">10:17 AM</span>
-                        </div>
-                        </div>
-                        <div class="msg-row sent">
-                        <div class="chat-message">
-                            Router restart korechen?
-                            <span class="meta">10:16 AM</span>
-                        </div>
-                        </div>
-                        <div class="msg-row">
-                        <img class="avatar-xs" src="https://i.pravatar.cc/100?img=12">
-                        <div class="chat-message received">
-                            Ha korechi
-                            <span class="meta">10:17 AM</span>
-                        </div>
-                        </div>
-                        <div class="msg-row sent">
-                        <div class="chat-message">
-                            Router restart korechen?
-                            <span class="meta">10:16 AM</span>
-                        </div>
-                        </div>
-                        <div class="msg-row">
-                        <img class="avatar-xs" src="https://i.pravatar.cc/100?img=12">
-                        <div class="chat-message received">
-                            Ha korechi
-                            <span class="meta">10:17 AM</span>
-                        </div>
-                        </div>
-                        <div class="msg-row sent">
-                        <div class="chat-message">
-                            Router restart korechen?
-                            <span class="meta">10:16 AM</span>
-                        </div>
-                        </div>
-                        <div class="msg-row">
-                        <img class="avatar-xs" src="https://i.pravatar.cc/100?img=12">
-                        <div class="chat-message received">
-                            Ha korechi
-                            <span class="meta">10:17 AM</span>
-                        </div>
-                        </div>
-                        <div class="msg-row sent">
-                        <div class="chat-message">
-                            Router restart korechen?
-                            <span class="meta">10:16 AM</span>
-                        </div>
-                        </div>
-                        <div class="msg-row">
-                        <img class="avatar-xs" src="https://i.pravatar.cc/100?img=12">
-                        <div class="chat-message received">
-                            Ha korechi
-                            <span class="meta">10:17 AM</span>
-                        </div>
-                        </div>
-                        <div class="msg-row sent">
-                        <div class="chat-message">
-                            Router restart korechen?
-                            <span class="meta">10:16 AM</span>
-                        </div>
-                        </div>
-                        <div class="msg-row">
-                        <img class="avatar-xs" src="https://i.pravatar.cc/100?img=12">
-                        <div class="chat-message received">
-                            Ha korechi
-                            <span class="meta">10:17 AM</span>
-                        </div>
+                        if ($_active_customer_id !== null) {
+                            $sql .= " WHERE c.id != $_active_customer_id ";
+                        }
+
+                        $sql .= " ORDER BY lc.id DESC";
+
+                        $result = $con->query($sql);
+
+                        if ($result && $result->num_rows > 0):
+                            while ($row = $result->fetch_assoc()):
+                        ?>
+
+                            <a href="chat_inbox.php?is_message=true&customer_id=<?= $row['id'] ?>"
+                            class="chat-user">
+
+                                <img src="<?= !empty($row['profile_image']) 
+                                    ? 'profileImages/'.$row['profile_image'] 
+                                    : 'assets/images/avatar.png'; ?>">
+
+                                <div>
+                                    <h6><?= htmlspecialchars($row['customer_name']) ?></h6>
+                                    <small class="text-muted">
+                                        <?= htmlspecialchars($row['message']) ?>
+                                    </small>
+                                </div>
+                            </a>
+
+                        <?php
+                            endwhile;
+                        else:
+                        ?>
+
+                        <div class="chat-user text-muted">
+                            No conversations found
                         </div>
 
-                        <div id="scrollBottom" class="scroll-bottom">
-                        <i class="mdi mdi-arrow-down"></i> Latest
-                        </div>
+                    <?php endif; ?>
 
                     </div>
 
-                    <!-- FOOTER -->
-                    <div class="chat-box-footer">
-                        <input id="msgInput" type="text" class="form-control" placeholder="Type message...">
-                        <button id="sendBtn" class="btn btn-primary">
-                        <i class="mdi mdi-send"></i>
-                        </button>
-                    </div>
 
-                    </div>
+                        <!-- RIGHT -->
+                        <div class="chat-box">
+
+                            <!-- HEADER -->
+                            <?php
+                            $customer_id = isset($_GET['customer_id']) ? (int)$_GET['customer_id'] : 0;
+
+                                $customer = null;
+                                if ($customer_id > 0) {
+                                    $res = $con->query("SELECT customer_name, profile_image FROM customers WHERE id = $customer_id");
+                                    $customer = $res->fetch_assoc();
+                                }
+                                ?>
+
+                                <div class="chat-box-header d-flex align-items-center">
+
+                                    <div class="d-flex align-items-center gap-2">
+                                        <img src="<?= !empty($customer['profile_image']) 
+                                            ? 'profileImages/'.$customer['profile_image'] 
+                                            : 'assets/images/avatar.png' ?>">
+                                        <div>
+                                            <strong><?= htmlspecialchars($customer['customer_name'] ?? 'Select Customer') ?></strong><br>
+                                            <small class="text-success">Online</small>
+                                        </div>
+                                    </div>
+                                    <!-- Call Icons -->
+                                    <div class="ms-auto d-flex align-items-center gap-2">
+                                        <button class="btn btn-light btn-sm call-btn" title="Audio Call">
+                                        <i class="mdi mdi-phone"></i>
+                                        </button>
+                                        <button class="btn btn-light btn-sm call-btn" title="Video Call">
+                                        <i class="mdi mdi-video"></i>
+                                        </button>
+                                        <button class="btn btn-light btn-sm call-btn" title="More">
+                                        <i class="mdi mdi-dots-vertical"></i>
+                                        </button>
+                                    </div>
+
+                                </div>
+
+
+
+                            <!-- BODY -->
+                            <div class="chat-box-body" id="chatBody">
+
+                            <?php
+                            if ($customer_id > 0) {
+                                $sql = "
+                                    SELECT sender, message, created_at
+                                    FROM live_chats
+                                    WHERE customer_id = $customer_id
+                                    ORDER BY id ASC
+                                ";
+                                $msgs = $con->query($sql);
+
+                                while ($msg = $msgs->fetch_assoc()):
+                                    $isAdmin = $msg['sender'] === 'admin';
+                            ?>
+
+                                <div class="msg-row <?= $isAdmin ? 'sent' : '' ?>">
+                                    <?php if (!$isAdmin): ?>
+                                        <img class="avatar-xs" src="assets/images/avatar.png">
+                                    <?php endif; ?>
+
+                                    <div class="chat-message <?= $isAdmin ? '' : 'received' ?>">
+                                        <?= htmlspecialchars($msg['message']) ?>
+                                        <span class="meta">
+                                            <?= date('h:i A', strtotime($msg['created_at'])) ?>
+                                        </span>
+                                    </div>
+                                </div>
+
+                            <?php endwhile; } ?>
+
+                            </div>
+
+
+                            <!-- FOOTER -->
+                            <div class="chat-box-footer">
+                                <input id="msgInput" type="text" class="form-control" placeholder="Type message...">
+                                <button id="sendBtn" class="btn btn-primary">
+                                    <i class="mdi mdi-send"></i>
+                                </button>
+                            </div>
+
+
+                        </div>
                     </div>
                 </div> <!-- container-fluid -->
             </div>
@@ -459,6 +496,17 @@ body {
         msgInput.value = '';
         chatBody.scrollTop = chatBody.scrollHeight;
         }
+
+        document.getElementById('sendBtn').onclick = function () {
+            let msg = msgInput.value.trim();
+            if (!msg) return;
+
+            fetch('send_message.php', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'customer_id=<?= $customer_id ?>&message=' + encodeURIComponent(msg)
+            }).then(() => location.reload());
+        };
 
     </script>
 </body>

@@ -1,39 +1,45 @@
 <div class="dropdown d-inline-block">
+<?php
+// unread count
+$result = $con->query("
+    SELECT COUNT(id) AS total
+    FROM live_chats
+    WHERE sender = 'customer'
+    AND is_seen = 0
+");
+
+$unreadCount = 0;
+if ($result) {
+    $row = $result->fetch_assoc();
+    $unreadCount = (int) $row['total'];
+}
+
+function _this_timeAgo($datetime){
+    $time = strtotime($datetime);
+    $diff = time() - $time;
+
+    if ($diff < 60) return $diff.'s';
+    if ($diff < 3600) return floor($diff / 60).'m';
+    if ($diff < 86400) return floor($diff / 3600).'h';
+
+    return floor($diff / 86400).'d';
+} 
+?>
+
 <button type="button"
-    class="btn header-item noti-icon waves-effect position-relative"
+    class="btn header-item noti-icon waves-effect"
     data-bs-toggle="dropdown"
     aria-haspopup="true"
     aria-expanded="false">
 
     <i class="mdi mdi-message-text-outline"></i>
 
-    <!-- Badge -->
-    <span class="badge bg-danger rounded-pill noti-dot">
-        <?php 
-        $result = $con->query("
-            SELECT COUNT(id) AS total 
-            FROM live_chats 
-            WHERE sender = 'customer' 
-            AND is_seen = 0
-        ");
-        
-        $row = $result->fetch_assoc();
-        echo $unreadCount = $row['total'];
-        
-        function timeAgo($datetime){
-            $time = strtotime($datetime);
-            $diff = time() - $time;
-        
-            if($diff < 60) return $diff.'s';
-            if($diff < 3600) return floor($diff/60).'m';
-            if($diff < 86400) return floor($diff/3600).'h';
-        
-            return floor($diff/86400).'d';
-        }
-        
-        
-        ?>
-    </span>
+    <?php if ($unreadCount > 0): ?>
+        <span class="badge bg-danger rounded-pill noti-dot">
+            <?= $unreadCount ?>
+        </span>
+    <?php endif; ?>
+
 </button>
 
 
@@ -68,7 +74,7 @@
         while($row = $result->fetch_assoc()):
     ?>
 
-        <a href="chat_inbox.php?user=<?= $row['customer_id'] ?>"
+        <a href="chat_inbox.php?is_message=true&customer_id=<?= $row['customer_id'] ?>"
            class="dropdown-item chat-item">
 
             <img src="http://103.112.206.139/assets/images/avatar.png"
@@ -84,7 +90,7 @@
             </div>
 
             <div class="chat-time">
-                <?= timeAgo($row['created_at']); ?>
+                <?= _this_timeAgo($row['created_at']); ?>
             </div>
         </a>
 

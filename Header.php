@@ -39,6 +39,11 @@
                 <div class="d-flex">
                     <!-- IP Status Summary -->
                     <?php include 'Component/ip_status_summary.php';?>
+                    <!-- Chat Notification -->
+                    <?php include 'Component/chat_bar.php';?>
+
+
+
                     <div class="dropdown d-none d-md-block me-2">
                         <button type="button" class="btn header-item waves-effect" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <span class="font-size-16">

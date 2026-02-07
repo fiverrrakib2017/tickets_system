@@ -212,6 +212,8 @@ if(isset($_GET['get_customers_data']) && $_SERVER['REQUEST_METHOD']=='GET'){
 if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $customer_name          = trim($_POST['customer_name']);
     $customer_email         = trim($_POST['customer_email']);
+    $customer_username      = trim($_POST['customer_username']);
+    $customer_password      = trim($_POST['customer_password']);
     $customer_type          = trim($_POST['customer_type']);
     $customer_pop_branch    = trim($_POST['customer_pop_branch']);
     $customer_vlan          = trim($_POST['customer_vlan']);
@@ -226,9 +228,18 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     // print_r($_POST);
     // echo '</pre>';
     // exit;
-    /* Validate Customer Name */
-    __validate_input($customer_name, 'Customer Name');
 
+    /*-------- Validate Customer Name ---------*/
+    __validate_input($customer_name, 'Customer Name');
+    /*-------- Validate Username Name ---------*/
+    __validate_input($customer_username, 'Customer Username');
+    /*-------- Validate Password Name ---------*/
+    __validate_input($customer_password, 'Customer Password');
+
+    /* -------- Check username exists -------- */
+    if (is_unique_column($con, 'users', 'username', $customer_username) === true) {
+        exit(json_encode(['success'=>false,'message'=>'Username already exists']));
+    }
     /* get  customer total */
     $total_limit = 0;
     if(isset($_POST['limit']) && is_array($_POST['limit'])){
@@ -242,7 +253,7 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $service_agreement_file = __upload_file($_FILES['service_agreement_file'] ?? null);
 
     /* Insert into  table */
-    $result = $con->query("INSERT INTO customers(`customer_name`,`customer_email`,`pop_id`,`customer_type_id`,`customer_vlan`,`private_customer_ip`,`service_type`,`status`,`total`,`nid_file`,`service_agreement_file`,`service_customer_type`) VALUES('$customer_name','$customer_email','$customer_pop_branch','$customer_type','$customer_vlan','$private_customer_ip','$service_type','$customer_status','$total_limit','$nid_file','$service_agreement_file','$service_customer_type')");
+    $result = $con->query("INSERT INTO customers(`customer_name`,`customer_email`,`username`,`password`,`pop_id`,`customer_type_id`,`customer_vlan`,`private_customer_ip`,`service_type`,`status`,`total`,`nid_file`,`service_agreement_file`,`service_customer_type`) VALUES('$customer_name','$customer_email','$customer_username','$customer_password','$customer_pop_branch','$customer_type','$customer_vlan','$private_customer_ip','$service_type','$customer_status','$total_limit','$nid_file','$service_agreement_file','$service_customer_type')");
 
     $get_customer_id=$con->insert_id;
 
@@ -286,11 +297,13 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 }
-/******** Update customer data Script ******************/
+/*-------------------- Update customer data Script ----------------------*/
 if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $customer_id            = trim($_POST['customer_id']);
     $customer_name          = trim($_POST['customer_name']);
     $customer_email         = trim($_POST['customer_email']);
+    $customer_username      = trim($_POST['customer_username']);
+    $customer_password      = trim($_POST['customer_password']);
     $customer_type          = trim($_POST['customer_type']);
     $customer_pop_branch    = trim($_POST['customer_pop_branch']);
     $customer_vlan          = trim($_POST['customer_vlan']);
@@ -298,6 +311,29 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     $service_type           = isset($_POST['service_type'])? trim($_POST['service_type']): null; 
     $customer_status        = trim($_POST['customer_status']);
     $service_customer_type  = trim($_POST['service_customer_type']);
+
+    /*-------- Validate Customer Name ---------*/
+    __validate_input($customer_name, 'Customer Name');
+    /*-------- Validate Username Name ---------*/
+    __validate_input($customer_username, 'Customer Username');
+    /*-------- Validate Password Name ---------*/
+    __validate_input($customer_password, 'Customer Password');
+    /* -------- Check Existing User -------- */
+    $old = $con->prepare("SELECT username FROM customers WHERE id=?");
+    $old->bind_param("i", $customer_id);
+    $old->execute();
+    $oldUser = $old->get_result()->fetch_assoc();
+
+    if (!$oldUser) {
+        exit(json_encode(['success'=>false,'message'=>'User not found']));
+    }
+
+    /* -------- Duplicate Username Check -------- */
+    if ($customer_username !== $oldUser['username']) {
+        if (is_unique_column($con, 'customers', 'username', $username)) {
+            exit(json_encode(['success'=>false,'message'=>'Username already exists']));
+        }
+    }
     
 
     /* ---------- Get old attachment ---------- */
@@ -330,7 +366,7 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     }
 
     /* Update  table */
-    $result = $con->query("UPDATE customers SET `customer_name`='$customer_name',`customer_email`='$customer_email',`pop_id`='$customer_pop_branch',`customer_type_id`='$customer_type',`customer_vlan`='$customer_vlan',`private_customer_ip`='$private_customer_ip',`service_type`='$service_type',`status`='$customer_status',`total`='$total_limit', service_customer_type='$service_customer_type', `nid_file`='$nid_file', `service_agreement_file`='$service_agreement_file' WHERE id='$customer_id'");
+    $result = $con->query("UPDATE customers SET `customer_name`='$customer_name',`customer_email`='$customer_email',`username`='$customer_username',`password`='$customer_password',`pop_id`='$customer_pop_branch',`customer_type_id`='$customer_type',`customer_vlan`='$customer_vlan',`private_customer_ip`='$private_customer_ip',`service_type`='$service_type',`status`='$customer_status',`total`='$total_limit', service_customer_type='$service_customer_type', `nid_file`='$nid_file', `service_agreement_file`='$service_agreement_file' WHERE id='$customer_id'");
     /*------------- Bandwidth Service------------- */
     if($_POST['service_customer_type'] == 1){
         if(!save_bandwidth_service( $con,  $customer_id, $_POST['service_id'] ?? [],$_POST['limit'] ?? [])){

@@ -14,6 +14,16 @@
      <input type="email" name="customer_email" class="form-control" placeholder="Enter Customer Email"
          value="<?= isset($customer['customer_email']) ? htmlspecialchars($customer['customer_email']) : '' ?>">
  </div>
+ <div class="col-md-6 mb-3">
+     <label class="form-label">Login Username</label>
+     <input type="username" name="customer_username" class="form-control" placeholder="Enter Username"
+         value="<?= isset($customer['username']) ? htmlspecialchars($customer['username']) : '' ?>"required>
+ </div>
+ <div class="col-md-6 mb-3">
+     <label class="form-label">Login Password</label>
+     <input type="password" name="customer_password" class="form-control" placeholder="Enter Password"
+         value="<?= isset($customer['password']) ? htmlspecialchars($customer['password']) : '' ?>" required>
+ </div>
 
 
 <!---------- Phone Number Section Start--------- -->

@@ -442,73 +442,59 @@ body {
     <!-- END layout-wrapper -->
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
-
-
     <?php include 'script.php'; ?>
-    <script type="text/javascript"></script>
+
     <script type="text/javascript">
-        const chatBody = document.getElementById('chatBody');
-        const scrollBtn = document.getElementById('scrollBottom');
-        const sendBtn = document.getElementById('sendBtn');
-        const msgInput = document.getElementById('msgInput');
-
-        /* start at bottom */
-        chatBody.scrollTop = chatBody.scrollHeight;
-
-        chatBody.addEventListener('scroll', () => {
-        const threshold = 50; 
-        const distanceFromBottom =
-            chatBody.scrollHeight - chatBody.scrollTop - chatBody.clientHeight;
-
-        if (distanceFromBottom > threshold) {
-            scrollBtn.style.display = 'block';
-        } else {
-            scrollBtn.style.display = 'none';
-        }
+        document.getElementById('sendBtn').addEventListener('click', sendMessage);
+        document.getElementById('msgInput').addEventListener('keypress', function(e){
+            if(e.key === 'Enter'){
+                sendMessage();
+            }
         });
 
+        function sendMessage(){
+            let msgInput = document.getElementById('msgInput');
+            let message = msgInput.value.trim();
+            let customerId = <?= (int)$customer_id ?>;
 
-        /* button click */
-        scrollBtn.onclick = () => {
-        chatBody.scrollTop = chatBody.scrollHeight;
-        scrollBtn.style.display = 'none';
-        };
+            if(message === '' || customerId === 0){
+                return;
+            }
 
-        /* send message */
-        sendBtn.onclick = sendMessage;
-        msgInput.addEventListener('keypress', e => {
-        if (e.key === 'Enter') sendMessage();
-        });
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "include/send_message_server.php", true);
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-        function sendMessage() {
-        const text = msgInput.value.trim();
-        if (!text) return;
+            xhr.onload = function(){
+                if(this.status === 200){
+                    let res = JSON.parse(this.responseText);
 
-        const row = document.createElement('div');
-        row.className = 'msg-row sent';
-        row.innerHTML = `
-            <div class="chat-message">
-            ${text}
-            <span class="meta">now</span>
-            </div>
-        `;
-        chatBody.insertBefore(row, scrollBtn);
-        msgInput.value = '';
-        chatBody.scrollTop = chatBody.scrollHeight;
+                    if(res.status === 'success'){
+                        let chatBody = document.getElementById('chatBody');
+
+                        let html = `
+                        <div class="msg-row sent">
+                            <div class="chat-message">
+                                ${res.message}
+                                <span class="meta">${res.time}</span>
+                            </div>
+                        </div>
+                        `;
+
+                        chatBody.insertAdjacentHTML('beforeend', html);
+                        chatBody.scrollTop = chatBody.scrollHeight;
+                        msgInput.value = '';
+                    }
+                }
+            };
+
+            xhr.send(
+                "customer_id=" + customerId +
+                "&message=" + encodeURIComponent(message)
+            );
         }
-
-        document.getElementById('sendBtn').onclick = function () {
-            let msg = msgInput.value.trim();
-            if (!msg) return;
-
-            fetch('send_message.php', {
-                method: 'POST',
-                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-                body: 'customer_id=<?= $customer_id ?>&message=' + encodeURIComponent(msg)
-            }).then(() => location.reload());
-        };
-
     </script>
+
 </body>
 
 </html>

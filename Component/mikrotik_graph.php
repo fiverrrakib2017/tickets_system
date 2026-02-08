@@ -138,7 +138,7 @@ let selectedInterface = null;
 
 /* ---------------- Load Interface List ----------------*/
 function _load_in_interface() {
-    fetch('ajax/mikrotik_interfaces.php?customer_id=<?= (int)$customer['id'] ?>')
+    fetch('http://103.112.206.139/ajax/mikrotik_interfaces.php?customer_id=<?= (int)$customer['id'] ?>')
         .then(res => res.json())
         .then(data => {
             let html = '';
@@ -190,7 +190,7 @@ function initChart() {
 function updateGraph() {
     if (!selectedInterface) return;
 
-    fetch('ajax/mikrotik_bandwidth.php?customer_id=<?= (int)$customer['id'] ?>&interface=' + selectedInterface)
+    fetch('http://103.112.206.139/ajax/mikrotik_bandwidth.php?customer_id=<?= (int)$customer['id'] ?>&interface=' + selectedInterface)
         .then(res => res.json())
         .then(data => {
             const time = data.time[0];
@@ -252,31 +252,31 @@ document.addEventListener('click', function (e) {
 
     /*----------------Graph Images-------------*/ 
     document.getElementById('graph_day').src =
-        'include/graph_proxy.php?interface=' + iface + '&file=daily.gif&customer_id=<?= (int)$customer['id'] ?>';
+        'http://103.112.206.139/include/graph_proxy.php?interface=' + iface + '&file=daily.gif&customer_id=<?= (int)$customer['id'] ?>';
 
     document.getElementById('graph_week').src =
-        'include/graph_proxy.php?interface=' + iface + '&file=weekly.gif&customer_id=<?= (int)$customer['id'] ?>';
+        'http://103.112.206.139/include/graph_proxy.php?interface=' + iface + '&file=weekly.gif&customer_id=<?= (int)$customer['id'] ?>';
 
     document.getElementById('graph_month').src =
-        'include/graph_proxy.php?interface=' + iface + '&file=monthly.gif&customer_id=<?= (int)$customer['id'] ?>';
+        'http://103.112.206.139/include/graph_proxy.php?interface=' + iface + '&file=monthly.gif&customer_id=<?= (int)$customer['id'] ?>';
 
     document.getElementById('graph_year').src =
-        'include/graph_proxy.php?interface=' + iface + '&file=yearly.gif&customer_id=<?= (int)$customer['id'] ?>';
+        'http://103.112.206.139/include/graph_proxy.php?interface=' + iface + '&file=yearly.gif&customer_id=<?= (int)$customer['id'] ?>';
 
      /*----------------Graph Text -------------*/ 
-    fetch('include/graph_text_proxy.php?interface=' + iface + '&period=day&customer_id=<?= (int)$customer['id'] ?>')
+    fetch('http://103.112.206.139/include/graph_text_proxy.php?interface=' + iface + '&period=day&customer_id=<?= (int)$customer['id'] ?>')
         .then(r => r.text())
         .then(t => document.getElementById('graph_day_info').innerHTML = t);
 
-    fetch('include/graph_text_proxy.php?interface=' + iface + '&period=week&customer_id=<?= (int)$customer['id'] ?>')
+    fetch('http://103.112.206.139/include/graph_text_proxy.php?interface=' + iface + '&period=week&customer_id=<?= (int)$customer['id'] ?>')
         .then(r => r.text())
         .then(t => document.getElementById('graph_week_info').innerHTML = t);
 
-    fetch('include/graph_text_proxy.php?interface=' + iface + '&period=month&customer_id=<?= (int)$customer['id'] ?>')
+    fetch('http://103.112.206.139/include/graph_text_proxy.php?interface=' + iface + '&period=month&customer_id=<?= (int)$customer['id'] ?>')
         .then(r => r.text())
         .then(t => document.getElementById('graph_month_info').innerHTML = t);
 
-    fetch('include/graph_text_proxy.php?interface=' + iface + '&period=year&customer_id=<?= (int)$customer['id'] ?>')
+    fetch('http://103.112.206.139/include/graph_text_proxy.php?interface=' + iface + '&period=year&customer_id=<?= (int)$customer['id'] ?>')
         .then(r => r.text())
         .then(t => document.getElementById('graph_year_info').innerHTML = t);
 

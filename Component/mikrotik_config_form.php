@@ -1,4 +1,4 @@
- <form method="post" action="include/save_mikrotik_config.php" class="d-flex align-items-center gap-2">
+ <form method="post" action="http://103.112.206.139/include/save_mikrotik_config.php" class="d-flex align-items-center gap-2">
 
      <input type="text" name="mikrotik_ip" class="form-control form-control-sm" placeholder="MikroTik IP"
          style="width:150px;" value="<?= isset($customer['ping_ip']) ? htmlspecialchars($customer['ping_ip']) : '' ?>" required>
@@ -27,7 +27,7 @@
                 return;
             }
 
-            fetch('include/customer_server.php?update_mikrotik_info=true', {
+            fetch('http://103.112.206.139/include/customer_server.php?update_mikrotik_info=true', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

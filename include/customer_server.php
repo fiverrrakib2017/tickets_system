@@ -318,6 +318,7 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     __validate_input($customer_username, 'Customer Username');
     /*-------- Validate Password Name ---------*/
     __validate_input($customer_password, 'Customer Password');
+    
     /* -------- Check Existing User -------- */
     $old = $con->prepare("SELECT username FROM customers WHERE id=?");
     $old->bind_param("i", $customer_id);
@@ -330,7 +331,7 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
 
     /* -------- Duplicate Username Check -------- */
     if ($customer_username !== $oldUser['username']) {
-        if (is_unique_column($con, 'customers', 'username', $username)) {
+        if (is_unique_column($con, 'customers', 'username', $customer_username)) {
             exit(json_encode(['success'=>false,'message'=>'Username already exists']));
         }
     }

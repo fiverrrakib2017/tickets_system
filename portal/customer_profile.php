@@ -110,12 +110,14 @@ if(isset($_SESSION['customer']['id']) ){
         <!-- ============================================================== -->
         <!-- Start right Content here -->
         <!-- ============================================================== -->
-        <div class="main-content">
+        <div class="main-content" style="margin-left: 0px !important; ">
+      
             <div class="page-content">
                 <div class="container-fluid">
                     <div class="row">
                         <div class="container">
                             <div class="main-body">
+                            <a href="logout.php" class="btn btn-primary mb-2"> <i class="fas fa-sign-out-alt"></i>Logout</a>
                                 <div class="row gutters-sm">
                                     <div class="col-md-4 mb-3">
                                         <div class="card  p-3 mb-4 bg-white rounded text-center">
@@ -561,8 +563,8 @@ if(isset($_SESSION['customer']['id']) ){
                                         </div>
 
                                     </div>
+                                 
                                     <div class="col-md-8">
-                                        
                                         <div class="container">
                                            <div class="row">
                                                 <div class="card">

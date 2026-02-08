@@ -44,7 +44,9 @@ if(isset($_SESSION['customer']['id']) ){
     if($customer_query->num_rows > 0){
         $customer = $customer_query->fetch_assoc();
     }
-} 
+}else{
+    header("Location: customer_login.php");
+}
 
 ?>
 <!doctype html>
@@ -112,12 +114,13 @@ if(isset($_SESSION['customer']['id']) ){
         <!-- ============================================================== -->
         <div class="main-content" style="margin-left: 0px !important; ">
       
-            <div class="page-content">
+            <div class="page-content" style="margin-top: 5px !important; padding: 0px !important;">
                 <div class="container-fluid">
                     <div class="row">
                         <div class="container">
                             <div class="main-body">
-                            <a href="logout.php" class="btn btn-primary mb-2"> <i class="fas fa-sign-out-alt"></i>Logout</a>
+                                <a href="create_ticket.php" class="btn btn-primary mb-2"> <i class="fas fa-plus"></i> Create Ticket</a>
+                                <a href="logout.php" class="btn btn-danger mb-2"> <i class="fas fa-sign-out-alt"></i>Logout</a>
                                 <div class="row gutters-sm">
                                     <div class="col-md-4 mb-3">
                                         <div class="card  p-3 mb-4 bg-white rounded text-center">

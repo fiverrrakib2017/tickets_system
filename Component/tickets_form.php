@@ -1,10 +1,26 @@
+ 
+ <?php 
+ /*------------If using customer portal----------------*/
+ $_is_customer_portal=false; 
+ if(isset($_SESSION['customer']['id'])){
+    $_is_customer_portal=true; 
+    $customer_id= (int)$_SESSION['customer']['id'];
+    $service_customer_type= $con->query("SELECT `customer_type_id` FROM customers WHERE id=$customer_id")->fetch_assoc()['customer_type_id'];
+    $customer_pop_id= $con->query("SELECT `pop_id` FROM customers WHERE id=$customer_id")->fetch_assoc()['pop_id'];
+ }
+ 
+ 
+ 
+ ?>
+ 
+ 
  <div class="col-md-6 mb-3 d-none">
      <label class="form-label">Ticket id</label>
      <input type="text" name="ticket_id" class="form-control"
          value="<?= isset($ticket['id']) ? htmlspecialchars($ticket['id']) : '' ?>" >
  </div>
 
-<div class="col-md-6 mb-3">
+<div class="col-md-6 mb-3  <?= $_is_customer_portal ? 'd-none' : '' ?>">
     <label class="form-label">Customer Name</label>
     <select name="customer_id" class="form-select" required>
         <option value="">---select---</option>
@@ -12,7 +28,8 @@
         $customers = $con->query('SELECT * FROM customers');
         while ($row = $customers->fetch_assoc()) {
             $selected = $row['id'] == $ticket['customer_id'] ? 'selected' : '';
-            echo "<option value='{$row['id']}' $selected>{$row['customer_name']}</option>";
+            $selected_for_customer_portal= $row['id'] == $customer_id ? 'selected' : '';
+            echo "<option value='{$row['id']}' $selected  $selected_for_customer_portal>{$row['customer_name']}</option>";
         }
         ?>
     </select>
@@ -40,7 +57,7 @@
 </div>
 
 
-<div class="col-md-6 mb-3">
+<div class="col-md-6 mb-3   <?= $_is_customer_portal ? 'd-none' : '' ?>">
     <label class="form-label">POP / Area</label>
     <select name="pop_branch" class="form-select" required>
         <option value="">---select---</option>
@@ -48,7 +65,8 @@
         $pop = $con->query('SELECT * FROM pop_branch');
         while ($row = $pop->fetch_assoc()) {
             $selected = $row['id'] == $ticket['pop_id'] ? 'selected' : '';
-            echo "<option value='{$row['id']}' $selected>{$row['name']}</option>";
+            $selected_pop_for_customer_portal= $row['id'] == $customer_pop_id ? 'selected' : '';
+            echo "<option value='{$row['id']}' $selected $selected_pop_for_customer_portal>{$row['name']}</option>";
         }
         ?>
     </select>
@@ -58,18 +76,19 @@
     <input name="text" id="show_pop_branch_ip" class="form-control" value="">
 </div>
 
-<div class="col-md-6 mb-3">
+<div class="col-md-6 mb-3 <?= $_is_customer_portal ? 'd-none' : '' ?>">
     <label class="form-label">Ticket For</label>
     <select id="ticket_for" name="ticket_for" class="form-select" required>
         <option value="">--- Select ---</option>
 
         <option value="Mac Client"
-            <?= (isset($ticket['ticketfor']) && $ticket['ticketfor'] === 'Mac Client') ? 'selected' : ''; ?>>
+            <?= (isset($ticket['ticketfor']) && $ticket['ticketfor'] === 'Mac Client') ? 'selected' : ''; ?> <?= (isset($service_customer_type) && $service_customer_type == '2') ? 'selected' : '' ?>>
             Mac Client
         </option>
 
         <option value="Bandwidth Client"
-            <?= (isset($ticket['ticketfor']) && $ticket['ticketfor'] === 'Bandwidth Client') ? 'selected' : ''; ?>>
+            <?= (isset($ticket['ticketfor']) && $ticket['ticketfor'] === 'Bandwidth Client') ? 'selected' : ''; ?>  <?= (isset($service_customer_type) && $service_customer_type == '1') ? 'selected' : '' ?>
+            >
             Bandwidth Client
         </option>
 
@@ -153,7 +172,8 @@
 </div>
 
 
-<script src="assets/libs/jquery/jquery.min.js"></script>
+<script src="http://103.112.206.139/assets/libs/jquery/jquery.min.js"></script>
+<?php if($_is_customer_portal==false):?>
 <script type="text/javascript">
     $(document).ready(function () {
         $(document).on('change', 'select[name="customer_id"]', function () {
@@ -164,7 +184,7 @@
             }
 
             $.ajax({
-                url: 'include/customer_server.php?get_customer_ping_ip=true',
+                url: 'http://103.112.206.139/include/customer_server.php?get_customer_ping_ip=true',
                 type: 'GET',
                 data: { customer_id: customer_id },
                 dataType: 'json',
@@ -189,7 +209,7 @@
             }
 
             $.ajax({
-                url: 'include/pop_branch_server.php?get_pop_branch_ping_ip=true',
+                url: 'http://103.112.206.139/include/pop_branch_server.php?get_pop_branch_ping_ip=true',
                 type: 'GET',
                 data: { pop_id: pop_id },
                 dataType: 'json',
@@ -206,3 +226,4 @@
     });
     
 </script>
+<?php endif;?>

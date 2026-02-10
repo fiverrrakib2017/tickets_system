@@ -72,9 +72,19 @@ require 'Head.php';
                     <?php include 'Component/dashboard_card.php'; ?>
                     <?php include 'Component/dashboard_ip_card.php'; ?>
                     <?php include 'Component/chart.php'; ?>
+                    <div class="row">
                     <?php include 'Component/recent_ticket.php'; ?>
+                        <div class="col-md-6 grid-margin stretch-card">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h4 class="card-title mb-4">Tickets Reports this month</h4>
+                                    <div class="" id="tickets_report">
 
-                    
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div> <!-- container-fluid -->
             </div>
             <!-- End Page-content -->
@@ -94,7 +104,45 @@ require 'Head.php';
     <script>
          $('#tickets_table').DataTable();
          $('#dashboard_customers_table').DataTable();
+         let today = new Date();
 
+        /*-------First Month Start Date-------*/
+        let start_date = new Date(today.getFullYear(), today.getMonth(), 1);
+
+        /*-------First Month End Date-------*/
+        let end_date = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+
+        /*-----------Format Date------------*/
+        function formatDate(date) {
+            let d = date.getDate().toString().padStart(2, '0');
+            let m = (date.getMonth() + 1).toString().padStart(2, '0');
+            let y = date.getFullYear();
+            return `${y}-${m}-${d}`;
+        }
+
+        start_date = formatDate(start_date);
+        end_date   = formatDate(end_date);
+
+         $.ajax({
+            url: 'include/tickets_server.php?get_tickets_report_data=true',
+            type: 'POST',
+            dataType: 'json',
+            data: {start_date: start_date, end_date:end_date},
+            success: function(response) {
+                if(response.success==true){
+                    
+                    $("#tickets_report").html(response.html);
+                    $("#tickets_report_data_table").DataTable();
+                   
+                    
+                }
+                
+                if(response.success==false) {
+                    toastr.error(response.message);
+                    $("#_data").html('<tr id="no-data"><td colspan="10" class="text-center">No data available</td></tr>');
+                }
+            },
+        });
     </script>
 </body>
 

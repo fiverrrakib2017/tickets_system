@@ -562,7 +562,8 @@ if (isset($_GET['get_tickets_report_data']) && $_SERVER['REQUEST_METHOD'] === 'P
             asignto,
             COUNT(*) as total_ticket,
             SUM(CASE WHEN ticket_type='Complete' THEN 1 ELSE 0 END) as completed_ticket,
-            SUM(CASE WHEN ticket_type='Active' THEN 1 ELSE 0 END) as active_ticket
+            SUM(CASE WHEN ticket_type='Active' THEN 1 ELSE 0 END) as active_ticket,
+            SUM(CASE WHEN ticket_type='Pending' THEN 1 ELSE 0 END) as pending_ticket
         FROM ticket
         WHERE $where_sql
         GROUP BY DATE(create_date), asignto
@@ -602,8 +603,9 @@ if (isset($_GET['get_tickets_report_data']) && $_SERVER['REQUEST_METHOD'] === 'P
                 <td>" . date('d M Y', strtotime($row['report_date'])) . "</td>
                 <td>{$asg_name}</td>
                 <td><span class='badge bg-secondary'>{$row['total_ticket']}</span></td>
+                <td><span class='badge bg-warning'>{$row['pending_ticket']}</span></td>
+                <td><span class='badge bg-danger'>{$row['active_ticket']}</span></td> 
                 <td><span class='badge bg-success'>{$row['completed_ticket']}</span></td>
-                <td><span class='badge bg-danger'>{$row['active_ticket']}</span></td>
                 <td><a href='{$view_url}' class='btn btn-sm btn-primary'><i class='fas fa-eye'></i></a></td>
             </tr>";
             $i++;
@@ -614,15 +616,16 @@ if (isset($_GET['get_tickets_report_data']) && $_SERVER['REQUEST_METHOD'] === 'P
 
     $html = '
     <div class="table-responsive">
-        <table class="table table-bordered">
+        <table id="tickets_report_data_table" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
             <thead>
                 <tr>
                     <th>No.</th>
                     <th>Date</th>
-                    <th>Assigned To</th>
-                    <th>Total Tickets</th>
-                    <th>Completed</th>
+                    <th>Assigned</th>
+                    <th>Total</th>
+                    <th>Pending</th> 
                     <th>Active</th>
+                    <th>Completed</th>
                     <th>Action</th>
                 </tr>
             </thead>

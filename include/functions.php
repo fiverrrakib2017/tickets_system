@@ -448,6 +448,22 @@ if (!function_exists('get_tickets')) {
             }
         }
 
+        /*---- Date Filter ----*/
+        if (!empty($options['ticket_date'])) {
+
+            $date = date('Y-m-d', strtotime($options['ticket_date']));
+        
+            $start = $date . ' 00:00:00';
+            $end   = date('Y-m-d', strtotime($date . ' +1 day')) . ' 00:00:00';
+        
+            $where[] = "t.create_date >= '{$start}' AND t.create_date < '{$end}'";
+        }
+        
+        /*---------Assigned To---------*/
+        if (!empty($options['assigned_to'])) {
+            $where[] = "t.asignto = " . (int)$options['assigned_to'];
+        }
+
         /*---- Today Filter ----*/
         if (!empty($options['today'])) {
             $where[] = "DATE(t.create_date) = CURDATE()";

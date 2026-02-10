@@ -41,7 +41,7 @@
 
 
 
-
+<?php if($_is_customer_portal==false):?>
 <div class="col-md-6 mb-3">
     <label class="form-label">Assign To</label>
     <select name="assign_to" class="form-select" required>
@@ -55,9 +55,11 @@
         ?>
     </select>
 </div>
+<?php endif; ?>
 
 
-<div class="col-md-6 mb-3   <?= $_is_customer_portal ? 'd-none' : '' ?>">
+<?php if($_is_customer_portal==false):?>
+<div class="col-md-6 mb-3 ">
     <label class="form-label">POP / Area</label>
     <select name="pop_branch" class="form-select" required>
         <option value="">---select---</option>
@@ -71,6 +73,8 @@
         ?>
     </select>
 </div>
+<?php endif; ?>
+
 <div class="col-md-6 mb-3 d-none" id="show_pop_branch_ip_div">
     <label class="form-label">Router/Switch IP</label>
     <input name="text" id="show_pop_branch_ip" class="form-control" value="">
@@ -98,8 +102,7 @@
         </option>
     </select>
 </div>
-
-<div class="col-md-6 mb-3">
+<div class="col-md-6 mb-3 <?= $_is_customer_portal ? 'd-none' : '' ?>">
     <label class="form-label">Ticket Priority</label>
     <select id="ticket_priority" name="ticket_priority" class="form-select" required>
         <option value="">--- Select ---</option>
@@ -112,7 +115,7 @@
             Normal
         </option>
 
-        <option value="3" <?= (isset($ticket['priority']) && (int)$ticket['priority'] === 3) ? 'selected' : ''; ?>>
+        <option value="3" <?= (isset($ticket['priority']) && (int)$ticket['priority'] === 3) ? 'selected' : ''; ?> <?= $_is_customer_portal ? 'selected' : '' ?>>
             Standard
         </option>
 
@@ -129,8 +132,7 @@
         </option>
     </select>
 </div>
-
-
+<?php if($_is_customer_portal==false):?>
 <div class="col-md-6 mb-3">
     <label class="form-label">Complain Type</label>
     <select name="complain_type" class="form-select">
@@ -144,18 +146,20 @@
         ?>
     </select>
 </div>
+<?php endif; ?>
 
-
-
+<?php if($_is_customer_portal==false):?>
 <div class="col-md-6 mb-3">
     <label  class="form-label">Customer Note</label>
     <input  type="text" name="customer_note" class="form-control" value="<?= isset($ticket['customer_note']) ? $ticket['customer_note'] : '' ?>" placeholder="Enter Your Note">
 </div>
+<?php endif; ?>
+<?php if($_is_customer_portal==false):?>
 <div class="col-md-6 mb-3">
     <label  class="form-label">NOC Note</label>
     <input  type="text" name="noc_note" class="form-control" value="<?= isset($ticket['noc_note']) ? $ticket['noc_note'] : '' ?>" placeholder="Enter Your NOC Note">
 </div>
-
+<?php endif; ?>
 <div class="col-md-6 mb-3">
     <label  class="form-label">Subject</label>
     <input  type="text" name="customer_subject" class="form-control" value="<?= isset($ticket['subject']) ? $ticket['subject'] : '' ?>" placeholder="Enter Your Subject">

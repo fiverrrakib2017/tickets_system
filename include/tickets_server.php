@@ -65,20 +65,23 @@ if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
         ]);
         exit();
     }
-    if(empty($complain_type)) {
-       echo json_encode([
-            'success' => false,
-            'message'  =>  'Complain Type is required.'
-        ]);
-        exit();
+    if(!isset($_SESSION['customer']['id'])){
+        if(empty($complain_type)) {
+            echo json_encode([
+                'success' => false,
+                'message'  =>  'Complain Type is required.'
+            ]);
+            exit();
+        }
+        if(empty($assign_to)) {
+            echo json_encode([
+                'success' => false,
+                'message'  =>  'Assign To is required.'
+            ]);
+            exit();
+        }
     }
-    if(empty($assign_to)) {
-       echo json_encode([
-            'success' => false,
-            'message'  =>  'Assign To is required.'
-        ]);
-        exit();
-    }
+    
     if(empty($priority)) {
        echo json_encode([
             'success' => false,

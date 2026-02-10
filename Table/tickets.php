@@ -86,16 +86,18 @@ while ($row = $tickets->fetch_assoc()):
 
    <!-- Action -->
     <td class="text-end">
-        <a href="ticket_edit.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-info">
-            <i class="fas fa-edit"></i>
-        </a>
-        <a href="ticket_view.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-success">
-            <i class="fas fa-eye"></i>
-        </a>
-        <?php if (in_array($row['ticket_type'], ['Pending', 'Active'])): ?>
-            <button class="btn btn-sm btn-secondary" onclick="_mark_as_completed(<?= $row['id']; ?>)">
-                <i class="fas fa-check-circle"></i>
-            </button>
+        <?php if(!isset($_SESSION['customer']['id'])): ?>
+            <a href="ticket_edit.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-info">
+                <i class="fas fa-edit"></i>
+            </a>
+            <a href="ticket_view.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-success">
+                <i class="fas fa-eye"></i>
+            </a>
+            <?php if (in_array($row['ticket_type'], ['Pending', 'Active'])): ?>
+                <button class="btn btn-sm btn-secondary" onclick="_mark_as_completed(<?= $row['id']; ?>)">
+                    <i class="fas fa-check-circle"></i>
+                </button>
+            <?php endif; ?>
         <?php endif; ?>
     </td>
 </tr>

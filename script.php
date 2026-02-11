@@ -80,50 +80,83 @@
  <script type="text/javascript">
 $(document).ready(function () {
 
-    $('#menu_select_box').select2({
-        placeholder: 'Search customer...',
-        minimumInputLength: 1,  
-        allowClear: false,
+   $('#menu_select_box').select2({
 
-        ajax: {
-            url: 'include/customer_server.php',
-            dataType: 'json',
-            delay: 300, 
-            data: function (params) {
-                return {
-                    search_customer: params.term,
-                    ajax_select: true
-                };
-            },
-            processResults: function (response) {
+    placeholder: 'Search customer...',
+    minimumInputLength: 1,
+    allowClear: false,
 
-                if (response.success !== true) {
-                    return { results: [] };
+    ajax: {
+        url: 'include/customer_server.php',
+        dataType: 'json',
+        delay: 300,
+        data: function (params) {
+            return {
+                search_customer: params.term,
+                ajax_select: true
+            };
+        },
+        processResults: function (response) {
+
+            if (!response.success || !Array.isArray(response.data)) {
+                return { results: [] };
+            }
+
+            let results = response.data.map(function (customer) {
+
+                let firstPhone = '';
+
+                if (customer.phones && typeof customer.phones === 'string') {
+                    firstPhone = customer.phones.split(',')[0].trim();
                 }
 
-                let results = [];
-
-                $.each(response.data, function (i, customer) {
-
-
-                    results.push({
-                        id: customer.id,
-                        text: ` [${customer.id}] ${customer.customer_name} ||
-                                ${customer.customer_email} (${customer.customer_phone})`
-                    });
-                });
-
                 return {
-                    results: results
+                    id: customer.id,
+                    name: customer.customer_name || '',
+                    email: customer.customer_email || '',
+                    phone: firstPhone,
+                    ping_ip: customer.ping_ip || '',
+                    status: customer.ping_ip_status || 'offline'
                 };
-            },
-            cache: true
-        },
+            });
 
-        escapeMarkup: function (markup) {
-            return markup;
-        }
-    });
+            return { results: results };
+        },
+        cache: true
+    },
+
+    templateResult: function (data) {
+
+        if (!data.id) return data.text;
+
+        let online_offline_badge = data.status === 'online'
+            ? '<span class="badge bg-success ms-2">Online</span>'
+            : '<span class="badge bg-danger ms-2">Offline</span>';
+        let _ip_badge = data.ping_ip ? `<span class="badge bg-info ms-1">${data.ping_ip}</span>`: '';
+
+        return `
+            <div>
+                <strong>[${data.id}] ${data.name}</strong> ${   
+                online_offline_badge} ${_ip_badge}
+                <br>
+                <small>
+                    ${data.email || ''} 
+                    ${data.phone ? '(' + data.phone + ')' : ''}
+                </small>
+            </div>
+        `;
+    },
+
+    templateSelection: function (data) {
+        return data.name ? `[${data.id}] ${data.name}` : data.text;
+    },
+
+    escapeMarkup: function (markup) {
+        return markup; // HTML render করতে দেবে
+    }
+
+});
+
 
     // Redirect on select
     $('#menu_select_box').on('select2:select', function (e) {

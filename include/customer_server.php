@@ -155,22 +155,26 @@ if(isset($_GET['update_customer_link']) && $_SERVER['REQUEST_METHOD']==='POST'){
 if (isset($_GET['search_customer']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
     $search = $con->real_escape_string(trim($_GET['search_customer']));
     $customers = $con->query("
-      SELECT DISTINCT
+            SELECT 
                 c.id,
                 c.customer_name,
                 c.customer_email,
-                c.customer_phone
+                c.ping_ip,
+                c.ping_ip_status,
+                GROUP_CONCAT(cp.phone_number SEPARATOR ', ') AS phones
             FROM customers c
             LEFT JOIN customer_invoice ci ON ci.customer_id = c.id
             LEFT JOIN customer_service s ON s.id = ci.service_id
+            LEFT JOIN customer_phones cp ON cp.customer_id = c.id
             WHERE 
-                c.id = 'iig'
-                OR c.customer_name LIKE '%$search%'
+                c.customer_name LIKE '%$search%'
                 OR c.customer_email LIKE '%$search%'
-                OR c.customer_phone LIKE '%$search%'
-                OR s.name LIKE '%$search%';
-                  
-    ");
+                OR c.ping_ip LIKE '%$search%'
+                OR s.name LIKE '%$search%'
+                OR cp.phone_number LIKE '%$search%'
+            GROUP BY 
+                c.id, c.customer_name, c.customer_email, c.ping_ip, c.ping_ip_status
+        ");
     $data = [];
     while ($row = $customers->fetch_assoc()) {         
         $data[] = $row;

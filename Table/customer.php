@@ -128,6 +128,11 @@
                 $pop_branch_id = (int)$_GET['pop_branch'];
                 $where_clause[] = "c.pop_id = $pop_branch_id";
             }
+            /*------------Customer link filter------------*/
+            if(isset($_GET['customer_link']) && $_GET['customer_link'] !== ''){
+                $customer_link = mysqli_real_escape_string($con, $_GET['customer_link']);
+                $where_clause[] = "c.customer_link = '$customer_link'";
+            }
 
             /*---- Final WHERE ----*/
             $where_sql = '';

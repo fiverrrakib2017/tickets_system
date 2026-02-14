@@ -59,6 +59,13 @@ if ($result && $result->num_rows > 0) {
                 <span>Customer Types</span>
             </a>
         </li>
+        <li>
+            <a href="customer_links.php" class="waves-effect">
+               <i class="mdi mdi-account-details-outline"></i>
+
+                <span>Customer Links</span>
+            </a>
+        </li>
 
         <li>
             <a href="services.php" class="waves-effect">

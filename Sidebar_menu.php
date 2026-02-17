@@ -21,7 +21,7 @@ if ($result && $result->num_rows > 0) {
                 <span>Dashboard</span>
             </a>
         </li>
-         <select name="menu_select_box" id="menu_select_box" class="form-select"></select> 
+         <select name="menu_select_box" id="menu_select_box" class="form-select" style="width: 100%;"></select> 
 
         <!-- Customers -->
         <li class="menu-title">Customer Management</li>

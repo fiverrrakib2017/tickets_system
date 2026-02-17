@@ -38,7 +38,9 @@
 
                 <div class="d-flex">
                     <!-- IP Status Summary -->
-                    <?php include 'Component/ip_status_summary.php';?>
+                    <?php 
+                    // include 'Component/ip_status_summary.php';
+                    ?>
                     <!-- Chat Notification -->
                     <?php include 'Component/chat_bar.php';?>
 

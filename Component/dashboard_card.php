@@ -62,6 +62,28 @@ if ($row = $result->fetch_assoc()) {
     $todayStats['resolved'] = (int)$row['resolved_ticket'];
 }
 
+$userTicketStats = [];
+
+$sqlUserStats = "
+    SELECT 
+        ta.id,
+        ta.name,
+        SUM(t.ticket_type = 'Active')   AS open_ticket,
+        SUM(t.ticket_type = 'Pending')  AS pending_ticket,
+        SUM(t.ticket_type = 'Complete') AS resolved_ticket
+    FROM ticket t
+    LEFT JOIN ticket_assign ta ON t.asignto = ta.id
+    WHERE t.create_date >= CURDATE()
+      AND t.create_date < CURDATE() + INTERVAL 1 DAY
+    GROUP BY t.asignto
+";
+
+$resultUserStats = $con->query($sqlUserStats);
+
+while ($row = $resultUserStats->fetch_assoc()) {
+    $userTicketStats[] = $row;
+}
+
 
 ?>
 
@@ -80,6 +102,9 @@ if ($row = $result->fetch_assoc()) {
                                 <?= $todayStats['total']; ?>
                             </h3>
                             <small class="text-muted">All time tickets</small>
+                            
+                           
+
                         </div>
                         <div class="stat-icon bg-primary">
                             <i class="fas fa-ticket-alt"></i>
@@ -101,6 +126,16 @@ if ($row = $result->fetch_assoc()) {
                             <p class="stat-title">Open Tickets</p>
                             <h3 class="stat-value">  <?= $todayStats['open']; ?></h3>
                             <small class="text-muted">Currently open</small>
+                             <div class="mt-2">
+                                <?php foreach($userTicketStats as $user): ?>
+                                    <?php if($user['open_ticket'] > 0): ?>
+                                        <div style="font-size:12px;">
+                                            <?= htmlspecialchars($user['name'] ?? 'N/A'); ?>
+                                            - <strong><?= $user['open_ticket']; ?></strong>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </div>
                         </div>
                         <div class="stat-icon bg-warning">
                             <i class="fas fa-folder-open"></i>
@@ -121,6 +156,16 @@ if ($row = $result->fetch_assoc()) {
                             <p class="stat-title">Pending Tickets</p>
                             <h3 class="stat-value"> <?= $todayStats['pending']; ?></h3>
                             <small class="text-muted">Awaiting response</small>
+                             <div class="mt-2">
+                                <?php foreach($userTicketStats as $user): ?>
+                                    <?php if($user['pending_ticket'] > 0): ?>
+                                        <div style="font-size:12px;">
+                                            <?= htmlspecialchars($user['name'] ?? 'N/A'); ?>
+                                            - <strong><?= $user['pending_ticket']; ?></strong>
+                                        </div>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
+                            </div>
                         </div>
                         <div class="stat-icon bg-danger">
                             <i class="fas fa-hourglass-half"></i>
@@ -141,6 +186,16 @@ if ($row = $result->fetch_assoc()) {
                         <p class="stat-title">Resolved Tickets</p>
                         <h3 class="stat-value"> <?= $todayStats['resolved']; ?></h3>
                         <small class="text-muted">Successfully closed</small>
+                         <div class="mt-2">
+                            <?php foreach($userTicketStats as $user): ?>
+                                <?php if($user['resolved_ticket'] > 0): ?>
+                                    <div style="font-size:12px;">
+                                        <?= htmlspecialchars($user['name'] ?? 'N/A'); ?>
+                                        - <strong><?= $user['resolved_ticket']; ?></strong>
+                                    </div>
+                                <?php endif; ?>
+                            <?php endforeach; ?>
+                        </div>
                     </div>
                     <div class="stat-icon bg-success">
                         <i class="fas fa-check-circle"></i>

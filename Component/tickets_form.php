@@ -157,6 +157,22 @@
 <?php if($_is_customer_portal==false):?>
 <div class="col-md-6 mb-3">
     <label  class="form-label">NOC Note</label>
+    <select  type="text" name="noc_note_select" class="form-control">
+        <option>---Select---</option>
+        <?php 
+        if($get_all_noc_note=$con->query("SELECT * FROM noc_note")){
+            while($rows=$get_all_noc_note->fetch_array()){
+                echo '<option value="'.$rows['name'].'">'.$rows['name'].'</option>';
+            }
+        }
+        
+        ?>
+    </select>
+</div>
+<?php endif; ?>
+<?php if($_is_customer_portal==false):?>
+<div class="col-md-6 mb-3">
+    <label  class="form-label">NOC Note</label>
     <input  type="text" name="noc_note" class="form-control" value="<?= isset($ticket['noc_note']) ? $ticket['noc_note'] : '' ?>" placeholder="Enter Your NOC Note">
 </div>
 <?php endif; ?>
@@ -227,6 +243,10 @@
                 }
             });
         }); 
+        $(document).on('change','select[name="noc_note_select"]',function(){
+            const noc_note_value = $(this).val();    
+            $('input[name="noc_note"]').val(noc_note_value);
+        });
     });
     
 </script>

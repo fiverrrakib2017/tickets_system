@@ -101,13 +101,13 @@ if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
     $stmt->execute();
     $stmt->store_result();
 
-    if ($stmt->num_rows > 0) {
-        echo json_encode([
-            'success' => false,
-            'message'  =>  'You already have an active ticket.'
-        ]);
-        exit();
-    }
+    // if ($stmt->num_rows > 0) {
+    //     echo json_encode([
+    //         'success' => false,
+    //         'message'  =>  'You already have an active ticket.'
+    //     ]);
+    //     exit();
+    // }
 
     /*-------------Upload Ticket File-------------*/
     $ticket_file = __upload_file($_FILES['customer_attachments'] ?? null);

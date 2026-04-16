@@ -120,6 +120,12 @@ if ($result && $result->num_rows > 0) {
                 <span>Ticket Topics</span>
             </a>
         </li>
+        <li>
+            <a href="ticket_notes.php" class="waves-effect">
+                <i class="mdi mdi-tag-multiple-outline"></i>
+                <span>NOC Note</span>
+            </a>
+        </li>
 
         <li>
             <a href="ticket_reports.php" class="waves-effect">

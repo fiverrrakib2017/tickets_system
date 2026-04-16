@@ -636,7 +636,109 @@ if (isset($_GET['get_tickets_report_data']) && $_SERVER['REQUEST_METHOD'] === 'P
     echo json_encode(['success' => true, 'html' => $html]);
     exit;
 }
+/* ------- Noc Note ----------------*/
+if (isset($_GET['add_noc_note']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $name = trim($_POST['name']);
 
+    /* Validate  Name */
+    __validate_input($name, 'NOC Note');
+
+    
+    /* Insert into  table */
+    $result = $con->query("INSERT INTO noc_note(`name`) VALUES( '$name')");
+    if ($result) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Added successfully!',
+        ]);
+        exit();
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Failed to add Pool!',
+        ]);
+        exit();
+    }
+}
+/*-------------- Update Value Added service--------------------------*/
+if (isset($_GET['update_noc_note']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id = trim($_POST['id']);
+    $name = trim($_POST['name']);
+
+    
+    /* Validate Service Name */
+    __validate_input($name, 'NOC Note');
+    /* Check if service already exists */
+    $check_service = $con->query("SELECT * FROM noc_note WHERE name='$name' AND id != '$id'");
+    if ($check_service->num_rows > 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Note Already exists!',
+        ]);
+        exit();
+    }
+    /* Update the service in the database */
+    $result = $con->query("UPDATE noc_note SET `name`='$name' WHERE id='$id'");
+    if ($result) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Updated successfully!',
+        ]);
+        exit();
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Failed to update Topic!',
+        ]);
+        exit();
+    }
+}
+
+if (isset($_GET['get_noc_note']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
+    $id = isset($_GET['id']) ? trim($_GET['id']) : '';
+    $data = [];
+    if (isset($id) && is_numeric($id)) {
+        $result = $con->query("SELECT * FROM noc_note WHERE id='$id'");
+    }else{
+        $result = $con->query("SELECT * FROM noc_note");
+    }
+
+    while ($row = $result->fetch_assoc()) {
+        $data[] = $row;
+    }
+
+    echo json_encode([
+        'success' => true,
+        'data' => isset($_GET['id']) ? ($data[0] ?? []) : $data,
+    ]);
+    exit();
+}
+/*Delete customer type Script*/
+if (isset($_GET['delete_noc_note_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id = trim($_POST['id']);
+    if (empty($id)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'ID is required!',
+        ]);
+        exit();
+    }
+    $result = $con->query("DELETE FROM noc_note WHERE id='$id'");
+    $con->close();
+    if ($result) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Deleted successfully!',
+        ]);
+        exit();
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Failed to delete!',
+        ]);
+        exit();
+    }
+}
 /* -------Function to calculate actual work time */
 function acctual_work($startdate, $enddate)
 {

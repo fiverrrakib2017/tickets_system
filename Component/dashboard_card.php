@@ -83,8 +83,8 @@ $resultUserStats = $con->query($sqlUserStats);
 while ($row = $resultUserStats->fetch_assoc()) {
     $userTicketStats[] = $row;
 }
-
-
+$total_tickets = (int) ($con->query("SELECT COUNT(*) AS total_tickets FROM ticket")
+                ->fetch_assoc()['total_tickets'] ?? 0);
 ?>
 
 
@@ -92,27 +92,27 @@ while ($row = $resultUserStats->fetch_assoc()) {
     <!-- Total Tickets -->
   
     <div class="col-xl-3 col-md-6">
-        <a href="tickets.php?status=total">
-            <div class="card stat-card">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-grow-1">
-                            <p class="stat-title">Total Tickets</p>
-                            <h3 class="stat-value">
-                                <?= $todayStats['total']; ?>
-                            </h3>
-                            <small class="text-muted">All time tickets</small>
-                            
-                           
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <p class="stat-title">Today/Total Tickets</p>
+                        <h3 class="stat-value">
+                            <a href="tickets.php?status=total"><?= $todayStats['total']; ?></a>
+                            /
+                            <a href="tickets.php"><?= $total_tickets; ?></a>
+                        </h3>
+                        <small class="text-muted">All time tickets</small>
+                        
+                        
 
-                        </div>
-                        <div class="stat-icon bg-primary">
-                            <i class="fas fa-ticket-alt"></i>
-                        </div>
+                    </div>
+                    <div class="stat-icon bg-primary">
+                        <i class="fas fa-ticket-alt"></i>
                     </div>
                 </div>
             </div>
-        </a>
+        </div>
     </div>
 
 

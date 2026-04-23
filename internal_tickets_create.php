@@ -57,7 +57,7 @@ require 'Head.php';
                                     </h5>
                                 </div>
 
-                                <form id="addTicketForm" action="include/tickets_server.php?add_ticket_data=true"
+                                <form id="addTicketForm" action="include/tickets_server.php?add_internal_tickets_data=true"
                                     method="POST" enctype="multipart/form-data">
 
                                     <div class="card-body">

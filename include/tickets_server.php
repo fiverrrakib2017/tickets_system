@@ -739,6 +739,119 @@ if (isset($_GET['delete_noc_note_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
         exit();
     }
 }
+/*----------- Add Internal Ticket Data------------------*/
+if (isset($_GET['add_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    $category_id          = isset($_POST['category_id']) ? trim($_POST['category_id']) : '';
+    $sub_category_id      = isset($_POST['sub_category_id']) ? trim($_POST['sub_category_id']) : '';
+    $pop_branch           = isset($_POST['pop_branch']) ? trim($_POST['pop_branch']) : '';
+    $ticket_severity      = isset($_POST['ticket_severity']) ? trim($_POST['ticket_severity']) : '';
+    $subject              = isset($_POST['customer_subject']) ? trim($_POST['customer_subject']) : '';
+    $customer_description = isset($_POST['customer_description']) ? trim($_POST['customer_description']) : '';
+
+    $status = 'open';
+    $ticket_no = 'INT-' . time();
+
+    /* ---------- Validation ---------- */
+    if (empty((int)$category_id)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Category is required.'
+        ]);
+        exit();
+    }
+
+    if (empty((int)$sub_category_id)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Sub Category is required.'
+        ]);
+        exit();
+    }
+
+    if (empty((int)$pop_branch)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'POP / Branch is required.'
+        ]);
+        exit();
+    }
+
+    if (empty($ticket_severity)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Severity is required.'
+        ]);
+        exit();
+    }
+
+    if (empty($subject)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Subject is required.'
+        ]);
+        exit();
+    }
+
+    /*------------- Upload Ticket File -------------*/
+    $attachment = __upload_file($_FILES['customer_attachments'] ?? null);
+
+    /* ---------- Safe variable mapping ---------- */
+    $subcategory_id = (int)$sub_category_id;
+    $pop_id = (int)$pop_branch;
+    $severity = mysqli_real_escape_string($con, $ticket_severity);
+    $description = mysqli_real_escape_string($con, $customer_description);
+    $subject = mysqli_real_escape_string($con, $subject);
+    $created_by = (int)$_SESSION['uid'];
+
+    /* ---------- Insert Ticket ---------- */
+    $result = $con->query("
+        INSERT INTO internal_tickets
+        (
+            ticket_no,
+            category_id,
+            subcategory_id,
+            pop_id,
+            severity,
+            status,
+            subject,
+            description,
+            attachment,
+            opened_at,
+            created_at,
+            created_by
+        )
+        VALUES
+        (
+            '$ticket_no',
+            '$category_id',
+            '$subcategory_id',
+            '$pop_id',
+            '$severity',
+            '$status',
+            '$subject',
+            '$description',
+            '$attachment',
+            NOW(),
+            NOW(),
+            '$created_by'
+        )
+    ");
+
+    if ($result) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Internal ticket created successfully.'
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Database Error: ' . $con->error
+        ]);
+    }
+
+    exit;
+}
 /* -------Function to calculate actual work time */
 function acctual_work($startdate, $enddate)
 {

@@ -134,13 +134,13 @@ if ($result && $result->num_rows > 0) {
         </li>
         <li class="nav-item">
             <a href="tickets_category.php" class="nav-link">
-                <i class="fa fa-ticket-alt"></i>
+                  <i class="fa fa-folder-open"></i>
                 <span>Tickets Category</span>
             </a>
         </li>
         <li class="nav-item">
             <a href="tickets_sub_category.php" class="nav-link">
-                <i class="fa fa-ticket-alt"></i>
+                <i class="fa fa-tags"></i>
                 <span>Tickets Sub Category</span>
             </a>
         </li>

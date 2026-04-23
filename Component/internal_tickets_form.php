@@ -10,7 +10,7 @@
 
 <div class="col-md-6 mb-3 ">
     <label class="form-label">Category</label>
-    <select name="category_id" class="form-select" required>
+    <select name="category_id" id="category_id" class="form-select" required>
         <option value="">---select---</option>
         <?php
         $pop = $con->query('SELECT * FROM ticket_categories');
@@ -23,28 +23,13 @@
 </div>
 <div class="col-md-6 mb-3 ">
     <label class="form-label">Sub Category</label>
-    <select name="sub_category_id" class="form-select" required>
+    <select name="sub_category_id" id="sub_category_id" class="form-select" required>
         <option value="">---select---</option>
         <?php
         $pop = $con->query('SELECT * FROM ticket_subcategories');
         while ($row = $pop->fetch_assoc()) {
             $selected = $row['id'] == $ticket['subcategory_id'] ? 'selected' : '';
             echo "<option value='{$row['id']}' $selected >{$row['name']}</option>";
-        }
-        ?>
-    </select>
-</div>
-
-
-<div class="col-md-6 mb-3">
-    <label class="form-label">Assign To</label>
-    <select name="assign_to" class="form-select" required>
-        <option value="">---select---</option>
-        <?php
-        $ticket_assign = $con->query('SELECT * FROM ticket_assign');
-        while ($row = $ticket_assign->fetch_assoc()) {
-            $selected = $row['id'] == $ticket['assigned_team'] ? 'selected' : '';
-            echo "<option value='{$row['id']}' $selected>{$row['name']}</option>";
         }
         ?>
     </select>
@@ -74,37 +59,25 @@
     <select id="ticket_priority" name="ticket_severity" class="form-select" required>
         <option value="">--- Select ---</option>
 
-        <option value="critical" <?= (isset($ticket['severity']) && (int)$ticket['severity'] === 'critical') ? 'selected' : ''; ?>>
+        <option value="critical" <?= (isset($ticket['severity']) && $ticket['severity'] === 'critical') ? 'selected' : ''; ?>>
             Critical
         </option>
 
-        <option value="high" <?= (isset($ticket['severity']) && (int)$ticket['severity'] === 'high') ? 'selected' : ''; ?>>
+        <option value="high" <?= (isset($ticket['severity']) && $ticket['severity'] === 'high') ? 'selected' : ''; ?>>
             High
         </option>
 
-        <option value="medium" <?= (isset($ticket['severity']) && (int)$ticket['severity'] === 'medium') ? 'selected' : ''; ?> <?= $_is_customer_portal ? 'selected' : '' ?>>
+        <option value="medium" <?= (isset($ticket['severity']) && $ticket['severity'] === 'medium') ? 'selected' : ''; ?> >
             Medium
         </option>
-        <option value="low" <?= (isset($ticket['severity']) && (int)$ticket['severity'] === 'low') ? 'selected' : ''; ?> <?= $_is_customer_portal ? 'selected' : '' ?>>
+        <option value="low" <?= (isset($ticket['severity']) && $ticket['severity'] === 'low') ? 'selected' : ''; ?> >
             Low
         </option>
 
        
     </select>
 </div>
-<div class="col-md-6 mb-3">
-    <label class="form-label">Complain Type</label>
-    <select name="complain_type" class="form-select">
-       <option value="">---select---</option>
-        <?php
-        $complain_type = $con->query('SELECT * FROM ticket_topic');
-        while ($row = $complain_type->fetch_assoc()) {
-            $selected = $row['id'] == $ticket['complain_type'] ? 'selected' : '';
-            echo "<option value='{$row['id']}' $selected>{$row['topic_name']}</option>";
-        }
-        ?>
-    </select>
-</div>
+
 
 
 <div class="col-md-6 mb-3">
@@ -150,25 +123,33 @@
                 }
             });
         }); 
-        $(document).on('change', 'select[name="category_id"]', function () {
+        $(document).on('change', '#category_id', function () {
             let category_id = $(this).val();
-            
+
+            if (category_id == '') {
+                $('#sub_category_id').html('<option value="">---select---</option>');
+                return;
+            }
 
             $.ajax({
-                url: 'http://103.112.206.139/include/pop_branch_server.php?get_pop_branch_ping_ip=true',
+                url: 'http://103.112.206.139/include/category_server.php?get_subcategory_data=true',
                 type: 'GET',
-                data: { pop_id: pop_id },
+                data: { id: category_id },
                 dataType: 'json',
                 success: function (response) {
-                    if (response.success) {
-                        $("#show_pop_branch_ip_div").removeClass('d-none');
-                        $('#show_pop_branch_ip').val(response.router_ip);
-                    } else {
-                        $('#show_pop_branch_ip').val('');
+
+                    let options = '<option value="">---select---</option>';
+
+                    if (response.success && response.data) {
+                        options += `<option value="${response.data.id}">
+                                        ${response.data.name}
+                                    </option>`;
                     }
+
+                    $('#sub_category_id').html(options);
                 }
             });
-        }); 
+        });
     });
     
 </script>

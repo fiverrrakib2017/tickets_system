@@ -132,6 +132,12 @@ if ($result && $result->num_rows > 0) {
                 <span>NOC & Backbone</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="tickets_category.php" class="nav-link">
+                <i class="fa fa-ticket-alt"></i>
+                <span>Tickets Category</span>
+            </a>
+        </li>
 
         <li>
             <a href="ticket_reports.php" class="waves-effect">

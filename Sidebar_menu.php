@@ -126,6 +126,12 @@ if ($result && $result->num_rows > 0) {
                 <span>NOC Note</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="internal_tickets.php" class="nav-link">
+                <i class="fa fa-network-wired"></i>
+                <span>NOC & Backbone</span>
+            </a>
+        </li>
 
         <li>
             <a href="ticket_reports.php" class="waves-effect">

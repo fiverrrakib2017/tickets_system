@@ -138,6 +138,12 @@ if ($result && $result->num_rows > 0) {
                 <span>Tickets Category</span>
             </a>
         </li>
+        <li class="nav-item">
+            <a href="tickets_sub_category.php" class="nav-link">
+                <i class="fa fa-ticket-alt"></i>
+                <span>Tickets Sub Category</span>
+            </a>
+        </li>
 
         <li>
             <a href="ticket_reports.php" class="waves-effect">

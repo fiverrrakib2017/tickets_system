@@ -5,7 +5,7 @@ include "db_connect.php";
 if (isset($_GET['add_category_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = trim($_POST['name']);
 
-    /**Check Area Name is exist**/
+    /**-----------Check Category  Name is exist-----------**/
     $check_ = $con->query("SELECT * FROM ticket_categories WHERE name='$name'");
     if ($check_->num_rows > 0) {
         echo json_encode([
@@ -15,9 +15,9 @@ if (isset($_GET['add_category_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
         exit();
     }
 
-    /* Validate Category name */
+    /*----------- Validate Category name -----------*/
     __validate_input($name, 'Category Name');
-    /* Insert into Category table */
+    /*----------- Insert into Category table -----------*/
     $result = $con->query("INSERT INTO ticket_categories(name) VALUES('$name')");
     if ($result) {
         echo json_encode([
@@ -47,14 +47,14 @@ if (isset($_GET['get_category_data'])) {
     ]);
     exit();
 }
-/******** Update Category  Script ******************/
+/*----------- Update Category  Script -----------*/
 if (isset($_GET['update_category_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = trim($_POST['name']);
     
 
-     /* Validate Category name */
+     /*----------- Validate Category name -----------*/
     __validate_input($name, 'Category Name');
-    /* Insert into Category table */
+    /*----------- Insert into Category table -----------*/
     $id = trim($_POST['id']);
     if (empty($id)) {
         echo json_encode([
@@ -79,7 +79,7 @@ if (isset($_GET['update_category_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     }
 }
 
-/*Delete  Script*/
+/*-----------Delete  Script-----------*/
 if (isset($_GET['delete_category_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = trim($_POST['id']);
     if (empty($id)) {
@@ -104,6 +104,104 @@ if (isset($_GET['delete_category_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
         ]);
         exit();
     }
+}
+
+
+/*----------- Add SubCategory -----------------*/
+if (isset($_GET['add_subcategory_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    $name = trim($_POST['sub_category_name']);
+    $category_id = intval($_POST['category_id']);
+
+    __validate_input($name, 'Subcategory Name');
+    __validate_input($category_id, 'Category');
+
+    /*----------- Check duplicate -----------*/
+    $check_ = $con->query("SELECT * FROM ticket_subcategories WHERE name='$name' AND category_id='$category_id'");
+    if ($check_->num_rows > 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Subcategory already exists!',
+        ]);
+        exit();
+    }
+
+    $result = $con->query("INSERT INTO ticket_subcategories(category_id, name) VALUES('$category_id','$name')");
+
+    if ($result) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Subcategory added successfully!',
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Failed to add!',
+        ]);
+    }
+    exit();
+}
+
+/*----------- Get SubCategory -----------*/
+if (isset($_GET['get_subcategory_data'])) {
+    $id = intval($_GET['id']);
+    $result = $con->query("SELECT * FROM ticket_subcategories WHERE id = $id");
+
+    $data = $result->fetch_assoc();
+
+    echo json_encode([
+        'success' => true,
+        'data' => $data ?? [],
+    ]);
+    exit();
+}
+
+/******** Update ********/
+if (isset($_GET['update_subcategory_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    $id = intval($_POST['id']);
+    $name = trim($_POST['sub_category_name']);
+    $category_id = intval($_POST['category_id']);
+
+    __validate_input($id, 'ID');
+    __validate_input($name, 'Subcategory Name');
+    __validate_input($category_id, 'Category');
+
+    $result = $con->query("UPDATE ticket_subcategories SET name='$name', category_id='$category_id' WHERE id='$id'");
+
+    if ($result) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Updated successfully!',
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Failed to update!',
+        ]);
+    }
+    exit();
+}
+
+/******** Delete ********/
+if (isset($_GET['delete_subcategory_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    $id = intval($_POST['id']);
+
+    $result = $con->query("DELETE FROM ticket_subcategories WHERE id='$id'");
+
+    if ($result) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Deleted successfully!',
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Failed to delete!',
+        ]);
+    }
+    exit();
 }
 function __validate_input($value, $field)
 {

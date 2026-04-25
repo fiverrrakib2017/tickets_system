@@ -51,7 +51,7 @@
 
 <div class="col-md-6 mb-3 d-none" id="show_pop_branch_ip_div">
     <label class="form-label">Router/Switch IP</label>
-    <input name="text" id="show_pop_branch_ip" class="form-control" value="">
+    <input type="text" id="show_pop_branch_ip" class="form-control" value="">
 </div>
 
 <div class="col-md-6 mb-3 ">

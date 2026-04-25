@@ -852,6 +852,101 @@ if (isset($_GET['add_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] == '
 
     exit;
 }
+/*----------- Update Internal Ticket Data ------------------*/
+if (isset($_GET['update_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    // echo '<pre>'; 
+    // print_r($_POST); 
+    // echo '</pre>';
+    // exit; 
+    
+    $ticket_id             = isset($_POST['ticket_id']) ? trim($_POST['ticket_id']) : '';
+    $category_id           = isset($_POST['category_id']) ? trim($_POST['category_id']) : '';
+    $sub_category_id       = isset($_POST['sub_category_id']) ? trim($_POST['sub_category_id']) : '';
+    $pop_branch            = isset($_POST['pop_branch']) ? trim($_POST['pop_branch']) : '';
+    $ticket_severity       = isset($_POST['ticket_severity']) ? trim($_POST['ticket_severity']) : '';
+    $subject               = isset($_POST['customer_subject']) ? trim($_POST['customer_subject']) : '';
+    $customer_description  = isset($_POST['customer_description']) ? trim($_POST['customer_description']) : '';
+    $status                = isset($_POST['ticket_status']) ? trim($_POST['ticket_status']) : 'open';
+
+    /* ---------- Validation ---------- */
+    if (empty((int)$ticket_id)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Ticket ID is required.'
+        ]);
+        exit();
+    }
+
+    if (empty((int)$category_id)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Category is required.'
+        ]);
+        exit();
+    }
+
+    if (empty((int)$sub_category_id)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Sub Category is required.'
+        ]);
+        exit();
+    }
+
+    /*------------- Upload Ticket File -------------*/
+    $attachment_sql = '';
+
+    if (!empty($_FILES['customer_attachments']['name'])) {
+        $attachment = __upload_file($_FILES['customer_attachments']);
+
+        if (!empty($attachment)) {
+            $attachment_sql = ", attachment = '$attachment'";
+        }
+    }
+
+    $updated_by = (int) $_SESSION['uid'];
+
+    /* ---------- Close time & downtime calculation ---------- */
+    $extra_status_sql = '';
+
+    if ($status == 'closed') {
+        $extra_status_sql = ",
+            closed_at = NOW(),
+            downtime_minutes = TIMESTAMPDIFF(MINUTE, opened_at, NOW())
+        ";
+    }
+
+    /* ---------- Update Query ---------- */
+    $result = $con->query("
+        UPDATE internal_tickets SET
+            category_id = '$category_id',
+            subcategory_id = '$sub_category_id',
+            pop_id = '$pop_branch',
+            severity = '$ticket_severity',
+            status = '$status',
+            subject = '$subject',
+            description = '$customer_description',
+            updated_by = '$updated_by',
+            updated_at = NOW()
+            $attachment_sql
+            $extra_status_sql
+        WHERE id = '$ticket_id'
+    ");
+
+    if ($result) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Ticket updated successfully.'
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Database Error: ' . $con->error
+        ]);
+    }
+
+    exit;
+}
 /* -------Function to calculate actual work time */
 function acctual_work($startdate, $enddate)
 {

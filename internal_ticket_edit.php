@@ -6,7 +6,20 @@ include 'include/db_connect.php';
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-
+if(isset($_GET['id'])) {
+    $ticket_id = $_GET['id'];
+    $ticket_query = $con->prepare('SELECT * FROM internal_tickets WHERE id = ?');
+    $ticket_query->bind_param('i', $ticket_id);
+    $ticket_query->execute();
+    $ticket_result = $ticket_query->get_result();
+    if($ticket_result->num_rows > 0) {
+        $ticket = $ticket_result->fetch_assoc();
+    } else {
+        die('Ticket not found.');
+    }
+} else {
+    die('Invalid request.');
+}
 ?>
 
 <!doctype html>
@@ -23,7 +36,7 @@ require 'Head.php';
     <!-- Begin page -->
     <div id="layout-wrapper">
 
-        <?php $page_title = 'Create Ticket';
+        <?php $page_title = 'Ticket Edit';
         include 'Header.php'; ?>
 
         <!-- ========== Left Sidebar Start ========== -->
@@ -53,11 +66,11 @@ require 'Head.php';
                             <div class="card">
                                 <div class="card-header bg-success text-white">
                                     <h5 class="mb-0">
-                                        <i class="mdi mdi-ticket-account"></i> Create Ticket
+                                        <i class="mdi mdi-ticket-account"></i> Ticket Edit
                                     </h5>
                                 </div>
 
-                                <form id="addTicketForm" action="include/tickets_server.php?add_internal_tickets_data=true"
+                                <form id="addTicketForm" action="include/tickets_server.php?update_internal_tickets_data=true"
                                     method="POST" enctype="multipart/form-data">
 
                                     <div class="card-body">
@@ -74,7 +87,7 @@ require 'Head.php';
                                             <i class="fas fa-arrow-left"></i> Back
                                         </a>
                                         <button type="submit" class="btn btn-success">
-                                            <i class="fas fa-save"></i> Create Ticket
+                                            <i class="fas fa-save"></i> Update Ticket
                                         </button>
                                     </div>
 

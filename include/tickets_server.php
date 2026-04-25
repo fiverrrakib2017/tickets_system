@@ -947,6 +947,65 @@ if (isset($_GET['update_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] =
 
     exit;
 }
+
+if(isset($_GET['update_assigned_team']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
+
+    $ticket_id      = (int) $_POST['ticket_id'];
+    $assigned_team  = trim($_POST['assigned_team']);
+    $updated_by     = (int) $_SESSION['uid'];
+
+    $result = $con->query("
+        UPDATE internal_tickets
+        SET assigned_team = '$assigned_team',
+        updated_by = '$updated_by'
+        WHERE id = '$ticket_id'
+    ");
+
+    echo json_encode([
+        'success' => $result ? true : false,
+        'message' => $result ? 'Assigned team updated successfully' : $con->error
+    ]);
+    exit;
+}
+if(isset($_GET['update_ticket_status']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
+
+    $ticket_id      = (int) $_POST['ticket_id'];
+    $status         = trim($_POST['status']);
+    $updated_by     = (int) $_SESSION['uid'];
+    $rca_note       = isset($_POST['rca_note']) ? trim($_POST['rca_note']) : '';
+    $extra_sql = '';
+
+    if ($status == 'closed' && empty($rca_note)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'RCA note is required to close ticket'
+        ]);
+        exit;
+    }
+
+    if ($status == 'closed') {
+        $extra_sql = ",
+            rca_note = '" . mysqli_real_escape_string($con, $rca_note) . "',
+            closed_at = NOW(),
+            downtime_minutes = TIMESTAMPDIFF(MINUTE, opened_at, NOW())
+        ";
+    }
+
+    $result = $con->query("
+        UPDATE internal_tickets
+        SET 
+            status = '$status',
+            updated_by = '$updated_by'
+            $extra_sql
+        WHERE id = '$ticket_id'
+    ");
+
+    echo json_encode([
+        'success' => $result ? true : false,
+        'message' => $result ? 'Status updated successfully' : $con->error
+    ]);
+    exit;
+}
 /* -------Function to calculate actual work time */
 function acctual_work($startdate, $enddate)
 {

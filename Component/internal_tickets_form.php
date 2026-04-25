@@ -38,7 +38,7 @@
 <div class="col-md-6 mb-3 ">
     <label class="form-label">POP / Area</label>
     <select name="pop_branch" class="form-select" >
-        <option value="">---select---</option>
+        <option value="0">---select---</option>
         <?php
         $pop = $con->query('SELECT * FROM pop_branch');
         while ($row = $pop->fetch_assoc()) {

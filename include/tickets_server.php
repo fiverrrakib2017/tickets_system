@@ -748,7 +748,7 @@ if (isset($_GET['add_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] == '
     $ticket_severity      = isset($_POST['ticket_severity']) ? trim($_POST['ticket_severity']) : '';
     $subject              = isset($_POST['customer_subject']) ? trim($_POST['customer_subject']) : '';
     $customer_description = isset($_POST['customer_description']) ? trim($_POST['customer_description']) : '';
-
+    $customer_ids         = isset($_POST['customer_id']) ? $_POST['customer_id'] : [];
     $status = 'open';
     $ticket_no = 'INT-' . time();
 
@@ -796,6 +796,52 @@ if (isset($_GET['add_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] == '
     $description = mysqli_real_escape_string($con, $customer_description);
     $subject = mysqli_real_escape_string($con, $subject);
     $created_by = (int)$_SESSION['uid'];
+ 
+    if (!empty($customer_ids)) {
+
+        foreach ($customer_ids as $customer_id) {
+
+            $customer_id = (int)$customer_id;
+
+            $con->query("
+                INSERT INTO ticket (
+                    customer_id,
+                    ticket_type,
+                    asignto,
+                    ticketfor,
+                    pop_id,
+                    complain_type,
+                    startdate,
+                    enddate,
+                    parcent,
+                    priority,
+                    customer_note,
+                    noc_note,
+                    subject,
+                    description,
+                    attachments,
+                    create_date
+                ) VALUES (
+                    '$customer_id',
+                    'Active',
+                     NULL,
+                    'Bandwidth Client',
+                    '$pop_id',
+                    '$sub_category_id',
+                    NOW(),
+                    NULL,
+                    '0',
+                    '3',
+                    'Auto generated from internal ticket',
+                    NULL,
+                    '$subject',
+                    '$customer_description',
+                    '$attachment',
+                    NOW()
+                )
+            ");
+        }
+    }
 
     /* ---------- Insert Ticket ---------- */
     $result = $con->query("
@@ -847,11 +893,7 @@ if (isset($_GET['add_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] == '
 }
 /*----------- Update Internal Ticket Data ------------------*/
 if (isset($_GET['update_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-    // echo '<pre>'; 
-    // print_r($_POST); 
-    // echo '</pre>';
-    // exit; 
-    
+      
     $ticket_id             = isset($_POST['ticket_id']) ? trim($_POST['ticket_id']) : '';
     $category_id           = isset($_POST['category_id']) ? trim($_POST['category_id']) : '';
     $sub_category_id       = isset($_POST['sub_category_id']) ? trim($_POST['sub_category_id']) : '';
@@ -960,13 +1002,14 @@ if(isset($_GET['update_assigned_team']) && $_SERVER['REQUEST_METHOD'] == 'POST')
     ]);
     exit;
 }
-if(isset($_GET['update_ticket_status']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
+if (isset($_GET['update_ticket_status']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
-    $ticket_id      = (int) $_POST['ticket_id'];
-    $status         = trim($_POST['status']);
-    $updated_by     = (int) $_SESSION['uid'];
-    $rca_note       = isset($_POST['rca_note']) ? trim($_POST['rca_note']) : '';
-    $extra_sql = '';
+    $ticket_id  = (int) $_POST['ticket_id'];
+    $status     = trim($_POST['status']);
+    $updated_by = (int) $_SESSION['uid'];
+    $rca_note   = isset($_POST['rca_note']) ? trim($_POST['rca_note']) : '';
+    $safe_rca_note = mysqli_real_escape_string($con, $rca_note);
+    $extra_sql  = '';
 
     if ($status == 'closed' && empty($rca_note)) {
         echo json_encode([
@@ -976,27 +1019,76 @@ if(isset($_GET['update_ticket_status']) && $_SERVER['REQUEST_METHOD'] == 'POST')
         exit;
     }
 
-    if ($status == 'closed') {
-        $extra_sql = ",
-            rca_note = '" . mysqli_real_escape_string($con, $rca_note) . "',
-            closed_at = NOW(),
-            downtime_minutes = TIMESTAMPDIFF(MINUTE, opened_at, NOW())
-        ";
+    mysqli_begin_transaction($con);
+
+    try {
+
+        if ($status == 'closed') {
+
+            $ticket_data = $con->query("
+                SELECT pop_id 
+                FROM internal_tickets 
+                WHERE id = $ticket_id
+            ");
+
+            $ticket_row = $ticket_data->fetch_assoc();
+            $get_pop_id = (int)$ticket_row['pop_id'];
+
+            $enddate = date('Y-m-d H:i:s');
+
+            /* linked customer tickets resolved */
+            $update_ticket = $con->query("
+                UPDATE ticket 
+                SET 
+                    ticket_type = 'Complete',
+                    parcent     = '100%',
+                    enddate     = '$enddate',
+                    noc_note    = '$safe_rca_note'
+                WHERE pop_id    = $get_pop_id
+                AND ticket_type = 'Active'
+            ");
+
+            if (!$update_ticket) {
+                throw new Exception($con->error);
+            }
+
+            $extra_sql = ",
+                rca_note = '$safe_rca_note',
+                closed_at = NOW(),
+                downtime_minutes = TIMESTAMPDIFF(MINUTE, opened_at, NOW())
+            ";
+        }
+
+        $result = $con->query("
+            UPDATE internal_tickets
+            SET 
+                status = '$status',
+                updated_by = '$updated_by'
+                $extra_sql
+            WHERE id = '$ticket_id'
+        ");
+
+        if (!$result) {
+            throw new Exception($con->error);
+        }
+
+        mysqli_commit($con);
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Status updated successfully'
+        ]);
+
+    } catch (Exception $e) {
+
+        mysqli_rollback($con);
+
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
     }
 
-    $result = $con->query("
-        UPDATE internal_tickets
-        SET 
-            status = '$status',
-            updated_by = '$updated_by'
-            $extra_sql
-        WHERE id = '$ticket_id'
-    ");
-
-    echo json_encode([
-        'success' => $result ? true : false,
-        'message' => $result ? 'Status updated successfully' : $con->error
-    ]);
     exit;
 }
 /* -------Function to calculate actual work time */

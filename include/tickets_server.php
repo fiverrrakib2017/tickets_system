@@ -744,7 +744,7 @@ if (isset($_GET['add_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] == '
 
     $category_id          = isset($_POST['category_id']) ? trim($_POST['category_id']) : '';
     $sub_category_id      = isset($_POST['sub_category_id']) ? trim($_POST['sub_category_id']) : '';
-    $pop_branch           = isset($_POST['pop_branch']) ? trim($_POST['pop_branch']) : '';
+    $pop_id               = isset($_POST['pop_branch']) ? trim($_POST['pop_branch']) : '';
     $ticket_severity      = isset($_POST['ticket_severity']) ? trim($_POST['ticket_severity']) : '';
     $subject              = isset($_POST['customer_subject']) ? trim($_POST['customer_subject']) : '';
     $customer_description = isset($_POST['customer_description']) ? trim($_POST['customer_description']) : '';
@@ -769,13 +769,7 @@ if (isset($_GET['add_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] == '
         exit();
     }
 
-    if (empty((int)$pop_branch)) {
-        echo json_encode([
-            'success' => false,
-            'message' => 'POP / Branch is required.'
-        ]);
-        exit();
-    }
+    
 
     if (empty($ticket_severity)) {
         echo json_encode([
@@ -798,7 +792,6 @@ if (isset($_GET['add_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] == '
 
     /* ---------- Safe variable mapping ---------- */
     $subcategory_id = (int)$sub_category_id;
-    $pop_id = (int)$pop_branch;
     $severity = mysqli_real_escape_string($con, $ticket_severity);
     $description = mysqli_real_escape_string($con, $customer_description);
     $subject = mysqli_real_escape_string($con, $subject);

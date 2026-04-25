@@ -149,21 +149,26 @@ require 'Head.php';
                                                         <td><?= htmlspecialchars($row['category_name']) ?></td>
 
                                                         <td><?= htmlspecialchars($row['subcategory_name']) ?></td>
-
                                                         <td>
+
                                                             <?= !empty($row['assigned_team']) 
                                                                 ? ucfirst(str_replace('_', ' ', $row['assigned_team'])) 
                                                                 : '---' ?>
 
-                                                            <button 
-                                                                type="button"
-                                                                class="btn btn-sm btn-primary ms-1"
-                                                                data-bs-toggle="modal"
-                                                                data-bs-target="#assignTeamModal"
-                                                                data-ticket-id="<?= $row['id'] ?>"
-                                                                data-assigned-team="<?= $row['assigned_team'] ?>">
-                                                                <i class="fas fa-user-edit"></i>
-                                                            </button>
+                                                            <?php if ($row['status'] != 'closed' && $row['status'] != 'resolved'): ?>
+
+                                                                <button 
+                                                                    type="button"
+                                                                    class="btn btn-sm btn-primary ms-1"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#assignTeamModal"
+                                                                    data-ticket-id="<?= $row['id'] ?>"
+                                                                    data-assigned-team="<?= $row['assigned_team'] ?>">
+                                                                    <i class="fas fa-user-edit"></i>
+                                                                </button>
+
+                                                            <?php endif; ?>
+
                                                         </td>
 
                                                        <td>
@@ -236,7 +241,7 @@ require 'Head.php';
                                                                 ? htmlspecialchars($row['created_by_name']) 
                                                                 : '---' ?>
                                                         </td>
-                                                                                                                                                                 <td>
+                                                                                                                                                                                   <td>
                                                             <?= !empty($row['updated_by_name']) 
                                                                 ? htmlspecialchars($row['updated_by_name']) 
                                                                 : '---' ?>
@@ -325,6 +330,7 @@ require 'Head.php';
                     <input type="hidden" id="assign_ticket_id">
 
                     <select id="assigned_team_select" class="form-select">
+                        <option value="">---Select---</option>
                         <option value="noc">NOC</option>
                         <option value="fiber_team">Fiber Team</option>
                         <option value="system_admin">System Admin</option>
@@ -354,6 +360,7 @@ require 'Head.php';
                     <input type="hidden" id="status_ticket_id">
 
                     <select id="ticket_status_select" class="form-select">
+                        <option value="">---Select---</option>
                         <option value="open">Open</option>
                         <option value="in_progress">In Progress</option>
                         <option value="pending_vendor">Pending Vendor</option>

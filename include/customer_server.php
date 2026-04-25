@@ -662,9 +662,48 @@ if (isset($_GET['delete_customer_service_data']) && $_SERVER['REQUEST_METHOD'] =
         exit();
     }
 }
+if (isset($_GET['get_customer']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 
+    $id = isset($_GET['id']) ? trim($_GET['id']) : '';
+    $pop_id = isset($_GET['pop_id']) ? trim($_GET['pop_id']) : '';
 
+    $data = [];
+    $result = false;
 
+    if (!empty($id) && is_numeric($id)) {
+
+        $id = (int)$id;
+
+        $result = $con->query("
+            SELECT * 
+            FROM customers 
+            WHERE id = '$id'
+        ");
+
+    } elseif (!empty($pop_id) && is_numeric($pop_id)) {
+
+        $pop_id = (int)$pop_id;
+
+        $result = $con->query("
+            SELECT * 
+            FROM customers 
+            WHERE pop_id = '$pop_id'
+        ");
+    }
+
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+    }
+
+    echo json_encode([
+        'success' => true,
+        'data' => !empty($id) ? ($data[0] ?? []) : $data,
+    ]);
+
+    exit();
+}
 
 function __validate_input($value, $field)
 {

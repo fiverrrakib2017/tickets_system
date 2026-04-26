@@ -85,27 +85,54 @@ while ($row = $resultUserStats->fetch_assoc()) {
 }
 $total_tickets = (int) ($con->query("SELECT COUNT(*) AS total_tickets FROM ticket")
                 ->fetch_assoc()['total_tickets'] ?? 0);
+
+$today_date= date('Y-m-d');
+
+$internal_tickets_row = $con->query("
+    SELECT
+        SUM(CASE 
+            WHEN pop_id != 0 
+            AND DATE(created_at) = '$today_date' 
+            THEN 1 ELSE 0 
+        END) AS today_noc,
+
+        SUM(CASE 
+            WHEN pop_id != 0 
+            THEN 1 ELSE 0 
+        END) AS total_noc,
+
+        SUM(CASE 
+            WHEN pop_id = 0 
+            AND DATE(created_at) = '$today_date' 
+            THEN 1 ELSE 0 
+        END) AS today_upstream,
+
+        SUM(CASE 
+            WHEN pop_id = 0 
+            THEN 1 ELSE 0 
+        END) AS total_upstream
+
+    FROM internal_tickets
+");
+
+$internal_tickets = $internal_tickets_row->fetch_assoc();
 ?>
 
-
 <div class="row">
-    <!-- Total Tickets -->
-  
-    <div class="col-xl-3 col-md-6">
+
+    <!-- Total & Today Tickets -->
+    <div class="col-xl-4 col-md-6">
         <div class="card stat-card">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-grow-1">
-                        <p class="stat-title">Today/Total Tickets</p>
+                        <p class="stat-title">Tickets</p>
                         <h3 class="stat-value">
                             <a href="tickets.php?status=total"><?= $todayStats['total']; ?></a>
                             /
                             <a href="tickets.php"><?= $total_tickets; ?></a>
                         </h3>
-                        <small class="text-muted">All time tickets</small>
-                        
-                        
-
+                        <small class="text-muted">Today / Total</small>
                     </div>
                     <div class="stat-icon bg-primary">
                         <i class="fas fa-ticket-alt"></i>
@@ -115,9 +142,62 @@ $total_tickets = (int) ($con->query("SELECT COUNT(*) AS total_tickets FROM ticke
         </div>
     </div>
 
+    <!-- NOC & Backbone -->
+    <div class="col-xl-4 col-md-6">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <p class="stat-title">NOC & Backbone</p>
+                        <h3 class="stat-value">
+                            <a href="internal_tickets.php?department=noc_backbone&filter=today">
+                                <?= $internal_tickets['today_noc'] ?>
+                            </a>
+                            /
+                            <a href="internal_tickets.php?department=noc_backbone">
+                                <?= $internal_tickets['total_noc'] ?>
+                            </a>
+                        </h3>
+                        <small class="text-muted">Today / Total</small>
+                    </div>
+                    <div class="stat-icon bg-warning">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Upstream -->
+    <div class="col-xl-4 col-md-6">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <p class="stat-title">Upstream Tickets</p>
+                        <h3 class="stat-value">
+                            <a href="internal_tickets.php?department=upstream&filter=today">
+                                <?= $internal_tickets['today_upstream'] ?>
+                            </a>
+                            /
+                            <a href="internal_tickets.php?department=upstream">
+                                <?= $internal_tickets['total_upstream'] ?>
+                            </a>
+                        </h3>
+                        <small class="text-muted">Today / Total</small>
+                    </div>
+                    <div class="stat-icon bg-danger">
+                        <i class="fas fa-server"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
 
     <!-- Open Tickets -->
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-4 col-md-6">
         <a href="tickets.php?status=open">
             <div class="card stat-card">
                 <div class="card-body">
@@ -147,7 +227,7 @@ $total_tickets = (int) ($con->query("SELECT COUNT(*) AS total_tickets FROM ticke
     </div>
 
     <!-- Pending Tickets -->
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-4 col-md-6">
         <a href="tickets.php?status=pending">
             <div class="card stat-card">
                 <div class="card-body">
@@ -177,7 +257,7 @@ $total_tickets = (int) ($con->query("SELECT COUNT(*) AS total_tickets FROM ticke
     </div>
 
     <!-- Resolved Tickets -->
-    <div class="col-xl-3 col-md-6">
+    <div class="col-xl-4 col-md-6">
         <a href="tickets.php?status=resolved">
         <div class="card stat-card">
             <div class="card-body">

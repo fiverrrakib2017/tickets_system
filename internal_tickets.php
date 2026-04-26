@@ -98,6 +98,28 @@ require 'Head.php';
 
                                             <tbody id="tickets-list">
                                                 <?php
+                                                $where = [];
+
+                                                if (isset($_GET['department'])) {
+                                                    if ($_GET['department'] == 'noc_backbone') {
+                                                        $where[] = "t.pop_id != 0";
+                                                    }
+
+                                                    if ($_GET['department'] == 'upstream') {
+                                                        $where[] = "t.pop_id = 0";
+                                                    }
+                                                }
+
+                                                if (isset($_GET['filter']) && $_GET['filter'] == 'today') {
+                                                    $todayDate = date('Y-m-d');
+                                                    $where[] = "DATE(t.created_at) = '$todayDate'";
+                                                }
+
+                                                $whereSql = '';
+
+                                                if (!empty($where)) {
+                                                    $whereSql = 'WHERE ' . implode(' AND ', $where);
+                                                }
                                                 $result = $con->query("
                                                         SELECT 
                                                             t.id,
@@ -134,7 +156,7 @@ require 'Head.php';
 
                                                         LEFT JOIN users uu
                                                             ON uu.id = t.updated_by
-
+                                                            $whereSql
                                                         ORDER BY t.id DESC
                                                     ");
 

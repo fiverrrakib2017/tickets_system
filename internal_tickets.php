@@ -106,7 +106,7 @@ require 'Head.php';
                                                     }
 
                                                     if ($_GET['department'] == 'upstream') {
-                                                        $where[] = "t.pop_id = 0";
+                                                        $where[] = "t.upstream_id != 0";
                                                     }
                                                 }
 
@@ -166,7 +166,7 @@ require 'Head.php';
                                                     <tr>
                                                         <td><?= htmlspecialchars($row['ticket_no']) ?></td>
 
-                                                        <td><?= htmlspecialchars($row['pop_name']) ?></td>
+                                                        <td><?= htmlspecialchars($row['pop_name'] ?? '---') ?></td>
 
                                                         <td><?= htmlspecialchars($row['category_name']) ?></td>
 

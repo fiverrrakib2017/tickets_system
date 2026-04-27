@@ -48,6 +48,19 @@
         ?>
     </select>
 </div>
+<div class="col-md-6 mb-3" id="show_upstream_div">
+    <label class="form-label">Upstream </label>
+    <select name="upstream_id" class="form-select" >
+        <option value="0">---select---</option>
+        <?php
+        $pop = $con->query('SELECT * FROM upstream');
+        while ($row = $pop->fetch_assoc()) {
+            $selected = $row['id'] == $ticket['upstream_id'] ? 'selected' : '';
+            echo "<option value='{$row['id']}' $selected >{$row['name']}</option>";
+        }
+        ?>
+    </select>
+</div>
 
 <div class="col-md-6 mb-3 d-none" id="show_pop_branch_ip_div">
     <label class="form-label">Router/Switch IP</label>
@@ -172,8 +185,10 @@
             }
             if(category_id =='2'){
                 $('#show_pop_branch_div').removeClass('d-none');
+                 $('#show_upstream_div').addClass('d-none');
             }else{
                 $('#show_pop_branch_div').addClass('d-none');
+                $('#show_upstream_div').removeClass('d-none');
             }
 
             $.ajax({

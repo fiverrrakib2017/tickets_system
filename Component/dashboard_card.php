@@ -102,13 +102,13 @@ $internal_tickets_row = $con->query("
         END) AS total_noc,
 
         SUM(CASE 
-            WHEN pop_id = 0 
+            WHEN upstream_id != 0 
             AND DATE(created_at) = '$today_date' 
             THEN 1 ELSE 0 
         END) AS today_upstream,
 
         SUM(CASE 
-            WHEN pop_id = 0 
+            WHEN upstream_id != 0 
             THEN 1 ELSE 0 
         END) AS total_upstream
 

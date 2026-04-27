@@ -741,10 +741,11 @@ if (isset($_GET['delete_noc_note_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
 }
 /*----------- Add Internal Ticket Data------------------*/
 if (isset($_GET['add_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-
+    
     $category_id          = isset($_POST['category_id']) ? trim($_POST['category_id']) : '';
     $sub_category_id      = isset($_POST['sub_category_id']) ? trim($_POST['sub_category_id']) : '';
     $pop_id               = isset($_POST['pop_branch']) ? trim($_POST['pop_branch']) : '';
+    $upstream_id          = isset($_POST['upstream_id']) ? trim($_POST['upstream_id']) : '';
     $ticket_severity      = isset($_POST['ticket_severity']) ? trim($_POST['ticket_severity']) : '';
     $subject              = isset($_POST['customer_subject']) ? trim($_POST['customer_subject']) : '';
     $customer_description = isset($_POST['customer_description']) ? trim($_POST['customer_description']) : '';
@@ -851,6 +852,7 @@ if (isset($_GET['add_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] == '
             category_id,
             subcategory_id,
             pop_id,
+            upstream_id,
             severity,
             status,
             subject,
@@ -866,6 +868,7 @@ if (isset($_GET['add_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] == '
             '$category_id',
             '$subcategory_id',
             '$pop_id',
+            '$upstream_id',
             '$severity',
             '$status',
             '$subject',

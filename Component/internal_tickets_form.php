@@ -35,7 +35,7 @@
     </select>
 </div>
 
-<div class="col-md-6 mb-3 ">
+<div class="col-md-6 mb-3 d-none" id="show_pop_branch_div">
     <label class="form-label">POP / Area</label>
     <select name="pop_branch" class="form-select" >
         <option value="0">---select---</option>
@@ -169,6 +169,11 @@
             if (category_id == '') {
                 $('#sub_category_id').html('<option value="">---select---</option>');
                 return;
+            }
+            if(category_id =='2'){
+                $('#show_pop_branch_div').removeClass('d-none');
+            }else{
+                $('#show_pop_branch_div').addClass('d-none');
             }
 
             $.ajax({

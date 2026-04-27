@@ -133,6 +133,12 @@ if ($result && $result->num_rows > 0) {
             </a>
         </li>
         <li class="nav-item">
+            <a href="upstream.php" class="nav-link">
+                <i class="fa fa-server"></i>
+                <span>Upstream</span>
+            </a>
+        </li>
+        <li class="nav-item">
             <a href="tickets_category.php" class="nav-link">
                   <i class="fa fa-folder-open"></i>
                 <span>Tickets Category</span>

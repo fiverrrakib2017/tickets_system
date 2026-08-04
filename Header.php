@@ -28,10 +28,17 @@
                         <i class="mdi mdi-menu"></i>
                     </button>
 
-                    <div class="d-none d-sm-block ms-2">
-                        <h4 class="page-title"> 
+                   
+                    <div class="d-none d-sm-flex align-items-center ms-2">
+                        <h4 class="page-title mb-0">
                             <?php echo isset($page_title) ? $page_title : 'Welcome To Dashboard'; ?>
                         </h4>
+
+                        <a href="task_dashboard.php"
+                        class="btn btn-primary btn-sm ms-3 rounded-pill shadow-sm">
+                            <i class="mdi mdi-view-dashboard-outline me-1"></i>
+                            Task Dashboard
+                        </a>
                     </div>
                 </div>
 

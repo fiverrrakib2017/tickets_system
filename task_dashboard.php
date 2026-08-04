@@ -230,6 +230,79 @@ WHERE ticket_type='Complete'
     background: rgba(6,182,212,0.1);
     color: #0891b2;
 }
+
+
+
+
+
+/* Table Styles */
+.custom-performance-table thead th {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border-bottom: 1px solid #edf2f7;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.custom-performance-table tbody tr {
+  transition: all 0.2s ease;
+}
+
+.custom-performance-table tbody tr:hover {
+  background-color: #fcfdfe;
+}
+
+/* Custom Soft Badges */
+.custom-badge {
+  padding: 6px 12px;
+  border-radius: 30px;
+  font-size: 0.825rem;
+  font-weight: 600;
+  display: inline-block;
+  min-width: 36px;
+}
+
+.bg-soft-primary { background-color: #e8f1ff; color: #0d6efd; }
+.bg-soft-success { background-color: #e6f4ea; color: #198754; }
+.bg-soft-warning { background-color: #fff8e6; color: #ffb800; }
+.bg-soft-danger  { background-color: #fce8e8; color: #dc3545; }
+.bg-soft-info    { background-color: #e0f8f9; color: #0dcaf0; }
+
+/* Avatar System */
+.avatar-sm {
+  width: 38px;
+  height: 38px;
+  position: relative;
+}
+
+.avatar-title {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+}
+
+.status-indicator {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+}
+
+/* Progress Bar Overrides */
+.progress {
+  background-color: #edf2f7;
+  overflow: hidden;
+  border-radius: 10px;
+}
 </style>
 <body data-sidebar="dark">
 
@@ -340,70 +413,139 @@ WHERE ticket_type='Complete'
                                 </div>
                             </div>
                         </div>
-                        <!-- ================= ENGINEER PERFORMANCE TABLE ================= -->
-                        <div class="row">
-                            <div class="col-12 mb-4">
-                            <div class="card shadow">
-                                <div class="card-header py-3 bg-primary text-white d-flex align-items-center justify-content-between">
-                                <h6 class="m-0 font-weight-bold"><i class="fas fa-users-cog mr-2"></i>Engineer Performance</h6>
-                                </div>
-                                <div class="card-body p-0">
-                                <div class="table-responsive">
-                                    <table class="table table-hover table-striped align-items-center mb-0">
-                                    <thead class="thead-light">
-                                        <tr>
-                                        <th>Engineer</th>
-                                        <th>Current</th>
-                                        <th>Pending</th>
-                                        <th>Closed</th>
-                                        <th>Success</th>
-                                        <th>Progress</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                        <td class="font-weight-bold"><i class="fas fa-user-circle text-secondary mr-2"></i>Rakib</td>
-                                        <td><span class="badge bg-primary">12</span></td>
-                                        <td><span class="badge bg-warning text-dark">2</span></td>
-                                        <td><span class="badge bg-success">10</span></td>
-                                        <td><strong>83%</strong></td>
-                                        <td style="width: 25%;">
-                                            <div class="progress progress-sm">
-                                            <div class="progress-bar bg-success" role="progressbar" style="width: 83%;" aria-valuenow="83" aria-valuemin="0" aria-valuemax="100"></div>
-                                            </div>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td class="font-weight-bold"><i class="fas fa-user-circle text-secondary mr-2"></i>Sakib</td>
-                                        <td><span class="badge bg-primary">8</span></td>
-                                        <td><span class="badge bg-warning text-dark">1</span></td>
-                                        <td><span class="badge bg-success">7</span></td>
-                                        <td><strong>88%</strong></td>
-                                        <td style="width: 25%;">
-                                            <div class="progress progress-sm">
-                                            <div class="progress-bar bg-info" role="progressbar" style="width: 88%;" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100"></div>
-                                            </div>
-                                        </td>
-                                        </tr>
-                                        <tr>
-                                        <td class="font-weight-bold"><i class="fas fa-user-circle text-secondary mr-2"></i>Rony</td>
-                                        <td><span class="badge bg-primary">5</span></td>
-                                        <td><span class="badge bg-warning text-dark">3</span></td>
-                                        <td><span class="badge bg-success">2</span></td>
-                                        <td><strong>40%</strong></td>
-                                        <td style="width: 25%;">
-                                            <div class="progress progress-sm">
-                                            <div class="progress-bar bg-danger" role="progressbar" style="width: 40%;" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
-                                            </div>
-                                        </td>
-                                        </tr>
-                                    </tbody>
-                                    </table>
-                                </div>
-                                </div>
-                            </div>
-                            </div>
-                        </div>
+
+                       <!-- ================= ENGINEER PERFORMANCE TABLE ================= -->
+<div class="row">
+  <div class="col-12 mb-4">
+    <div class="card shadow-sm border-0 rounded-lg">
+      
+      <!-- Card Header -->
+      <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between">
+        <div class="d-flex align-items-center">
+          <div class="icon-shape bg-soft-primary text-primary rounded-circle me-3 p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+            <i class="fas fa-users-cog fs-5"></i>
+          </div>
+          <div>
+            <h5 class="mb-0 font-weight-bold text-dark">Engineer Performance</h5>
+            <small class="text-muted">Real-time task tracking & metrics</small>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-light text-muted shadow-none">
+          <i class="fas fa-ellipsis-v"></i>
+        </button>
+      </div>
+
+      <!-- Table Body -->
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-hover align-middle mb-0 custom-performance-table">
+            <thead>
+              <tr>
+                <th class="ps-4">Engineer</th>
+                <th class="text-center">Current</th>
+                <th class="text-center">Pending</th>
+                <th class="text-center">Closed</th>
+                <th class="text-center">Success Rate</th>
+                <th class="pe-4" style="min-width: 180px;">Progress</th>
+              </tr>
+            </thead>
+            <tbody>
+              
+              <!-- Engineer 1: Rakib -->
+              <tr>
+                <td class="ps-4">
+                  <div class="d-flex align-items-center">
+                    <div class="avatar-sm me-3 position-relative">
+                      <span class="avatar-title rounded-circle bg-soft-primary text-primary font-weight-bold">R</span>
+                      <span class="status-indicator bg-success"></span>
+                    </div>
+                    <div>
+                      <h6 class="mb-0 font-weight-bold text-dark">Rakib</h6>
+                      <small class="text-muted">Senior Engineer</small>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-center"><span class="custom-badge bg-soft-primary text-primary">12</span></td>
+                <td class="text-center"><span class="custom-badge bg-soft-warning text-warning">2</span></td>
+                <td class="text-center"><span class="custom-badge bg-soft-success text-success">10</span></td>
+                <td class="text-center">
+                  <span class="fw-bold text-dark">83%</span>
+                </td>
+                <td class="pe-4">
+                  <div class="d-flex align-items-center">
+                    <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                      <div class="progress-bar bg-success rounded" role="progressbar" style="width: 83%;" aria-valuenow="83" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Engineer 2: Sakib -->
+              <tr>
+                <td class="ps-4">
+                  <div class="d-flex align-items-center">
+                    <div class="avatar-sm me-3 position-relative">
+                      <span class="avatar-title rounded-circle bg-soft-info text-info font-weight-bold">S</span>
+                      <span class="status-indicator bg-success"></span>
+                    </div>
+                    <div>
+                      <h6 class="mb-0 font-weight-bold text-dark">Sakib</h6>
+                      <small class="text-muted">Network Engineer</small>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-center"><span class="custom-badge bg-soft-primary text-primary">8</span></td>
+                <td class="text-center"><span class="custom-badge bg-soft-warning text-warning">1</span></td>
+                <td class="text-center"><span class="custom-badge bg-soft-success text-success">7</span></td>
+                <td class="text-center">
+                  <span class="fw-bold text-dark">88%</span>
+                </td>
+                <td class="pe-4">
+                  <div class="d-flex align-items-center">
+                    <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                      <div class="progress-bar bg-info rounded" role="progressbar" style="width: 88%;" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+              <!-- Engineer 3: Rony -->
+              <tr>
+                <td class="ps-4">
+                  <div class="d-flex align-items-center">
+                    <div class="avatar-sm me-3 position-relative">
+                      <span class="avatar-title rounded-circle bg-soft-danger text-danger font-weight-bold">R</span>
+                      <span class="status-indicator bg-secondary"></span>
+                    </div>
+                    <div>
+                      <h6 class="mb-0 font-weight-bold text-dark">Rony</h6>
+                      <small class="text-muted">Support Engineer</small>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-center"><span class="custom-badge bg-soft-primary text-primary">5</span></td>
+                <td class="text-center"><span class="custom-badge bg-soft-warning text-warning">3</span></td>
+                <td class="text-center"><span class="custom-badge bg-soft-success text-success">2</span></td>
+                <td class="text-center">
+                  <span class="fw-bold text-dark">40%</span>
+                </td>
+                <td class="pe-4">
+                  <div class="d-flex align-items-center">
+                    <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                      <div class="progress-bar bg-danger rounded" role="progressbar" style="width: 40%;" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
                         <!-- ================= TOP PERFORMERS LEADERBOARD ================= -->
                         <div class="row">
                             

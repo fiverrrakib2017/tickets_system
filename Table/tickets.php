@@ -39,17 +39,17 @@ while ($row = $tickets->fetch_assoc()):
 
     <td>
         <a href="customer_profile.php?clid=<?= $row['customer_id']; ?>">
-            <?= htmlspecialchars($row['customer_name'] ?? 'N/A'); ?>
+            <?= htmlspecialchars($row['customer_name'] ?? '---'); ?>
         </a>
     </td>
 
-    <td><?= $row['phones'] ?: 'N/A'; ?></td>
+    <td><?= $row['phones'] ?: '---'; ?></td>
 
-    <td><?= htmlspecialchars($row['issue_name'] ?? 'N/A'); ?></td>
+    <td><?= htmlspecialchars($row['issue_name'] ?? '---'); ?></td>
 
-    <td><?= htmlspecialchars($row['pop_name'] ?? 'N/A'); ?></td>
+    <td><?= htmlspecialchars($row['pop_name'] ?? '---'); ?></td>
 
-    <td><?= htmlspecialchars($row['assigned_name'] ?? 'N/A'); ?></td>
+    <td><?= htmlspecialchars($row['assigned_name'] ?? '---'); ?></td>
 
    <!-- Actual Work -->
     <td>
@@ -87,9 +87,12 @@ while ($row = $tickets->fetch_assoc()):
    <!-- Action -->
     <td class="text-end">
         <?php if(!isset($_SESSION['customer']['id'])): ?>
-            <a href="ticket_edit.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-info">
-                <i class="fas fa-edit"></i>
-            </a>
+            <?php if (in_array($row['ticket_type'], ['Pending', 'Active'])): ?>
+                <a href="ticket_edit.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-info">
+                    <i class="fas fa-edit"></i>
+                </a>
+            <?php endif; ?>
+           
             <a href="ticket_view.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-success">
                 <i class="fas fa-eye"></i>
             </a>

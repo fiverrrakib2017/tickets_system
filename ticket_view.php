@@ -94,10 +94,13 @@ require 'Head.php';
                     <div class="row">
                         <div class="col-md-6 justify-content-end">
                             <div class="d-flex  gap-2 mb-3">
-
-                                <a class="btn btn-sm btn-success" href="ticket_edit.php?id=<?php echo $ticket['id']; ?>">
-                                    <i class="fas fa-edit"></i>
-                                </a>
+                                
+                                <?php if (in_array($ticket['ticket_type'], ['Active', 'Pending'])): ?>
+                                    <a class="btn btn-sm btn-success" href="ticket_edit.php?id=<?= $ticket['id']; ?>">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                <?php endif; ?>
+                              
 
                                 <a href="ticket_delete.php?id=<?php echo $ticket['id']; ?>" 
                                 class="btn btn-sm btn-primary"
@@ -358,7 +361,7 @@ require 'Head.php';
                                 </div>
 
                                 <div class="card mb-3">
-                                    <div class="card-body">
+                                    <div class="card-body <?php if($ticket['ticket_type'] == 'Complete') echo 'd-none'; ?>" id="commentFormContainer<?= urlencode($ticket['id'])?>">
                                         <form action="include/tickets_server.php?add_ticket_comment=true" method="POST" id="commentForm">
                                             <div class="row">
                                                 <div class="col-sm">

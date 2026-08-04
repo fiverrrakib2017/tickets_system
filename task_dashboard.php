@@ -303,6 +303,70 @@ WHERE ticket_type='Complete'
   overflow: hidden;
   border-radius: 10px;
 }
+
+
+
+
+
+
+
+
+/* Card Hover Effect */
+.leaderboard-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.leaderboard-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0.5rem 1.2rem rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Rank Badges (Gold, Silver, Bronze) */
+.rank-badge {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.rank-1 {
+  background-color: #ffd700;
+  color: #5a4300;
+  box-shadow: 0 2px 4px rgba(255, 215, 0, 0.4);
+}
+
+.rank-2 {
+  background-color: #e0e0e0;
+  color: #424242;
+}
+
+.rank-3 {
+  background-color: #cd7f32;
+  color: #ffffff;
+}
+
+/* Background Soft Highlights */
+.bg-soft-warning-light {
+  background-color: #fffdf5;
+  border-radius: 8px;
+}
+
+/* Count Badge Pill */
+.custom-count-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+}
+
+.bg-soft-primary { background-color: #e8f1ff; color: #0d6efd; }
+.bg-soft-info    { background-color: #e0f8f9; color: #0dcaf0; }
+.bg-soft-success { background-color: #e6f4ea; color: #198754; }
+.bg-soft-warning { background-color: #fff8e6; color: #ffb800; }
+.fs-7 { font-size: 0.75rem; }
 </style>
 <body data-sidebar="dark">
 
@@ -414,231 +478,356 @@ WHERE ticket_type='Complete'
                             </div>
                         </div>
 
-                       <!-- ================= ENGINEER PERFORMANCE TABLE ================= -->
-<div class="row">
-  <div class="col-12 mb-4">
-    <div class="card shadow-sm border-0 rounded-lg">
-      
-      <!-- Card Header -->
-      <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between">
-        <div class="d-flex align-items-center">
-          <div class="icon-shape bg-soft-primary text-primary rounded-circle me-3 p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-            <i class="fas fa-users-cog fs-5"></i>
-          </div>
-          <div>
-            <h5 class="mb-0 font-weight-bold text-dark">Engineer Performance</h5>
-            <small class="text-muted">Real-time task tracking & metrics</small>
-          </div>
-        </div>
-        <button class="btn btn-sm btn-light text-muted shadow-none">
-          <i class="fas fa-ellipsis-v"></i>
-        </button>
-      </div>
+                       <!--------- ENGINEER PERFORMANCE TABLE--------->
+                        <div class="row">
+                            <div class="col-12 mb-4">
+                                <div class="card shadow-sm border-0 rounded-lg">
+                                
+                                <!-- Card Header -->
+                                <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center">
+                                    <div class="icon-shape bg-soft-primary text-primary rounded-circle me-3 p-2 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                        <i class="fas fa-users-cog fs-5"></i>
+                                    </div>
+                                    <div>
+                                        <h5 class="mb-0 font-weight-bold text-dark">Engineer Performance</h5>
+                                        <small class="text-muted">Real-time task tracking & metrics</small>
+                                    </div>
+                                    </div>
+                                    <button class="btn btn-sm btn-light text-muted shadow-none">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                    </button>
+                                </div>
 
-      <!-- Table Body -->
-      <div class="card-body p-0">
-        <div class="table-responsive">
-          <table class="table table-hover align-middle mb-0 custom-performance-table">
-            <thead>
-              <tr>
-                <th class="ps-4">Engineer</th>
-                <th class="text-center">Current</th>
-                <th class="text-center">Pending</th>
-                <th class="text-center">Closed</th>
-                <th class="text-center">Success Rate</th>
-                <th class="pe-4" style="min-width: 180px;">Progress</th>
-              </tr>
-            </thead>
-            <tbody>
-              
-              <!-- Engineer 1: Rakib -->
-              <tr>
-                <td class="ps-4">
-                  <div class="d-flex align-items-center">
-                    <div class="avatar-sm me-3 position-relative">
-                      <span class="avatar-title rounded-circle bg-soft-primary text-primary font-weight-bold">R</span>
-                      <span class="status-indicator bg-success"></span>
-                    </div>
-                    <div>
-                      <h6 class="mb-0 font-weight-bold text-dark">Rakib</h6>
-                      <small class="text-muted">Senior Engineer</small>
-                    </div>
-                  </div>
-                </td>
-                <td class="text-center"><span class="custom-badge bg-soft-primary text-primary">12</span></td>
-                <td class="text-center"><span class="custom-badge bg-soft-warning text-warning">2</span></td>
-                <td class="text-center"><span class="custom-badge bg-soft-success text-success">10</span></td>
-                <td class="text-center">
-                  <span class="fw-bold text-dark">83%</span>
-                </td>
-                <td class="pe-4">
-                  <div class="d-flex align-items-center">
-                    <div class="progress flex-grow-1 me-2" style="height: 6px;">
-                      <div class="progress-bar bg-success rounded" role="progressbar" style="width: 83%;" aria-valuenow="83" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </div>
-                </td>
-              </tr>
+                                <!-- Table Body -->
+                                <div class="card-body p-0">
+                                    <div class="table-responsive">
+                                    <table class="table table-hover align-middle mb-0 custom-performance-table">
+                                        <thead>
+                                        <tr>
+                                            <th class="ps-4">Engineer</th>
+                                            <th class="text-center">Current</th>
+                                            <th class="text-center">Pending</th>
+                                            <th class="text-center">Closed</th>
+                                            <th class="text-center">Success Rate</th>
+                                            <th class="pe-4" style="min-width: 180px;">Progress</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php 
+                                            $sql = "
+                                                SELECT
+                                                    ta.id,
+                                                    ta.name,
+                                                    SUM(CASE WHEN t.ticket_type='Active' THEN 1 ELSE 0 END) AS current_task,
+                                                    SUM(CASE WHEN t.ticket_type='Pending' THEN 1 ELSE 0 END) AS pending_task,
+                                                    SUM(CASE WHEN t.ticket_type='Complete' THEN 1 ELSE 0 END) AS closed_task
+                                                FROM ticket_assign ta
+                                                LEFT JOIN ticket t ON t.asignto = ta.id
+                                                GROUP BY ta.id, ta.name
+                                                ORDER BY closed_task DESC
+                                            ";
 
-              <!-- Engineer 2: Sakib -->
-              <tr>
-                <td class="ps-4">
-                  <div class="d-flex align-items-center">
-                    <div class="avatar-sm me-3 position-relative">
-                      <span class="avatar-title rounded-circle bg-soft-info text-info font-weight-bold">S</span>
-                      <span class="status-indicator bg-success"></span>
-                    </div>
-                    <div>
-                      <h6 class="mb-0 font-weight-bold text-dark">Sakib</h6>
-                      <small class="text-muted">Network Engineer</small>
-                    </div>
-                  </div>
-                </td>
-                <td class="text-center"><span class="custom-badge bg-soft-primary text-primary">8</span></td>
-                <td class="text-center"><span class="custom-badge bg-soft-warning text-warning">1</span></td>
-                <td class="text-center"><span class="custom-badge bg-soft-success text-success">7</span></td>
-                <td class="text-center">
-                  <span class="fw-bold text-dark">88%</span>
-                </td>
-                <td class="pe-4">
-                  <div class="d-flex align-items-center">
-                    <div class="progress flex-grow-1 me-2" style="height: 6px;">
-                      <div class="progress-bar bg-info rounded" role="progressbar" style="width: 88%;" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </div>
-                </td>
-              </tr>
+                                            $engineers = $con->query($sql);
+                                            ?>
 
-              <!-- Engineer 3: Rony -->
-              <tr>
-                <td class="ps-4">
-                  <div class="d-flex align-items-center">
-                    <div class="avatar-sm me-3 position-relative">
-                      <span class="avatar-title rounded-circle bg-soft-danger text-danger font-weight-bold">R</span>
-                      <span class="status-indicator bg-secondary"></span>
-                    </div>
-                    <div>
-                      <h6 class="mb-0 font-weight-bold text-dark">Rony</h6>
-                      <small class="text-muted">Support Engineer</small>
-                    </div>
-                  </div>
-                </td>
-                <td class="text-center"><span class="custom-badge bg-soft-primary text-primary">5</span></td>
-                <td class="text-center"><span class="custom-badge bg-soft-warning text-warning">3</span></td>
-                <td class="text-center"><span class="custom-badge bg-soft-success text-success">2</span></td>
-                <td class="text-center">
-                  <span class="fw-bold text-dark">40%</span>
-                </td>
-                <td class="pe-4">
-                  <div class="d-flex align-items-center">
-                    <div class="progress flex-grow-1 me-2" style="height: 6px;">
-                      <div class="progress-bar bg-danger rounded" role="progressbar" style="width: 40%;" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100"></div>
-                    </div>
-                  </div>
-                </td>
-              </tr>
+                                            <?php while($row = $engineers->fetch_assoc()): 
+                                                /*------Calculate Total Task--------*/
+                                                $total_tasks = $row['current_task'] + $row['pending_task'] + $row['closed_task'];
+                                                
+                                                /*---------Dynamic Success Rate Division by zero---------*/ 
+                                                $success_rate = ($total_tasks > 0) ? round(($row['closed_task'] / $total_tasks) * 100) : 0;
+                                                
+                                                /*---------Grace Color For performance----------*/ 
+                                                $bar_color = 'bg-danger';
+                                                if ($success_rate >= 80) {
+                                                    $bar_color = 'bg-success';
+                                                } elseif ($success_rate >= 50) {
+                                                    $bar_color = 'bg-info';
+                                                } elseif ($success_rate >= 30) {
+                                                    $bar_color = 'bg-warning';
+                                                }
 
-            </tbody>
-          </table>
-        </div>
-      </div>
+                                                $first_letter = !empty($row['name']) ? strtoupper(substr($row['name'], 0, 1)) : 'U';
+                                            ?>
+                                                <tr>
+                                                    <!-- Engineer Name & Avatar -->
+                                                    <td class="ps-4">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="avatar-sm me-3 position-relative">
+                                                                <span class="avatar-title rounded-circle bg-soft-primary text-primary font-weight-bold">
+                                                                    <?= $first_letter; ?>
+                                                                </span>
+                                                                <span class="status-indicator bg-success"></span>
+                                                            </div>
+                                                            <div>
+                                                                <h6 class="mb-0 font-weight-bold text-dark"><?= htmlspecialchars($row['name']); ?></h6>
+                                                                <small class="text-muted">Engineer</small>
+                                                            </div>
+                                                        </div>
+                                                    </td>
 
-    </div>
-  </div>
-</div>
-                        <!-- ================= TOP PERFORMERS LEADERBOARD ================= -->
+                                                    <!-- Current Task -->
+                                                    <td class="text-center">
+                                                        <span class="custom-badge bg-soft-primary text-primary"><?= $row['current_task']; ?></span>
+                                                    </td>
+
+                                                    <!-- Pending Task -->
+                                                    <td class="text-center">
+                                                        <span class="custom-badge bg-soft-warning text-warning"><?= $row['pending_task']; ?></span>
+                                                    </td>
+
+                                                    <!-- Closed Task -->
+                                                    <td class="text-center">
+                                                        <span class="custom-badge bg-soft-success text-success"><?= $row['closed_task']; ?></span>
+                                                    </td>
+
+                                                    <!-- Success Rate -->
+                                                    <td class="text-center">
+                                                        <span class="fw-bold text-dark"><?= $success_rate; ?>%</span>
+                                                    </td>
+
+                                                    <!-- Dynamic Progress Bar -->
+                                                    <td class="pe-4">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="progress flex-grow-1 me-2" style="height: 6px;">
+                                                                <div class="progress-bar <?= $bar_color; ?> rounded" 
+                                                                    role="progressbar" 
+                                                                    style="width: <?= $success_rate; ?>%;" 
+                                                                    aria-valuenow="<?= $success_rate; ?>" 
+                                                                    aria-valuemin="0" 
+                                                                    aria-valuemax="100">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            <?php endwhile; ?>
+                                        </tbody>
+                                    </table>
+                                    </div>
+                                </div>
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                       <!--------TOP PERFORMERS LEADERBOARD--------->
+                       <?php
+                        /*---------Today Top-----*/
+                        $sql_today = "
+                            SELECT ta.name, COUNT(t.id) AS total_complete
+                            FROM ticket_assign ta
+                            JOIN ticket t ON t.asignto = ta.id
+                            WHERE t.ticket_type = 'Complete' AND DATE(t.enddate) = CURDATE()
+                            GROUP BY ta.id, ta.name
+                            ORDER BY total_complete DESC
+                            LIMIT 3
+                        ";
+                        $today_performers = $con->query($sql_today);
+
+                        /*----------This Week Top-------*/
+                        $sql_week = "
+                            SELECT ta.name, COUNT(t.id) AS total_complete
+                            FROM ticket_assign ta
+                            JOIN ticket t ON t.asignto = ta.id
+                            WHERE t.ticket_type = 'Complete' 
+                            AND YEARWEEK(t.enddate, 1) = YEARWEEK(CURDATE(), 1)
+                            GROUP BY ta.id, ta.name
+                            ORDER BY total_complete DESC
+                            LIMIT 3
+                        ";
+                        $week_performers = $con->query($sql_week);
+
+                        /*----------This Month Top---------*/
+                        $sql_month = "
+                            SELECT ta.name, COUNT(t.id) AS total_complete
+                            FROM ticket_assign ta
+                            JOIN ticket t ON t.asignto = ta.id
+                            WHERE t.ticket_type = 'Complete' 
+                            AND MONTH(t.enddate) = MONTH(CURDATE()) 
+                            AND YEAR(t.enddate) = YEAR(CURDATE())
+                            GROUP BY ta.id, ta.name
+                            ORDER BY total_complete DESC
+                            LIMIT 3
+                        ";
+                        $month_performers = $con->query($sql_month);
+
+                        /*-----------This Year Top-------*/ 
+                        $sql_year = "
+                            SELECT ta.name, COUNT(t.id) AS total_complete
+                            FROM ticket_assign ta
+                            JOIN ticket t ON t.asignto = ta.id
+                            WHERE t.ticket_type = 'Complete' 
+                            AND YEAR(t.enddate) = YEAR(CURDATE())
+                            GROUP BY ta.id, ta.name
+                            ORDER BY total_complete DESC
+                            LIMIT 3
+                        ";
+                        $year_performers = $con->query($sql_year);
+                        ?>
+                       <!-- ================= TOP PERFORMERS LEADERBOARD ================= -->
                         <div class="row">
                             
-                            <!-- Today Top Performer -->
+                            <!-- 1. Today Top Performer -->
                             <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card shadow">
-                                <div class="card-header bg-dark text-white font-weight-bold text-center">
-                                Today Top Performer
+                                <div class="card shadow-sm border-0 rounded-lg leaderboard-card">
+                                    <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between">
+                                        <h6 class="m-0 font-weight-bold text-dark fs-6">
+                                            <i class="far fa-calendar-alt text-primary me-2"></i>Today Top
+                                        </h6>
+                                        <span class="badge bg-soft-primary text-primary rounded-pill px-2 py-1 fs-7">Daily</span>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <ul class="list-group list-group-flush border-0">
+                                            <?php 
+                                            $rank = 1;
+                                            if($today_performers && $today_performers->num_rows > 0):
+                                                while($row = $today_performers->fetch_assoc()): 
+                                                    $is_top = ($rank == 1);
+                                            ?>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-3 py-2 <?= $is_top ? 'bg-soft-warning-light' : ''; ?>">
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="rank-badge rank-<?= $rank; ?> me-2"><?= $rank; ?></span>
+                                                        <span class="<?= $is_top ? 'fw-bold text-dark' : 'fw-semibold text-secondary'; ?>">
+                                                            <?= htmlspecialchars($row['name']); ?>
+                                                        </span>
+                                                    </div>
+                                                    <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
+                                                        <?= number_format($row['total_complete']); ?>
+                                                    </span>
+                                                </li>
+                                            <?php 
+                                                $rank++;
+                                                endwhile; 
+                                            else:
+                                            ?>
+                                                <li class="list-group-item text-center text-muted py-3">No data available</li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
                                 </div>
-                                <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>🥇 Rakib</span>
-                                    <span class="badge bg-primary rounded-pill">18</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>🥈 Sakib</span>
-                                    <span class="badge bg-secondary rounded-pill">14</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>🥉 Rony</span>
-                                    <span class="badge bg-secondary rounded-pill">12</span>
-                                </li>
-                                </ul>
-                            </div>
                             </div>
 
-                            <!-- This Week Top Performer -->
+                            <!-- 2. This Week Top Performer -->
                             <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card shadow">
-                                <div class="card-header bg-dark text-white font-weight-bold text-center">
-                                This Week Top Performer
+                                <div class="card shadow-sm border-0 rounded-lg leaderboard-card">
+                                    <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between">
+                                        <h6 class="m-0 font-weight-bold text-dark fs-6">
+                                            <i class="far fa-clock text-info me-2"></i>This Week Top
+                                        </h6>
+                                        <span class="badge bg-soft-info text-info rounded-pill px-2 py-1 fs-7">Weekly</span>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <ul class="list-group list-group-flush border-0">
+                                            <?php 
+                                            $rank = 1;
+                                            if($week_performers && $week_performers->num_rows > 0):
+                                                while($row = $week_performers->fetch_assoc()): 
+                                                    $is_top = ($rank == 1);
+                                            ?>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-3 py-2 <?= $is_top ? 'bg-soft-warning-light' : ''; ?>">
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="rank-badge rank-<?= $rank; ?> me-2"><?= $rank; ?></span>
+                                                        <span class="<?= $is_top ? 'fw-bold text-dark' : 'fw-semibold text-secondary'; ?>">
+                                                            <?= htmlspecialchars($row['name']); ?>
+                                                        </span>
+                                                    </div>
+                                                    <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
+                                                        <?= number_format($row['total_complete']); ?>
+                                                    </span>
+                                                </li>
+                                            <?php 
+                                                $rank++;
+                                                endwhile; 
+                                            else:
+                                            ?>
+                                                <li class="list-group-item text-center text-muted py-3">No data available</li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
                                 </div>
-                                <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>🥇 Rakib</span>
-                                    <span class="badge bg-primary rounded-pill">81</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>🥈 Sohel</span>
-                                    <span class="badge bg-secondary rounded-pill">76</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>🥉 Sakib</span>
-                                    <span class="badge bg-secondary rounded-pill">70</span>
-                                </li>
-                                </ul>
-                            </div>
                             </div>
 
-                            <!-- This Month Top Performer -->
+                            <!-- 3. This Month Top Performer -->
                             <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card shadow">
-                                <div class="card-header bg-dark text-white font-weight-bold text-center">
-                                This Month Top Performer
+                                <div class="card shadow-sm border-0 rounded-lg leaderboard-card">
+                                    <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between">
+                                        <h6 class="m-0 font-weight-bold text-dark fs-6">
+                                            <i class="far fa-calendar text-success me-2"></i>This Month Top
+                                        </h6>
+                                        <span class="badge bg-soft-success text-success rounded-pill px-2 py-1 fs-7">Monthly</span>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <ul class="list-group list-group-flush border-0">
+                                            <?php 
+                                            $rank = 1;
+                                            if($month_performers && $month_performers->num_rows > 0):
+                                                while($row = $month_performers->fetch_assoc()): 
+                                                    $is_top = ($rank == 1);
+                                            ?>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-3 py-2 <?= $is_top ? 'bg-soft-warning-light' : ''; ?>">
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="rank-badge rank-<?= $rank; ?> me-2"><?= $rank; ?></span>
+                                                        <span class="<?= $is_top ? 'fw-bold text-dark' : 'fw-semibold text-secondary'; ?>">
+                                                            <?= htmlspecialchars($row['name']); ?>
+                                                        </span>
+                                                    </div>
+                                                    <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
+                                                        <?= number_format($row['total_complete']); ?>
+                                                    </span>
+                                                </li>
+                                            <?php 
+                                                $rank++;
+                                                endwhile; 
+                                            else:
+                                            ?>
+                                                <li class="list-group-item text-center text-muted py-3">No data available</li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
                                 </div>
-                                <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>🥇 Rakib</span>
-                                    <span class="badge bg-primary rounded-pill">220</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>🥈 Sakib</span>
-                                    <span class="badge bg-secondary rounded-pill">206</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>🥉 Sohel</span>
-                                    <span class="badge bg-secondary rounded-pill">198</span>
-                                </li>
-                                </ul>
-                            </div>
                             </div>
 
-                            <!-- This Year Top Performer -->
+                            <!-- 4. This Year Top Performer -->
                             <div class="col-xl-3 col-md-6 mb-4">
-                            <div class="card shadow">
-                                <div class="card-header bg-dark text-white font-weight-bold text-center">
-                                This Year Top Performer
+                                <div class="card shadow-sm border-0 rounded-lg leaderboard-card">
+                                    <div class="card-header bg-white py-3 border-0 d-flex align-items-center justify-content-between">
+                                        <h6 class="m-0 font-weight-bold text-dark fs-6">
+                                            <i class="fas fa-trophy text-warning me-2"></i>This Year Top
+                                        </h6>
+                                        <span class="badge bg-soft-warning text-warning rounded-pill px-2 py-1 fs-7">Yearly</span>
+                                    </div>
+                                    <div class="card-body p-0">
+                                        <ul class="list-group list-group-flush border-0">
+                                            <?php 
+                                            $rank = 1;
+                                            if($year_performers && $year_performers->num_rows > 0):
+                                                while($row = $year_performers->fetch_assoc()): 
+                                                    $is_top = ($rank == 1);
+                                            ?>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-3 py-2 <?= $is_top ? 'bg-soft-warning-light' : ''; ?>">
+                                                    <div class="d-flex align-items-center">
+                                                        <span class="rank-badge rank-<?= $rank; ?> me-2"><?= $rank; ?></span>
+                                                        <span class="<?= $is_top ? 'fw-bold text-dark' : 'fw-semibold text-secondary'; ?>">
+                                                            <?= htmlspecialchars($row['name']); ?>
+                                                        </span>
+                                                    </div>
+                                                    <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
+                                                        <?= number_format($row['total_complete']); ?>
+                                                    </span>
+                                                </li>
+                                            <?php 
+                                                $rank++;
+                                                endwhile; 
+                                            else:
+                                            ?>
+                                                <li class="list-group-item text-center text-muted py-3">No data available</li>
+                                            <?php endif; ?>
+                                        </ul>
+                                    </div>
                                 </div>
-                                <ul class="list-group list-group-flush">
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>🥇 Rakib</span>
-                                    <span class="badge bg-primary rounded-pill">2480</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>🥈 Sohel</span>
-                                    <span class="badge bg-secondary rounded-pill">2344</span>
-                                </li>
-                                <li class="list-group-item d-flex justify-content-between align-items-center">
-                                    <span>🥉 Sakib</span>
-                                    <span class="badge bg-secondary rounded-pill">2230</span>
-                                </li>
-                                </ul>
-                            </div>
                             </div>
 
                         </div>

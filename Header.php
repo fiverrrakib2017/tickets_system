@@ -29,15 +29,15 @@
                     </button>
 
                    
-                    <div class="d-none d-sm-flex align-items-center ms-2">
-                        <h4 class="page-title mb-0">
+                    <div class="d-flex align-items-center ms-2">
+                        <h4 class="page-title mb-0 d-none d-sm-block">
                             <?php echo isset($page_title) ? $page_title : 'Welcome To Dashboard'; ?>
                         </h4>
 
                         <a href="task_dashboard.php"
-                        class="btn btn-primary btn-sm ms-3 rounded-pill shadow-sm">
-                            <i class="mdi mdi-view-dashboard-outline me-1"></i>
-                            Task Dashboard
+                        class="btn btn-primary btn-sm ms-2 rounded-pill shadow-sm">
+                            <i class="mdi mdi-view-dashboard-outline"></i>
+                            <span class="d-none d-sm-inline">Task Dashboard</span>
                         </a>
                     </div>
                 </div>

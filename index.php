@@ -71,6 +71,7 @@ require 'Head.php';
 
                     <?php include 'Component/dashboard_card.php'; ?>
                     <?php include 'Component/dashboard_ip_card.php'; ?>
+                    <?php include 'Component/dashboard_pop_branch_card.php'; ?>
                     <?php include 'Component/chart.php'; ?>
                     <div class="row">
                     <?php include 'Component/recent_ticket.php'; ?>

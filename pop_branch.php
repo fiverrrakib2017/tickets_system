@@ -66,12 +66,32 @@ function _formate_duration($seconds) {
                     <div class="row">
                         <div class="col-md-12 stretch-card">
                             <div class="card">
-                                <div class="card-body">
-                                    <div class="col-md-6 float-md-right grid-margin-sm-0">
-                                        <div class="form-group">
+                               <div class="card-body">
+                                    <?php
+                                        $status_filter = isset($_GET['status']) ? $_GET['status'] : '';
 
+                                        if ($status_filter === 'online') {
+                                            $sql = "SELECT * FROM pop_branch WHERE ping_ip_status = 'online' ORDER BY id DESC";
+                                        } elseif ($status_filter === 'offline') {
+                                            $sql = "SELECT * FROM pop_branch WHERE ping_ip_status = 'offline' ORDER BY id DESC";
+                                        } else {
+                                            $sql = "SELECT * FROM pop_branch ORDER BY id DESC";
+                                        }
+
+                                        $result = mysqli_query($con, $sql);
+                                    ?>
+
+                                    <?php if($status_filter==='online'):?>
+                                        <div class="card-header mb-2 bg-white">
+                                            <div class="mb-3">
+                                                <span class="badge bg-success fs-6">Showing: Online POPs Only</span>
+                                                <a href="pop_branch.php" class="btn btn-sm btn-outline-danger ms-2">Show All</a>
+                                            </div>
                                         </div>
-                                    </div>
+                                        <?php elseif ($status_filter === 'offline'): ?>
+                                               <span class="badge bg-danger fs-6">Showing: Offline POPs Only</span>
+                                                <a href="pop_branch.php" class="btn btn-sm btn-outline-danger ms-2">Show All</a>
+                                    <?php endif; ?>
                                     <div class="table-responsive">
                                         <table id="ticket_topic_datatable" class="table table-bordered dt-responsive nowrap" style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                             <thead>
@@ -89,11 +109,7 @@ function _formate_duration($seconds) {
                                             <tbody>
 
                                                 <?php
-                                                $sql = "SELECT * FROM pop_branch ORDER BY id DESC";
-                                                $result = mysqli_query($con, $sql);
-
                                                 while ($rows = mysqli_fetch_assoc($result)) {
-
                                                 ?>
 
                                                     <tr>
@@ -110,8 +126,8 @@ function _formate_duration($seconds) {
                                                                     Offline for <?php echo _formate_duration($rows['offline_duration']); ?>
                                                                 </span>
                                                             <?php } ?>
-    
-                                                           <!-- Status + Ping -->
+                                    
+                                                            <!-- Status + Ping -->
                                                             <div class="d-flex flex-column gap-1 small text-muted">
 
                                                                 <!-- Online / Offline Status -->
@@ -187,15 +203,12 @@ function _formate_duration($seconds) {
                                                             <button type="button" name="edit_button" data-id="<?php echo $rows['id']; ?>" class="btn-sm btn btn-info"><i class="fas fa-edit"></i></button>
                                                             <button type="button" name="delete_button" data-id="<?php echo $rows['id']; ?>" class="btn-sm btn btn-danger"><i class="fas fa-trash"></i></button>
                                                             <button 
-                                                                    type="button"
-                                                                    class="btn-sm btn btn-dark terminal-btn"
-                                                                    data-ip="<?= $rows['router_ip'] ?>?>"
-                                                                >
-                                                                    <i class="fas fa-terminal"></i> Terminal
-                                                                </button>
-
-
-
+                                                                type="button"
+                                                                class="btn-sm btn btn-dark terminal-btn"
+                                                                data-ip="<?= $rows['router_ip'] ?>"
+                                                            >
+                                                                <i class="fas fa-terminal"></i> Terminal
+                                                            </button>
 
                                                         </td>
                                                     </tr>

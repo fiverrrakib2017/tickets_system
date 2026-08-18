@@ -133,8 +133,6 @@ require 'Head.php';
             </div>
         </div>
     </div>
-    <!-- Modal for Send Message -->
-     <?php include 'modal/message_modal.php'; ?>
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
     <?php include 'script.php'; ?>

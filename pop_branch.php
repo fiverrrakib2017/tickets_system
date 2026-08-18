@@ -564,15 +564,24 @@ function _formate_duration($seconds) {
         });
     </script>
     <script>
-    document.querySelectorAll('.terminal-btn').forEach(btn => {
-        btn.addEventListener('click', function () {
-            window.open(
-                'http://103.112.206.139:7681',
-                '_blank',
-                'width=600,height=300'
-            );
+        document.querySelectorAll('.terminal-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                let targetIp = this.getAttribute('data-ip');
+
+                let terminalUrl = 'http://103.112.206.139:7681'; 
+
+                let width = 800;
+                let height = 500;
+                let left = (screen.width - width) / 2;
+                let top = (screen.height - height) / 2;
+
+                window.open(
+                    terminalUrl,
+                    'TerminalWindow',
+                    `width=${width},height=${height},top=${top},left=${left},resizable=yes,scrollbars=yes,status=no`
+                );
+            });
         });
-    });
     </script>
 
 

@@ -79,7 +79,7 @@ if (isset($_SESSION["uid"])) {
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>Login | ISP-BILLING SOFTWARE</title>
+    <title>Login | Tickets Management System</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Bootstrap CSS -->
@@ -193,7 +193,7 @@ if (isset($_SESSION["uid"])) {
 
                         <h4 class="text-center mb-2">Welcome Back</h4>
                         <p class="text-muted text-center mb-4">
-                            Sign in to continue to ISP Billing System
+                            Sign in to continue to Tickets Management System
                         </p>
 
                         <form method="POST" action="<?php echo $_SERVER['PHP_SELF']; ?>">

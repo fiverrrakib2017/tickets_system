@@ -66,16 +66,16 @@ $userTicketStats = [];
 
 $sqlUserStats = "
     SELECT 
-        ta.id,
-        ta.name,
+        tu.id,
+        tu.fullname as name,
         SUM(t.ticket_type = 'Active')   AS open_ticket,
         SUM(t.ticket_type = 'Pending')  AS pending_ticket,
         SUM(t.ticket_type = 'Complete') AS resolved_ticket
     FROM ticket t
-    LEFT JOIN ticket_assign ta ON t.asignto = ta.id
+    LEFT JOIN users tu ON t.assign_user_id = tu.id
     WHERE t.create_date >= CURDATE()
       AND t.create_date < CURDATE() + INTERVAL 1 DAY
-    GROUP BY t.asignto
+    GROUP BY t.assign_user_id
 ";
 
 $resultUserStats = $con->query($sqlUserStats);

@@ -147,39 +147,6 @@ WHERE ticket_type='Complete'
 
 
 
-
-.custom-card {
-    border: none;
-   
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-    overflow: hidden;
-}
-
-.custom-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #fff;
-    padding: 18px 20px;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.custom-header h5 {
-    margin: 0;
-    font-size: 16px;
-}
-
-.view-btn {
-    font-size: 13px;
-    color: #3b82f6;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.view-btn:hover {
-    text-decoration: underline;
-}
-
 .custom-table thead {
     background: #f8fafc;
 }
@@ -232,31 +199,6 @@ WHERE ticket_type='Complete'
 }
 
 
-
-
-
-/* Table Styles */
-.custom-performance-table thead th {
-  background-color: #f8f9fa;
-  color: #6c757d;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.8px;
-  border-bottom: 1px solid #edf2f7;
-  padding-top: 12px;
-  padding-bottom: 12px;
-}
-
-.custom-performance-table tbody tr {
-  transition: all 0.2s ease;
-}
-
-.custom-performance-table tbody tr:hover {
-  background-color: #fcfdfe;
-}
-
-
-
 /* Avatar System */
 .avatar-sm {
   width: 38px;
@@ -273,29 +215,12 @@ WHERE ticket_type='Complete'
   font-size: 0.9rem;
 }
 
-.status-indicator {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 2px solid #ffffff;
-}
-
 /* Progress Bar Overrides */
 .progress {
   background-color: #edf2f7;
   overflow: hidden;
   border-radius: 10px;
 }
-
-
-
-
-
-
-
 
 /* Card Hover Effect */
 .leaderboard-card {
@@ -353,6 +278,27 @@ WHERE ticket_type='Complete'
 .bg-soft-success { background-color: #e6f4ea; color: #198754; }
 .bg-soft-warning { background-color: #fff8e6; color: #ffb800; }
 .fs-7 { font-size: 0.75rem; }
+
+
+
+
+.status-indicator {
+    position: absolute;
+    bottom: 2px;
+    right: 0;
+    width: 11px;
+    height: 11px;
+    border: 2px solid #fff;
+    border-radius: 50%;
+}
+
+.bg-success {
+    background-color: #28a745 !important;
+}
+
+.bg-secondary {
+    background-color: #6c757d !important;
+}
 </style>
 <body data-sidebar="dark">
 
@@ -488,7 +434,7 @@ WHERE ticket_type='Complete'
                                 <!-- Table Body -->
                                 <div class="card-body p-0">
                                     <div class="table-responsive">
-                                    <table class="table table-hover align-middle mb-0 custom-performance-table">
+                                    <table class="table table-hover align-middle mb-0 ">
                                         <thead>
                                         <tr>
                                             <th class="ps-4">Engineer</th>
@@ -505,6 +451,7 @@ WHERE ticket_type='Complete'
                                                 SELECT
                                                     tu.id,
                                                     tu.fullname as name,
+                                                    tu.lastlogin,
                                                     SUM(CASE WHEN t.ticket_type='Active' THEN 1 ELSE 0 END) AS current_task,
                                                     SUM(CASE WHEN t.ticket_type='Pending' THEN 1 ELSE 0 END) AS pending_task,
                                                     SUM(CASE WHEN t.ticket_type='Complete' THEN 1 ELSE 0 END) AS closed_task
@@ -535,21 +482,39 @@ WHERE ticket_type='Complete'
                                                 }
 
                                                 $first_letter = !empty($row['name']) ? strtoupper(substr($row['name'], 0, 1)) : 'U';
+                                                $is_online = !empty($row['lastlogin']) && strtotime($row['lastlogin']) >= strtotime('-2 minutes');
+
+                                                $status_class = $is_online ? 'bg-success' : 'bg-danger';
                                             ?>
-                                                <tr>
+                                                <tr style="border: 2px dotted #c7c7c7;">
                                                     <!-- Engineer Name & Avatar -->
                                                     <td class="ps-4">
                                                         <div class="d-flex align-items-center">
+
                                                             <div class="avatar-sm me-3 position-relative">
+
                                                                 <span class="avatar-title rounded-circle bg-soft-primary text-primary font-weight-bold">
                                                                     <?= $first_letter; ?>
                                                                 </span>
-                                                                <span class="status-indicator bg-success"></span>
+
+                                                                <!-- Online / Offline indicator -->
+                                                                <span 
+                                                                    class="status-indicator <?= $status_class; ?>"
+                                                                    title="<?= $is_online ? 'Online' : 'Offline'; ?>">
+                                                                </span>
+
                                                             </div>
+
                                                             <div>
-                                                                <h6 class="mb-0 font-weight-bold text-dark"><?= htmlspecialchars($row['name']); ?></h6>
-                                                                <small class="text-muted">Engineer</small>
+                                                                <h6 class="mb-0 font-weight-bold text-dark">
+                                                                    <?= htmlspecialchars($row['name']); ?>
+                                                                </h6>
+
+                                                                <small class="text-muted">
+                                                                    <?= $is_online ? 'Online' : 'Offline'; ?>
+                                                                </small>
                                                             </div>
+
                                                         </div>
                                                     </td>
 

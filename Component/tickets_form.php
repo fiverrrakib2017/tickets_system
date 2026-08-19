@@ -44,13 +44,24 @@
 <?php if($_is_customer_portal==false):?>
 <div class="col-md-6 mb-3">
     <label class="form-label">Assign To</label>
-    <select name="assign_to" class="form-select" required>
+
+    <select name="assign_user_id" class="form-select" required>
         <option value="">---select---</option>
+
         <?php
-        $ticket_assign = $con->query('SELECT * FROM ticket_assign');
-        while ($row = $ticket_assign->fetch_assoc()) {
-            $selected = $row['id'] == $ticket['asignto'] ? 'selected' : '';
-            echo "<option value='{$row['id']}' $selected>{$row['name']}</option>";
+        $session_uid = $_SESSION['uid'] ?? 0;
+
+        $ticket_assign_users = $con->query("SELECT * FROM users");
+
+        while ($row = $ticket_assign_users->fetch_assoc()) {
+
+            if (!empty($ticket['assign_user_id'])) {
+                $selected = ($row['id'] == $ticket['assign_user_id']) ? 'selected' : '';
+            } else {
+                $selected = ($row['id'] == $session_uid) ? 'selected' : '';
+            }
+
+            echo "<option value='{$row['id']}' {$selected}>{$row['fullname']}</option>";
         }
         ?>
     </select>

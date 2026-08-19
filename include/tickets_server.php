@@ -38,11 +38,15 @@ if(isset($_GET['mark_ticket_completed']) && $_SERVER['REQUEST_METHOD'] == 'POST'
 
 /*----------- Add Ticket Data------------------*/
 if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
-   
+//    echo '<pre>';
+
+//    print_r($_POST);
+//    echo '</pre>';
+//    exit; 
     $customer_id            = isset($_POST['customer_id']) ? trim($_POST['customer_id']) : '';
     $ticket_for             = isset($_POST['ticket_for']) ? trim($_POST['ticket_for']) : '';
     $complain_type          = isset($_POST['complain_type']) ? trim($_POST['complain_type']) : '';
-    $assign_to              = isset($_POST['assign_to']) ? trim($_POST['assign_to']) : '';
+    $assign_user_id         = isset($_POST['assign_user_id']) ? trim($_POST['assign_user_id']) : '';
     $note                   = isset($_POST['notes']) ? trim($_POST['notes']) : '';
     $priority               = isset($_POST['ticket_priority']) ? trim($_POST['ticket_priority']) : '';
     $customer_note          = isset($_POST['customer_note']) ? trim($_POST['customer_note']) : '';
@@ -73,7 +77,7 @@ if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
             ]);
             exit();
         }
-        if(empty($assign_to)) {
+        if(empty($assign_user_id)) {
             echo json_encode([
                 'success' => false,
                 'message'  =>  'Assign To is required.'
@@ -101,13 +105,13 @@ if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
     $stmt->execute();
     $stmt->store_result();
 
-    // if ($stmt->num_rows > 0) {
-    //     echo json_encode([
-    //         'success' => false,
-    //         'message'  =>  'You already have an active ticket.'
-    //     ]);
-    //     exit();
-    // }
+    if ($stmt->num_rows > 0) {
+        echo json_encode([
+            'success' => false,
+            'message'  =>  'You already have an active ticket.'
+        ]);
+        exit();
+    }
 
     /*-------------Upload Ticket File-------------*/
     $ticket_file = __upload_file($_FILES['customer_attachments'] ?? null);
@@ -129,7 +133,7 @@ if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
         (
             customer_id,
             ticket_type,
-            asignto,
+            assign_user_id,
             ticketfor,
             pop_id,
             complain_type,
@@ -155,7 +159,7 @@ if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
     $insert->bind_param(
         'iisssssssssss',
         $customer_id,
-        $assign_to,
+        $assign_user_id,
         $ticket_for,
         $customerPopId,
         $complain_type,
@@ -223,7 +227,7 @@ if (isset($_GET['update_ticket_data']) && $_SERVER['REQUEST_METHOD'] === 'POST')
             customer_id=?,
             ticketfor=?,
             pop_id=?,
-            asignto=?,
+            assign_user_id=?,
             complain_type=?,
             priority=?,
             customer_note=?,
@@ -495,9 +499,9 @@ if (isset($_GET['add_ticket_comment']) && $_SERVER['REQUEST_METHOD'] == 'POST') 
     __validate_input($assign_to, 'Assign To');
 
     /* Insert into ticket_details table */
-    $result = $con->query("INSERT INTO ticket_details(tcktid, status, datetm,comments,parcent,asignto) VALUES('$ticket_id', '$ticket_type', NOW(), '$comment', '$progress', '$assign_to')");
+    $result = $con->query("INSERT INTO ticket_details(tcktid, status, datetm,comments,parcent,assign_user_id) VALUES('$ticket_id', '$ticket_type', NOW(), '$comment', '$progress', '$assign_to')");
 
-    $con->query("UPDATE ticket SET ticket_type='$ticket_type', parcent='$progress', asignto='$assign_to' WHERE id='$ticket_id'");
+    $con->query("UPDATE ticket SET ticket_type='$ticket_type', parcent='$progress', assign_user_id='$assign_to' WHERE id='$ticket_id'");
     if(isset($progress) && $progress == '100%'){
         $enddate = date('Y-m-d H:i:s');
         $con->query("UPDATE ticket SET enddate='$enddate' WHERE id='$ticket_id'");
@@ -559,14 +563,14 @@ if (isset($_GET['get_tickets_report_data']) && $_SERVER['REQUEST_METHOD'] === 'P
     $query = "
         SELECT 
             DATE(create_date) as report_date,
-            asignto,
+            assign_user_id,
             COUNT(*) as total_ticket,
             SUM(CASE WHEN ticket_type='Complete' THEN 1 ELSE 0 END) as completed_ticket,
             SUM(CASE WHEN ticket_type='Active' THEN 1 ELSE 0 END) as active_ticket,
             SUM(CASE WHEN ticket_type='Pending' THEN 1 ELSE 0 END) as pending_ticket
         FROM ticket
         WHERE $where_sql
-        GROUP BY DATE(create_date), asignto
+        GROUP BY DATE(create_date), assign_user_id
         ORDER BY report_date ASC
     ";
 
@@ -588,7 +592,7 @@ if (isset($_GET['get_tickets_report_data']) && $_SERVER['REQUEST_METHOD'] === 'P
     if ($result->num_rows > 0) {
         $i = 1;
         while ($row = $result->fetch_assoc()) {
-            $asg_id = intval($row['asignto']);
+            $asg_id = intval($row['assign_user_id']);
             $asg_name = 'N/A';
             $asgRes = $con->query("SELECT `name` FROM ticket_assign WHERE id = $asg_id");
             if ($asgRes && $asgRes->num_rows > 0) {
@@ -808,7 +812,7 @@ if (isset($_GET['add_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] == '
                 INSERT INTO ticket (
                     customer_id,
                     ticket_type,
-                    asignto,
+                    assign_user_id,
                     ticketfor,
                     pop_id,
                     complain_type,

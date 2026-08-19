@@ -522,7 +522,7 @@ if (isset($_GET['add_ticket_comment']) && $_SERVER['REQUEST_METHOD'] == 'POST') 
     }
 }
 
-/******** Ticket Reports ******************/
+/*---------Ticket Reports ---------*/
 
 if (isset($_GET['get_tickets_report_data']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
@@ -593,8 +593,8 @@ if (isset($_GET['get_tickets_report_data']) && $_SERVER['REQUEST_METHOD'] === 'P
         $i = 1;
         while ($row = $result->fetch_assoc()) {
             $asg_id = intval($row['assign_user_id']);
-            $asg_name = 'N/A';
-            $asgRes = $con->query("SELECT `name` FROM ticket_assign WHERE id = $asg_id");
+            $asg_name = '---';
+            $asgRes = $con->query("SELECT `fullname` as `name` FROM users WHERE id = $asg_id");
             if ($asgRes && $asgRes->num_rows > 0) {
                 $asgRow = $asgRes->fetch_assoc();
                 $asg_name = $asgRow['name'];

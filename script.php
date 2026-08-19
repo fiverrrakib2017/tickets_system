@@ -152,19 +152,25 @@ $(document).ready(function () {
     },
 
     escapeMarkup: function (markup) {
-        return markup; // HTML render করতে দেবে
+        return markup;
     }
 
 });
 
 
-    // Redirect on select
+    /*--------Redirect on select-----*/ 
     $('#menu_select_box').on('select2:select', function (e) {
         let customerId = e.params.data.id;
         if (customerId) {
             window.location.href = 'customer_profile.php?clid=' + customerId;
         }
     });
+
+    function user_load_activity(){
+        fetch('include/heartbeat.php',{method:'POST'});
+    }
+    user_load_activity();
+    setInterval(user_load_activity, 60000);
 
 });
 </script>  

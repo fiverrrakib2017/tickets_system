@@ -6,14 +6,14 @@ $_SESSION["uid"];
 $_SESSION["username"];
 
 
-/*********************Check user is loged in *************************************/
+/*---------Check user is loged in ----------------*/
 if(empty($_SESSION["username"]) || empty($_SESSION['uid']))
 {
 	
 	header('location: login.php');
 	exit; 
 }
-/*************************************Include Database Connection*************************************/
+/*------Include Database Connection-----------*/
 if(!file_exists('db_connect.php')){
 	include 'db_connect.php';
 }
@@ -32,6 +32,6 @@ if($_SESSION['uid']!=='0' && !empty($_SESSION['uid'])){
 		$stmt->close();
 	}
 }
-/* Close the database connection*/
+/*---------- Close the database connection-------*/
 $con->close();
 ?>

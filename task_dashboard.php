@@ -255,21 +255,7 @@ WHERE ticket_type='Complete'
   background-color: #fcfdfe;
 }
 
-/* Custom Soft Badges */
-.custom-badge {
-  padding: 6px 12px;
-  border-radius: 30px;
-  font-size: 0.825rem;
-  font-weight: 600;
-  display: inline-block;
-  min-width: 36px;
-}
 
-.bg-soft-primary { background-color: #e8f1ff; color: #0d6efd; }
-.bg-soft-success { background-color: #e6f4ea; color: #198754; }
-.bg-soft-warning { background-color: #fff8e6; color: #ffb800; }
-.bg-soft-danger  { background-color: #fce8e8; color: #dc3545; }
-.bg-soft-info    { background-color: #e0f8f9; color: #0dcaf0; }
 
 /* Avatar System */
 .avatar-sm {
@@ -517,14 +503,14 @@ WHERE ticket_type='Complete'
                                             <?php 
                                             $sql = "
                                                 SELECT
-                                                    ta.id,
-                                                    ta.name,
+                                                    tu.id,
+                                                    tu.fullname as name,
                                                     SUM(CASE WHEN t.ticket_type='Active' THEN 1 ELSE 0 END) AS current_task,
                                                     SUM(CASE WHEN t.ticket_type='Pending' THEN 1 ELSE 0 END) AS pending_task,
                                                     SUM(CASE WHEN t.ticket_type='Complete' THEN 1 ELSE 0 END) AS closed_task
-                                                FROM ticket_assign ta
-                                                LEFT JOIN ticket t ON t.asignto = ta.id
-                                                GROUP BY ta.id, ta.name
+                                                FROM users tu
+                                                LEFT JOIN ticket t ON t.assign_user_id = tu.id
+                                                GROUP BY tu.id, tu.fullname
                                                 ORDER BY closed_task DESC
                                             ";
 
@@ -569,17 +555,17 @@ WHERE ticket_type='Complete'
 
                                                     <!-- Current Task -->
                                                     <td class="text-center">
-                                                        <span class="custom-badge bg-soft-primary text-primary"><?= $row['current_task']; ?></span>
+                                                        <span class="badge bg-primary"><?= $row['current_task']; ?></span>
                                                     </td>
 
                                                     <!-- Pending Task -->
                                                     <td class="text-center">
-                                                        <span class="custom-badge bg-soft-warning text-warning"><?= $row['pending_task']; ?></span>
+                                                        <span class="badge bg-dark"><?= $row['pending_task']; ?></span>
                                                     </td>
 
                                                     <!-- Closed Task -->
                                                     <td class="text-center">
-                                                        <span class="custom-badge bg-soft-success text-success"><?= $row['closed_task']; ?></span>
+                                                        <span class="badge bg-success"><?= $row['closed_task']; ?></span>
                                                     </td>
 
                                                     <!-- Success Rate -->
@@ -617,11 +603,11 @@ WHERE ticket_type='Complete'
                        <?php
                         /*---------Today Top-----*/
                         $sql_today = "
-                            SELECT ta.name, COUNT(t.id) AS total_complete
-                            FROM ticket_assign ta
-                            JOIN ticket t ON t.asignto = ta.id
+                            SELECT tu.fullname, COUNT(t.id) AS total_complete
+                            FROM users tu
+                            JOIN ticket t ON t.assign_user_id = tu.id
                             WHERE t.ticket_type = 'Complete' AND DATE(t.enddate) = CURDATE()
-                            GROUP BY ta.id, ta.name
+                            GROUP BY tu.id, tu.fullname
                             ORDER BY total_complete DESC
                             LIMIT 3
                         ";
@@ -629,12 +615,12 @@ WHERE ticket_type='Complete'
 
                         /*----------This Week Top-------*/
                         $sql_week = "
-                            SELECT ta.name, COUNT(t.id) AS total_complete
-                            FROM ticket_assign ta
-                            JOIN ticket t ON t.asignto = ta.id
+                            SELECT tu.fullname, COUNT(t.id) AS total_complete
+                            FROM users tu
+                            JOIN ticket t ON t.assign_user_id = tu.id
                             WHERE t.ticket_type = 'Complete' 
                             AND YEARWEEK(t.enddate, 1) = YEARWEEK(CURDATE(), 1)
-                            GROUP BY ta.id, ta.name
+                            GROUP BY tu.id, tu.fullname
                             ORDER BY total_complete DESC
                             LIMIT 3
                         ";
@@ -642,13 +628,13 @@ WHERE ticket_type='Complete'
 
                         /*----------This Month Top---------*/
                         $sql_month = "
-                            SELECT ta.name, COUNT(t.id) AS total_complete
-                            FROM ticket_assign ta
-                            JOIN ticket t ON t.asignto = ta.id
+                            SELECT tu.fullname, COUNT(t.id) AS total_complete
+                            FROM users tu
+                            JOIN ticket t ON t.assign_user_id = tu.id
                             WHERE t.ticket_type = 'Complete' 
                             AND MONTH(t.enddate) = MONTH(CURDATE()) 
                             AND YEAR(t.enddate) = YEAR(CURDATE())
-                            GROUP BY ta.id, ta.name
+                            GROUP BY tu.id, tu.fullname
                             ORDER BY total_complete DESC
                             LIMIT 3
                         ";
@@ -656,18 +642,18 @@ WHERE ticket_type='Complete'
 
                         /*-----------This Year Top-------*/ 
                         $sql_year = "
-                            SELECT ta.name, COUNT(t.id) AS total_complete
-                            FROM ticket_assign ta
-                            JOIN ticket t ON t.asignto = ta.id
+                            SELECT tu.fullname, COUNT(t.id) AS total_complete
+                            FROM users tu
+                            JOIN ticket t ON t.assign_user_id = tu.id
                             WHERE t.ticket_type = 'Complete' 
                             AND YEAR(t.enddate) = YEAR(CURDATE())
-                            GROUP BY ta.id, ta.name
+                            GROUP BY tu.id, tu.fullname
                             ORDER BY total_complete DESC
                             LIMIT 3
                         ";
                         $year_performers = $con->query($sql_year);
                         ?>
-                       <!-- ================= TOP PERFORMERS LEADERBOARD ================= -->
+                       <!---------- TOP PERFORMERS LEADERBOARD ------->
                         <div class="row">
                             
                             <!-- 1. Today Top Performer -->
@@ -691,7 +677,7 @@ WHERE ticket_type='Complete'
                                                     <div class="d-flex align-items-center">
                                                         <span class="rank-badge rank-<?= $rank; ?> me-2"><?= $rank; ?></span>
                                                         <span class="<?= $is_top ? 'fw-bold text-dark' : 'fw-semibold text-secondary'; ?>">
-                                                            <?= htmlspecialchars($row['name']); ?>
+                                                            <?= htmlspecialchars($row['fullname']); ?>
                                                         </span>
                                                     </div>
                                                     <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
@@ -731,7 +717,7 @@ WHERE ticket_type='Complete'
                                                     <div class="d-flex align-items-center">
                                                         <span class="rank-badge rank-<?= $rank; ?> me-2"><?= $rank; ?></span>
                                                         <span class="<?= $is_top ? 'fw-bold text-dark' : 'fw-semibold text-secondary'; ?>">
-                                                            <?= htmlspecialchars($row['name']); ?>
+                                                            <?= htmlspecialchars($row['fullname']); ?>
                                                         </span>
                                                     </div>
                                                     <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
@@ -771,7 +757,7 @@ WHERE ticket_type='Complete'
                                                     <div class="d-flex align-items-center">
                                                         <span class="rank-badge rank-<?= $rank; ?> me-2"><?= $rank; ?></span>
                                                         <span class="<?= $is_top ? 'fw-bold text-dark' : 'fw-semibold text-secondary'; ?>">
-                                                            <?= htmlspecialchars($row['name']); ?>
+                                                            <?= htmlspecialchars($row['fullname']); ?>
                                                         </span>
                                                     </div>
                                                     <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
@@ -811,7 +797,7 @@ WHERE ticket_type='Complete'
                                                     <div class="d-flex align-items-center">
                                                         <span class="rank-badge rank-<?= $rank; ?> me-2"><?= $rank; ?></span>
                                                         <span class="<?= $is_top ? 'fw-bold text-dark' : 'fw-semibold text-secondary'; ?>">
-                                                            <?= htmlspecialchars($row['name']); ?>
+                                                            <?= htmlspecialchars($row['fullname']); ?>
                                                         </span>
                                                     </div>
                                                     <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">

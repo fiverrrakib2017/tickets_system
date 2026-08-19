@@ -176,18 +176,16 @@ require 'Head.php';
                                                     To:</p>
                                                 <a href="#" class="text-dark fw-bold">
                                                    <?php 
-                                                   $assign_to_id = $ticket['asignto'];
+                                                   $assign_to_id = $ticket['assign_user_id'];
                                                    $assign_to_name = '';
                                                     if ($assign_to_id > 0) {
-                                                         $stmt = $con->prepare(
-                                                              "SELECT name FROM ticket_assign WHERE id = ? LIMIT 1"
-                                                         );
+                                                         $stmt = $con->prepare("SELECT `fullname` FROM `users` WHERE id = ? LIMIT 1");
                                                          $stmt->bind_param('i', $assign_to_id);
                                                          $stmt->execute();
                                                          $result = $stmt->get_result();
     
                                                          if ($row = $result->fetch_assoc()) {
-                                                             echo  $assign_to_name = $row['name'];
+                                                             echo  $assign_to_name = $row['fullname'] ?? '---';
                                                          }
     
                                                          $stmt->close();
@@ -402,10 +400,10 @@ require 'Head.php';
                                                         <select name="assign_to" class="form-select" required>
                                                             <option value="">---select---</option>
                                                             <?php
-                                                                $ticket_assign = $con->query('SELECT * FROM ticket_assign');
+                                                                $ticket_assign = $con->query('SELECT `id`,`fullname` FROM `users`');
                                                                 while ($row = $ticket_assign->fetch_assoc()) {
-                                                                    $selected = $row['id'] == $ticket['asignto'] ? 'selected' : '';
-                                                                    echo "<option value='{$row['id']}' $selected>{$row['name']}</option>";
+                                                                    $selected = $row['id'] == $ticket['assign_user_id'] ? 'selected' : '';
+                                                                    echo "<option value='{$row['id']}' $selected>{$row['fullname']}</option>";
                                                                 }
                                                             ?>
                                                         </select>

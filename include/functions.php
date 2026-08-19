@@ -460,8 +460,8 @@ if (!function_exists('get_tickets')) {
         }
         
         /*---------Assigned To---------*/
-        if (!empty($options['assigned_to'])) {
-            $where[] = "t.asignto = " . (int)$options['assigned_to'];
+        if (!empty($options['assign_user_id'])) {
+            $where[] = "t.assign_user_id = " . (int)$options['assign_user_id'];
         }
 
         /*---- Today Filter ----*/
@@ -483,13 +483,13 @@ if (!function_exists('get_tickets')) {
                 t.*,
                 c.customer_name,
                 pb.name AS pop_name,
-                ta.name AS assigned_name,
+                tu.fullname AS assigned_name,
                 tt.topic_name AS issue_name,
                 GROUP_CONCAT(DISTINCT cp.phone_number SEPARATOR '<br>') AS phones
             FROM ticket t
             LEFT JOIN customers c ON t.customer_id = c.id
             LEFT JOIN pop_branch pb ON t.pop_id = pb.id
-            LEFT JOIN ticket_assign ta ON t.asignto = ta.id
+            LEFT JOIN users tu ON t.assign_user_id = tu.id
             LEFT JOIN ticket_topic tt ON t.complain_type = tt.id
             LEFT JOIN customer_phones cp ON c.id = cp.customer_id
             $where_sql

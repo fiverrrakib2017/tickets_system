@@ -108,13 +108,6 @@ if ($result && $result->num_rows > 0) {
         </li> -->
 
         <li>
-            <a href="assign_members.php" class="waves-effect">
-                <i class="mdi mdi-account-group-outline"></i>
-                <span>Assigned Members</span>
-            </a>
-        </li>
-
-        <li>
             <a href="ticketsTopic.php" class="waves-effect">
                 <i class="mdi mdi-tag-multiple-outline"></i>
                 <span>Ticket Topics</span>

@@ -520,17 +520,24 @@ WHERE ticket_type='Complete'
 
                                                     <!-- Current Task -->
                                                     <td class="text-center">
-                                                        <span class="badge bg-primary"><?= $row['current_task']; ?></span>
+                                                          <a href="tickets.php?status=open&user_id=<?= $row['id'] ?>">
+                                                            <span class="badge bg-primary"><?= $row['current_task']; ?></span>
+                                                          </a>
+                                                        
                                                     </td>
 
                                                     <!-- Pending Task -->
                                                     <td class="text-center">
-                                                        <span class="badge bg-dark"><?= $row['pending_task']; ?></span>
+                                                        <a href="tickets.php?status=pending&user_id=<?= $row['id'] ?>">
+                                                            <span class="badge bg-dark"><?= $row['pending_task']; ?></span>
+                                                        </a>
                                                     </td>
 
                                                     <!-- Closed Task -->
                                                     <td class="text-center">
-                                                        <span class="badge bg-success"><?= $row['closed_task']; ?></span>
+                                                        <a href="tickets.php?status=resolved&user_id=<?= $row['id'] ?>">
+                                                            <span class="badge bg-success"><?= $row['closed_task']; ?></span>
+                                                        </a>
                                                     </td>
 
                                                     <!-- Success Rate -->

@@ -9,6 +9,82 @@ error_reporting(E_ALL);
 if(isset($_GET['clid'])){
     $clid = $_GET['clid'];
     $user=$con->query("SELECT * FROM users WHERE id='$clid'")->fetch_assoc();
+
+    $top_today  = false; 
+    $top_week   = false; 
+    $top_month  = false; 
+    $top_year   = false;
+    
+    /*---------Today Top Performer----------*/
+    $sql = "
+        SELECT tu.id
+        FROM users tu
+        JOIN ticket t ON t.assign_user_id = tu.id
+        WHERE t.ticket_type = 'Complete'
+        AND DATE(t.enddate) = CURDATE()
+        GROUP BY tu.id
+        ORDER BY COUNT(t.id) DESC
+        LIMIT 1
+    ";
+    $result = $con->query($sql);
+
+    if ($result && $row = $result->fetch_assoc()) {
+        $top_today = ((int)$row['id'] === $clid);
+    }
+
+    /*------- This Week Top Performer -------*/
+    $sql = "
+        SELECT tu.id
+        FROM users tu
+        JOIN ticket t ON t.assign_user_id = tu.id
+        WHERE t.ticket_type = 'Complete'
+        AND YEARWEEK(t.enddate, 1) = YEARWEEK(CURDATE(), 1)
+        GROUP BY tu.id
+        ORDER BY COUNT(t.id) DESC
+        LIMIT 1
+    ";
+
+    $result = $con->query($sql);
+    if ($result && $row = $result->fetch_assoc()) {
+        $top_week = ((int)$row['id'] === $clid);
+    }
+    /*---- This Month Top Performer -----*/
+    $sql = "
+        SELECT tu.id
+        FROM users tu
+        JOIN ticket t ON t.assign_user_id = tu.id
+        WHERE t.ticket_type = 'Complete'
+        AND MONTH(t.enddate) = MONTH(CURDATE())
+        AND YEAR(t.enddate) = YEAR(CURDATE())
+        GROUP BY tu.id
+        ORDER BY COUNT(t.id) DESC
+        LIMIT 1
+    ";
+
+    $result = $con->query($sql);
+
+    if ($result && $row = $result->fetch_assoc()) {
+        $top_month = ((int)$row['id'] === $clid);
+    }
+
+
+    /*--------- This Year Top Performer ---------*/
+    $sql = "
+        SELECT tu.id
+        FROM users tu
+        JOIN ticket t ON t.assign_user_id = tu.id
+        WHERE t.ticket_type = 'Complete'
+        AND YEAR(t.enddate) = YEAR(CURDATE())
+        GROUP BY tu.id
+        ORDER BY COUNT(t.id) DESC
+        LIMIT 1
+    ";
+
+    $result = $con->query($sql);
+
+    if ($result && $row = $result->fetch_assoc()) {
+        $top_year = ((int)$row['id'] === $clid);
+    }
 }
 ?>
 <!doctype html>

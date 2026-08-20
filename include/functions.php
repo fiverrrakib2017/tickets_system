@@ -462,6 +462,29 @@ if (!function_exists('get_tickets')) {
         
             $where[] = "t.create_date >= '{$start}' AND t.create_date < '{$end}'";
         }
+        /*---- Performance Filter ----*/
+        if (!empty($options['performance'])) {
+
+            switch ($options['performance']) {
+
+                case 'monthly':
+                    $where[] = "MONTH(t.create_date) = MONTH(CURDATE()) 
+                                AND YEAR(t.create_date) = YEAR(CURDATE())";
+                    break;
+
+                case 'weekly':
+                    $where[] = "YEARWEEK(t.create_date, 1) = YEARWEEK(CURDATE(), 1)";
+                    break;
+
+                case 'daily':
+                    $where[] = "DATE(t.create_date) = CURDATE()";
+                    break;
+
+                case 'yearly':
+                    $where[] = "YEAR(t.create_date) = YEAR(CURDATE())";
+                    break;
+            }
+        }
         
         /*---------Assigned To---------*/
         if (!empty($options['assign_user_id'])) {

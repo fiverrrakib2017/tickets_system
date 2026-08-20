@@ -87,9 +87,18 @@ require 'Head.php';
 
                                                 $options = [];
                                                 /*------------- Status Filter -------------------*/
-                                                if (isset($_GET['status']) && $_GET['status'] != '') {
-                                                   $options['status'] = $_GET['status'];
-                                                   $options['today'] = true;
+                                                if (!empty($_GET['status'])) {
+                                                    $options['status'] = strtolower(trim($_GET['status']));
+                                                }
+
+                                                /*------------- User Filter -------------------*/
+                                                if (!empty($_GET['user_id'])) {
+                                                    $options['user_id'] = (int) $_GET['user_id'];
+                                                }
+
+                                                /*------------- Performance Filter -------------------*/
+                                                if (!empty($_GET['performance'])) {
+                                                    $options['performance'] = trim($_GET['performance']);
                                                 }
 
                                                

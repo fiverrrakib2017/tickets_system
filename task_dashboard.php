@@ -568,7 +568,7 @@ WHERE ticket_type='Complete'
                        <?php
                         /*---------Today Top-----*/
                         $sql_today = "
-                            SELECT tu.fullname, COUNT(t.id) AS total_complete
+                            SELECT tu.id, tu.fullname, COUNT(t.id) AS total_complete
                             FROM users tu
                             JOIN ticket t ON t.assign_user_id = tu.id
                             WHERE t.ticket_type = 'Complete' AND DATE(t.enddate) = CURDATE()
@@ -580,7 +580,7 @@ WHERE ticket_type='Complete'
 
                         /*----------This Week Top-------*/
                         $sql_week = "
-                            SELECT tu.fullname, COUNT(t.id) AS total_complete
+                            SELECT tu.id, tu.fullname, COUNT(t.id) AS total_complete
                             FROM users tu
                             JOIN ticket t ON t.assign_user_id = tu.id
                             WHERE t.ticket_type = 'Complete' 
@@ -593,7 +593,7 @@ WHERE ticket_type='Complete'
 
                         /*----------This Month Top---------*/
                         $sql_month = "
-                            SELECT tu.fullname, COUNT(t.id) AS total_complete
+                            SELECT tu.id, tu.fullname, COUNT(t.id) AS total_complete
                             FROM users tu
                             JOIN ticket t ON t.assign_user_id = tu.id
                             WHERE t.ticket_type = 'Complete' 
@@ -607,7 +607,7 @@ WHERE ticket_type='Complete'
 
                         /*-----------This Year Top-------*/ 
                         $sql_year = "
-                            SELECT tu.fullname, COUNT(t.id) AS total_complete
+                            SELECT tu.id,tu.fullname, COUNT(t.id) AS total_complete
                             FROM users tu
                             JOIN ticket t ON t.assign_user_id = tu.id
                             WHERE t.ticket_type = 'Complete' 
@@ -640,14 +640,16 @@ WHERE ticket_type='Complete'
                                             ?>
                                                 <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-3 py-2 <?= $is_top ? 'bg-soft-warning-light' : ''; ?>">
                                                     <div class="d-flex align-items-center">
-                                                        <span class="rank-badge rank-<?= $rank; ?> me-2"><?= $rank; ?></span>
+                                                        
                                                         <span class="<?= $is_top ? 'fw-bold text-dark' : 'fw-semibold text-secondary'; ?>">
                                                             <?= htmlspecialchars($row['fullname']); ?>
                                                         </span>
                                                     </div>
-                                                    <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
-                                                        <?= number_format($row['total_complete']); ?>
-                                                    </span>
+                                                    <a href="tickets.php?status=resolved&user_id=<?= $row['id'] ?>&performance=daily">
+                                                        <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
+                                                            <?= number_format($row['total_complete']); ?>
+                                                        </span>
+                                                    </a>
                                                 </li>
                                             <?php 
                                                 $rank++;
@@ -680,14 +682,18 @@ WHERE ticket_type='Complete'
                                             ?>
                                                 <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-3 py-2 <?= $is_top ? 'bg-soft-warning-light' : ''; ?>">
                                                     <div class="d-flex align-items-center">
-                                                        <span class="rank-badge rank-<?= $rank; ?> me-2"><?= $rank; ?></span>
+                                                        
                                                         <span class="<?= $is_top ? 'fw-bold text-dark' : 'fw-semibold text-secondary'; ?>">
                                                             <?= htmlspecialchars($row['fullname']); ?>
                                                         </span>
                                                     </div>
-                                                    <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
-                                                        <?= number_format($row['total_complete']); ?>
-                                                    </span>
+
+                                                    <a href="tickets.php?status=resolved&user_id=<?= $row['id'] ?>&performance=weekly">
+                                                        <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
+                                                            <?= number_format($row['total_complete']); ?>
+                                                        </span>
+                                                    </a>
+                                                   
                                                 </li>
                                             <?php 
                                                 $rank++;
@@ -720,14 +726,17 @@ WHERE ticket_type='Complete'
                                             ?>
                                                 <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-3 py-2 <?= $is_top ? 'bg-soft-warning-light' : ''; ?>">
                                                     <div class="d-flex align-items-center">
-                                                        <span class="rank-badge rank-<?= $rank; ?> me-2"><?= $rank; ?></span>
+                                                       
                                                         <span class="<?= $is_top ? 'fw-bold text-dark' : 'fw-semibold text-secondary'; ?>">
                                                             <?= htmlspecialchars($row['fullname']); ?>
                                                         </span>
                                                     </div>
-                                                    <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
-                                                        <?= number_format($row['total_complete']); ?>
-                                                    </span>
+                                                     <a href="tickets.php?status=resolved&user_id=<?= $row['id']; ?>&performance=monthly">
+                                                        <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
+                                                            <?= number_format($row['total_complete']); ?>
+                                                        </span>
+                                                    </a>
+                                                   
                                                 </li>
                                             <?php 
                                                 $rank++;
@@ -760,14 +769,17 @@ WHERE ticket_type='Complete'
                                             ?>
                                                 <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-3 py-2 <?= $is_top ? 'bg-soft-warning-light' : ''; ?>">
                                                     <div class="d-flex align-items-center">
-                                                        <span class="rank-badge rank-<?= $rank; ?> me-2"><?= $rank; ?></span>
+                                                        
                                                         <span class="<?= $is_top ? 'fw-bold text-dark' : 'fw-semibold text-secondary'; ?>">
                                                             <?= htmlspecialchars($row['fullname']); ?>
                                                         </span>
                                                     </div>
-                                                    <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
-                                                        <?= number_format($row['total_complete']); ?>
-                                                    </span>
+                                                    <a href="tickets.php?status=resolved&user_id=<?= $row['id'] ?>&performance=yearly">
+                                                        <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
+                                                            <?= number_format($row['total_complete']); ?>
+                                                        </span>
+                                                    </a>
+                                                   
                                                 </li>
                                             <?php 
                                                 $rank++;

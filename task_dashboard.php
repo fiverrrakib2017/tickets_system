@@ -336,77 +336,76 @@ WHERE ticket_type='Complete'
                             </div>
                         </div>
 
-                       <div class="row g-3 mb-2">
+                       <div class="row g-3 mb-2 d-flex">
                             <!-- Current Ticket -->
                             <div class="col-md-6 col-xl-3">
-                                <div class="stat-card stat-primary">
+                                <a href="tickets.php?status=open">
+                                    <div class="stat-card stat-primary">
 
-                                    <div class="stat-card-icon">
-                                        <i class="mdi mdi-ticket-confirmation-outline"></i>
+                                        <div class="stat-card-icon">
+                                            <i class="mdi mdi-ticket-confirmation-outline"></i>
+                                        </div>
+
+                                        <div class="stat-card-body">
+                                            <span class="stat-label">Current Ticket</span>
+                                            <h3 class="stat-value mb-0">
+                                                <?= number_format($current_ticket) ?>
+                                            </h3>
+                                        </div>
                                     </div>
-
-                                    <div class="stat-card-body">
-                                        <span class="stat-label">Current Ticket</span>
-                                        <h3 class="stat-value mb-0">
-                                            <?= number_format($current_ticket) ?>
-                                        </h3>
-                                    </div>
-
-                                </div>
+                                </a>
                             </div>
-
                             <!-- Pending Task -->
                             <div class="col-md-6 col-xl-3">
-                                <div class="stat-card stat-warning">
+                                <a href="tickets.php?status=pending">
+                                    <div class="stat-card stat-warning">
+                                        <div class="stat-card-icon">
+                                            <i class="mdi mdi-progress-clock"></i>
+                                        </div>
 
-                                    <div class="stat-card-icon">
-                                        <i class="mdi mdi-progress-clock"></i>
+                                        <div class="stat-card-body">
+                                            <span class="stat-label">Pending Task</span>
+                                            <h3 class="stat-value mb-0">
+                                                <?= number_format($pending_ticket) ?>
+                                            </h3>
+                                        </div>
                                     </div>
-
-                                    <div class="stat-card-body">
-                                        <span class="stat-label">Pending Task</span>
-                                        <h3 class="stat-value mb-0">
-                                            <?= number_format($pending_ticket) ?>
-                                        </h3>
-                                    </div>
-
-                                </div>
+                                </a>
                             </div>
-
                             <!-- Today Closed -->
                             <div class="col-md-6 col-xl-3">
-                                <div class="stat-card stat-success">
+                                <a href="tickets.php?status=resolved&ticket_date=today">
+                                    <div class="stat-card stat-success">
 
-                                    <div class="stat-card-icon">
-                                        <i class="mdi mdi-check-decagram-outline"></i>
+                                        <div class="stat-card-icon">
+                                            <i class="mdi mdi-check-decagram-outline"></i>
+                                        </div>
+
+                                        <div class="stat-card-body">
+                                            <span class="stat-label">Today Closed</span>
+                                            <h3 class="stat-value mb-0">
+                                                <?= number_format($today_closed) ?>
+                                            </h3>
+                                        </div>
                                     </div>
-
-                                    <div class="stat-card-body">
-                                        <span class="stat-label">Today Closed</span>
-                                        <h3 class="stat-value mb-0">
-                                            <?= number_format($today_closed) ?>
-                                        </h3>
-                                    </div>
-
-                                </div>
+                                </a>
                             </div>
-
                             <!-- Total Closed -->
                             <div class="col-md-6 col-xl-3">
-                                <div class="stat-card stat-info">
+                                <a href="tickets.php?status=resolved"> 
+                                    <div class="stat-card stat-info">
 
-                                    <div class="stat-card-icon">
-                                        <i class="mdi mdi-clipboard-check-multiple-outline"></i>
+                                        <div class="stat-card-icon">
+                                            <i class="mdi mdi-clipboard-check-multiple-outline"></i>
+                                        </div>
+                                        <div class="stat-card-body">
+                                            <span class="stat-label">Total Closed</span>
+                                            <h3 class="stat-value mb-0">
+                                                <?= number_format($total_closed) ?>
+                                            </h3>
+                                        </div>
                                     </div>
-
-                                    <div class="stat-card-body">
-                                        <span class="stat-label">Total Closed</span>
-                                        <h3 class="stat-value mb-0">
-                                            <?= number_format($total_closed) ?>
-                                        </h3>
-                                    </div>
-
-                                </div>
+                                </a>
                             </div>
                         </div>
 
@@ -506,9 +505,12 @@ WHERE ticket_type='Complete'
                                                             </div>
 
                                                             <div>
-                                                                <h6 class="mb-0 font-weight-bold text-dark">
-                                                                    <?= htmlspecialchars($row['name']); ?>
-                                                                </h6>
+                                                                <a href="user_profile.php?clid=<?= $row['id']; ?>">
+                                                                    <h6 class="mb-0 font-weight-bold text-dark">
+                                                                        <?= htmlspecialchars($row['name']); ?>
+                                                                    </h6>
+                                                                </a>
+                                                               
 
                                                                 <small class="text-muted">
                                                                     <?= $is_online ? 'Online' : 'Offline'; ?>

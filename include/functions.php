@@ -430,6 +430,10 @@ if (!function_exists('get_tickets')) {
         if (!empty($options['customer_id'])) {
             $where[] = "t.customer_id = " . (int)$options['customer_id'];
         }
+        /*---- User Filter ----*/
+        if (!empty($options['user_id'])) {
+            $where[] = "t.assign_user_id = " . (int)$options['user_id'];
+        }
 
         /*---- Status Filter ----*/
         if (!empty($options['status'])) {

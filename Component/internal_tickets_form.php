@@ -183,7 +183,7 @@
                 $('#sub_category_id').html('<option value="">---select---</option>');
                 return;
             }
-            if(category_id =='2'){
+            if(category_id =='112'){
                 $('#show_pop_branch_div').removeClass('d-none');
                  $('#show_upstream_div').addClass('d-none');
             }else{
@@ -192,18 +192,26 @@
             }
 
             $.ajax({
-                url: 'http://103.112.206.139/include/category_server.php?get_subcategory_data=true',
+                url: 'include/category_server.php?get_subcategory_data=true',
                 type: 'GET',
                 data: { id: category_id },
                 dataType: 'json',
                 success: function (response) {
 
-                    let options = '<option value="">---select---</option>';
+                     let options = '<option value="">---select---</option>';
 
-                    if (response.success && response.data) {
-                        options += `<option value="${response.data.id}">
-                                        ${response.data.name}
-                                    </option>`;
+                    if (response.success && response.data.length > 0) {
+
+                        $.each(response.data, function (index, subcategory) {
+
+                            options += `
+                                <option value="${subcategory.id}">
+                                    ${subcategory.name}
+                                </option>
+                            `;
+
+                        });
+
                     }
 
                     $('#sub_category_id').html(options);

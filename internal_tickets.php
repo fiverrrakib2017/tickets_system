@@ -245,7 +245,7 @@ require 'Head.php';
                                                                 data-bs-target="#statusModal"
                                                                 data-ticket-id="<?= $row['id'] ?>"
                                                                 data-ticket-status="<?= $row['status'] ?>">
-                                                                <i class="fas fa-edit"></i>
+                                                                <i class="fas fa-exchange-alt"></i>
                                                             </button>
                                                         <?php endif; ?>
                                                     </td>
@@ -282,10 +282,10 @@ require 'Head.php';
                                                             onclick="return confirm('Are you sure?')">
                                                                 <i class="fas fa-trash"></i>
                                                             </a>
-                                                            <a href="internal_ticket_view.php?id=<?= $row['id'] ?>"
+                                                            <!-- <a href="internal_ticket_view.php?id=<?= $row['id'] ?>"
                                                             class="btn btn-sm btn-success">
                                                                 <i class="fas fa-eye"></i>
-                                                            </a>
+                                                            </a> -->
                                                         </td>
                                                     </tr>
                                                 <?php

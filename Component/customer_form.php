@@ -264,8 +264,8 @@ document.addEventListener('click', function (e) {
             /*---------No Data Empty Row---------*/
             if(count($rows) === 0){
                 $rows[] = [
-                    'package_count' => '',
-                    'total_customer' => ''
+                    'package_count' => 0,
+                    'total_customer' => 0
                 ];
             }
 
@@ -273,7 +273,7 @@ document.addEventListener('click', function (e) {
             ?>
             <div class="row mb-2 align-items-center reseller-row">
                 <div class="col-md-3">
-                    <input type="text"
+                    <input type="number"
                         class="form-control"
                         name="service_mac_reseller_package[]"
                         placeholder="Customer Package"
@@ -351,7 +351,7 @@ if (!empty($customer_id) && (int)$customer_id > 0) {
         <?php
         $services = $con->query("SELECT id, name FROM customer_service");
         while ($service = $services->fetch_assoc()):
-            $limitValue = $customerServiceMap[$service['id']] ?? '';
+            $limitValue = $customerServiceMap[$service['id']] ?? 0;
         ?>
             <div class="row mb-2 align-items-center">
 

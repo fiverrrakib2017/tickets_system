@@ -176,6 +176,12 @@ if ($result && $result->num_rows > 0) {
                 <span>Others Link</span>
             </a>
         </li>
+        <li>
+            <a href="database_backup.php" class="waves-effect">
+                <i class="mdi mdi-database-export-outline"></i>
+                <span>Database Backup</span>
+            </a>
+        </li>
 
         <?php if (!empty($others_links)): ?>
 

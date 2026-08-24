@@ -1,6 +1,6 @@
 <?php
 $bandwidth_customer_stats_sql = "SELECT 
-    COUNT(*) as total_bandwidth_customer,
+    COUNT(ping_ip) as total_bandwidth_customer,
     SUM(CASE WHEN ping_ip_status = 'online' THEN 1 ELSE 0 END) as online_bandwidth_customer,
     SUM(CASE WHEN ping_ip_status = 'offline' THEN 1 ELSE 0 END) as offline_bandwidth_customer
 FROM customers WHERE service_customer_type ='1'";

@@ -1,6 +1,6 @@
 <?php
 $bandwidth_customer_stats_sql = "SELECT 
-    COUNT(*) as total_mac_customer,
+    COUNT(ping_ip) as total_mac_customer,
     SUM(CASE WHEN ping_ip_status = 'online' THEN 1 ELSE 0 END) as online_mac_customer,
     SUM(CASE WHEN ping_ip_status = 'offline' THEN 1 ELSE 0 END) as offline_mac_customer
 FROM customers WHERE service_customer_type ='2'";
@@ -36,7 +36,7 @@ $offline_mac_customer = $bandwidth_stats['offline_mac_customer'] ?? 0;
 
     <!-- Online Bandwidth Customer -->
     <div class="col-xl-4 col-md-6 mb-3">
-        <a href="mac_reseller_customer.php?status=online" class="text-decoration-none">
+        <a href="mac_reseller_customer.php?online_ip=true" class="text-decoration-none">
             <div class="card stat-card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">
@@ -56,7 +56,7 @@ $offline_mac_customer = $bandwidth_stats['offline_mac_customer'] ?? 0;
 
     <!-- Offline Bandwidth Customer -->
     <div class="col-xl-4 col-md-6 mb-3">
-        <a href="mac_reseller_customer.php?status=offline" class="text-decoration-none">
+        <a href="mac_reseller_customer.php?offline_ip=true" class="text-decoration-none">
             <div class="card stat-card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">

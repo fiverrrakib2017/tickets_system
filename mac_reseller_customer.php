@@ -85,9 +85,11 @@ require 'Head.php';
                                             </p>
                                             <p class="text-primary mb-0 hover-cursor"><a href="customers.php">Customers / </a></p>
                                             
-                                         
-                                           
-                                            <p class="text-primary mb-0 hover-cursor">&nbsp;/&nbsp;Mac Reseller Customers</p>
+                                            <p class="text-primary mb-0 hover-cursor">&nbsp;Mac Reseller Customers</p>
+
+                                            <?php if(isset($_GET['online_ip'])):?>
+                                                 <p class="text-primary mb-0 hover-cursor">&nbsp;/Online Customer</p>
+                                                <?php endif; ?>
                                         </div>
                                     </div>
                                     <br>
@@ -110,6 +112,7 @@ require 'Head.php';
                                 <div class="card-body">
                                     <div class="table-responsive ">
                                         <?php $service_customer_type = 2; ?>
+                                       
                                        <?php include 'Table/customer.php'; ?>
 
                                     </div>

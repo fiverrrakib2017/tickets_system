@@ -87,24 +87,7 @@
                     $customer_ids[] = (int)$row['id'];
                 }
             }
-            /*-------------Request Total Online ip Customer---------------*/
-            if(isset($_GET['online_ip']) && $_GET['online_ip'] == 'true'){
-                $online_ip_query = $con->query(
-                    "SELECT  `id`  FROM customers  WHERE ping_ip_status = 'online'"
-                );
-                while ($row = $online_ip_query->fetch_assoc()) {
-                    $customer_ids[] = (int)$row['id'];
-                }
-            }
-            /*-------------Request Total OFFLINE ip Customer---------------*/
-            if(isset($_GET['offline_ip']) && $_GET['offline_ip'] == 'true'){
-                $offline_ip_query = $con->query(
-                    "SELECT   `id`   FROM customers  WHERE ping_ip_status = 'offline'"
-                );
-                while ($row = $offline_ip_query->fetch_assoc()) {
-                    $customer_ids[] = (int)$row['id'];
-                }
-            }
+            
             /*---- Remove duplicate IDs ----*/
             $customer_ids = array_unique($customer_ids);
 
@@ -132,6 +115,14 @@
             if(isset($_GET['customer_link']) && $_GET['customer_link'] !== ''){
                 $customer_link = mysqli_real_escape_string($con, $_GET['customer_link']);
                 $where_clause[] = "c.customer_link = '$customer_link'";
+            }
+            /*-------------Request Total Online ip Customer---------------*/
+            if (isset($_GET['online_ip']) && $_GET['online_ip'] == 'true') {
+                $where_clause[] = "c.ping_ip_status = 'online'";
+            }
+            /*-------------Request Total OFFLINE ip Customer---------------*/
+            if(isset($_GET['offline_ip']) && $_GET['offline_ip'] == 'true'){
+                $where_clause[] = "c.ping_ip_status = 'offline'";
             }
 
             /*---- Final WHERE ----*/

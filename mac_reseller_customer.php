@@ -111,8 +111,7 @@ require 'Head.php';
 
                                 <div class="card-body">
                                     <div class="table-responsive ">
-                                        <?php $service_customer_type = 2; ?>
-                                       
+                                        <?php $service_customer_type = 2;?>
                                        <?php include 'Table/customer.php'; ?>
 
                                     </div>

@@ -16,7 +16,7 @@ $offline_mac_customer = $bandwidth_stats['offline_mac_customer'] ?? 0;
 <div class="row">
     <!-- Total POP Branch -->
     <div class="col-xl-4 col-md-6 mb-3">
-        <a href="mac_reseller_customer.php" class="text-decoration-none">
+        <a href="mac_reseller_customer.php?total_ip=true" class="text-decoration-none">
             <div class="card stat-card">
                 <div class="card-body">
                     <div class="d-flex align-items-center">

@@ -86,7 +86,7 @@ require 'Head.php';
                                             <p class="text-primary mb-0 hover-cursor"><a href="customers.php">Customers / </a></p>
                                             
 
-                                            <p class="text-primary mb-0 hover-cursor">&nbsp;/&nbsp;Bandwidth Customers</p>
+                                            <p class="text-primary mb-0 hover-cursor">&nbsp;Bandwidth Customers</p>
                                         </div>
                                     </div>
                                     <br>

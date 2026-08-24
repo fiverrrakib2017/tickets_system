@@ -116,6 +116,10 @@
                 $customer_link = mysqli_real_escape_string($con, $_GET['customer_link']);
                 $where_clause[] = "c.customer_link = '$customer_link'";
             }
+            /*-------------Request Total ip Customer---------------*/
+            if (isset($_GET['total_ip']) && $_GET['total_ip'] == 'true') {
+                $where_clause[] = "c. ping_ip IS NOT NULL AND ping_ip != ''";
+            }
             /*-------------Request Total Online ip Customer---------------*/
             if (isset($_GET['online_ip']) && $_GET['online_ip'] == 'true') {
                 $where_clause[] = "c.ping_ip_status = 'online'";

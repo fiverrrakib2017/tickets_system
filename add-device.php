@@ -99,11 +99,10 @@ require 'Head.php';
 
 
     <?php include 'script.php'; ?>
-    <script type="text/javascript"></script>
     <script type="text/javascript">
-        // $('select').select2({
-        //     width: '100%'
-        // });
+        $('select').select2({
+            width: '100%'
+        });
         $('#addDeviceForm').submit(function(e) {
             e.preventDefault();
 
@@ -129,16 +128,29 @@ require 'Head.php';
 
                 success: function(response) {
                     if (response.success) {
-                        $('#addCustomerModal').modal('hide');
                         toastr.success(response.message);
                         setTimeout(() => location.reload(), 500);
                     } else {
-                        toastr.error(response.message);
+                        if (response.errors && Array.isArray(response.errors)) {
+                            response.errors.forEach(function(err) {
+                                toastr.error(err);
+                            });
+                        } 
+                        else if (response.message) {
+                            toastr.error(response.message);
+                        } 
+                        else {
+                            toastr.error('Something went wrong!');
+                        }
                     }
                 },
 
-                error: function(xhr) {
-                    toastr.error('Something went wrong');
+                error: function(xhr, status, error) {
+                    var errorMsg = 'Something went wrong on the server.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+                    toastr.error(errorMsg);
                 },
 
                 complete: function() {
@@ -146,7 +158,6 @@ require 'Head.php';
                 }
             });
         });
-
     </script>
 </body>
 

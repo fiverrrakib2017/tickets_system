@@ -83,7 +83,7 @@
 </div>
 <div class="col-md-6 mb-3">
     <label for="snmp_version">SNMP Version</label>
-    <select id="snmp_version" name="snmp_version" class="form-control">
+    <select id="snmp_version" name="snmp_version" class="form-select">
         <option value="2c" <?= ($device['snmp_version'] ?? '2c') === '2c' ? 'selected' : '' ?>>SNMP v2c</option>
         <option value="1" <?= ($device['snmp_version'] ?? '') === '1' ? 'selected' : '' ?>>SNMP v1</option>
         <option value="3" <?= ($device['snmp_version'] ?? '') === '3' ? 'selected' : '' ?>>SNMP v3</option>
@@ -103,21 +103,7 @@
 </div>
 <div class="col-md-6 mb-3">
     <label for="snmp_community">Community String</label>
-    <div class="input-group">
-        <input 
-            type="password" 
-            id="snmp_community"
-            name="snmp_community" 
-            class="form-control" 
-            placeholder="e.g. public"
-            value="<?= htmlspecialchars($_POST['snmp_community'] ?? '') ?>"
+        <input type="text" id="snmp_community" name="snmp_community"  class="form-control"  placeholder="e.g. public" value="<?= htmlspecialchars($_POST['snmp_community'] ?? '') ?>"
         >
-        <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="button" id="toggle_community">
-                <i class="fas fa-eye"></i>
-            </button>
-        </div>
-    </div>
-    <small class="form-text text-muted">Required for SNMP v1 and v2c authorization.</small>
 </div>
 

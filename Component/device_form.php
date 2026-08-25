@@ -52,7 +52,7 @@
 </div>
 <div class="col-md-12 mb-3">
     <label for="description">Description</label>
-    <textarea type="text" id="description" name="description" class="form-control"  placeholder="Write details about device usage or maintenance notes..." value="<?= htmlspecialchars($device['description'] ?? '') ?>"></textarea>
+    <textarea type="text" id="description" name="description" class="form-control"  placeholder="Write details about device usage or maintenance notes..." value=""><?= htmlspecialchars($device['description'] ?? '') ?></textarea>
 </div>
 
 
@@ -103,7 +103,7 @@
 </div>
 <div class="col-md-6 mb-3">
     <label for="snmp_community">Community String</label>
-        <input type="text" id="snmp_community" name="snmp_community"  class="form-control"  placeholder="e.g. public" value="<?= htmlspecialchars($_POST['snmp_community'] ?? '') ?>"
+        <input type="text" id="snmp_community" name="snmp_community"  class="form-control"  placeholder="e.g. public" value="<?= htmlspecialchars($device['snmp_community'] ?? '') ?>"
         >
 </div>
 

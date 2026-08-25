@@ -324,7 +324,7 @@ require 'Head.php';
                                                         <a href="edit-device.php?id=<?= (int)$device['id'] ?>" class="btn btn-sm btn-primary" title="Edit"> <i class="fas fa-edit"></i></a>
 
 
-                                                        <button type="button" class="btn btn-sm btn-danger" onclick="deleteDevice(<?= (int)$device['id'] ?>)" title="Delete"> <i class="fas fa-trash"></i></button>
+                                                        <button type="button" class="btn btn-sm btn-danger" name="delete_button" data-id="<?= (int)$device['id'] ?>" title="Delete"> <i class="fas fa-trash"></i></button>
 
 
                                                     </td>
@@ -350,6 +350,29 @@ require 'Head.php';
 
     </div>
     <!-- END layout-wrapper -->
+
+     <!-- Delete Modal -->
+    <div id="deleteModal" class="modal fade">
+        <div class="modal-dialog modal-confirm">
+            <div class="modal-content">
+                <div class="modal-header flex-column">
+                    <div class="icon-box">
+                        <i class="fa fa-trash"></i>
+                    </div>
+                    <h4 class="modal-title w-100">Are you sure?</h4>
+                    <h4 class="modal-title w-100 d-none" id="DeleteId"></h4>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="True">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>Do you really want to delete these records? This process cannot be undone.</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="DeleteConfirm">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
    
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
@@ -363,6 +386,37 @@ require 'Head.php';
                 "targets": [2],
                 "orderable": false,
             }],
+        });
+        /** Delete Script **/
+        $(document).on('click', "button[name='delete_button']", function() {
+            var id = $(this).data('id');
+            $('#DeleteId').text(id);
+            $('#deleteModal').modal('show');
+
+            $('#DeleteConfirm').off('click').on('click', function() {
+                $.ajax({
+                    url: "include/device_server.php?delete_device_data=true",
+                    type: "POST",
+                    data: {
+                        id: id
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            toastr.success(response.message);
+                            $('#deleteModal').modal('hide');
+                            setTimeout(() => {
+                                location.reload();
+                            }, 500);
+                        } else {
+                            toastr.error(response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        toastr.error("Error deleting NAS: " + xhr.responseText);
+                    }
+                });
+            });
         });
     </script>
 </body>

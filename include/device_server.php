@@ -287,4 +287,32 @@ if (isset($_GET['update_device_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') 
         exit;
     }
 }
+/*-----Delete customer Script--------*/
+if (isset($_GET['delete_device_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id = trim($_POST['id']);
+    if (empty($id)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'ID is required!',
+        ]);
+        exit();
+    }
+    $result = $con->query("DELETE FROM `devices` WHERE id='$id'");
+    $con->close();
+    if ($result) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Deleted successfully!',
+        ]);
+        exit();
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Failed to delete!',
+        ]);
+        exit();
+    }
+}
+
+
 ?>

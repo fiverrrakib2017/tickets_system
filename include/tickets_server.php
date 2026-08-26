@@ -754,7 +754,7 @@ if (isset($_GET['add_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] == '
     $subject              = isset($_POST['customer_subject']) ? trim($_POST['customer_subject']) : '';
     $customer_description = isset($_POST['customer_description']) ? trim($_POST['customer_description']) : '';
     $customer_ids         = isset($_POST['customer_id']) ? $_POST['customer_id'] : [];
-    $status = 'open';
+    $status = 'Active';
     $ticket_no = 'INT-' . time();
 
     /* ---------- Validation ---------- */
@@ -829,7 +829,7 @@ if (isset($_GET['add_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] == '
                 ) VALUES (
                     '$customer_id',
                     'Active',
-                     NULL,
+                    '$created_by',
                     'Bandwidth Client',
                     '$pop_id',
                     '$sub_category_id',

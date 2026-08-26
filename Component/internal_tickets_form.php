@@ -118,64 +118,64 @@
 <script type="text/javascript">
     $(document).ready(function () {
        
-       $(document).on('change', 'select[name="pop_branch"]', function () {
-        let pop_id = $(this).val();
+        $(document).on('change', 'select[name="pop_branch"]', function () {
+            let pop_id = $(this).val();
 
-        if (pop_id === '') {
-            $('#show_pop_branch_ip').val('');
-            $('#customer_id').html('');
-            $('#effective_customer_div').addClass('d-none');
-            return;
-        }
-
-        /*-------------Load Customers by POP------------*/
-        $.ajax({
-            url: 'http://103.112.206.139/include/customer_server.php?get_customer=true',
-            type: 'GET',
-            data: { pop_id: pop_id },
-            dataType: 'json',
-            success: function (response) {
-
-                let options = '';
-
-                if (response.success && response.data.length > 0) {
-
-                    $.each(response.data, function (index, customer) {
-                        options += `
-                            <option value="${customer.id}">
-                                ${customer.customer_name}
-                            </option>
-                        `;
-                    });
-
-                    $('#customer_id').html(options);
-                    $('#effective_customer_div').removeClass('d-none');
-
-                } else {
-                    $('#customer_id').html('');
-                    $('#effective_customer_div').addClass('d-none');
-                }
+            if (pop_id === '') {
+                $('#show_pop_branch_ip').val('');
+                $('#customer_id').html('');
+                $('#effective_customer_div').addClass('d-none');
+                return;
             }
-        });
 
+            /*-------------Load Customers by POP------------*/
+            $.ajax({
+                url: 'http://103.112.206.139/include/customer_server.php?get_customer=true',
+                type: 'GET',
+                data: { pop_id: pop_id },
+                dataType: 'json',
+                success: function (response) {
 
-        /*------------Load Router IP------------*/
-        $.ajax({
-            url: 'http://103.112.206.139/include/pop_branch_server.php?get_pop_branch_ping_ip=true',
-            type: 'GET',
-            data: { pop_id: pop_id },
-            dataType: 'json',
-            success: function (response) {
-                if (response.success) {
-                    $('#show_pop_branch_ip_div').removeClass('d-none');
-                    $('#show_pop_branch_ip').val(response.router_ip);
-                } else {
-                    $('#show_pop_branch_ip').val('');
+                    let options = '';
+
+                    if (response.success && response.data.length > 0) {
+
+                        $.each(response.data, function (index, customer) {
+                            options += `
+                                <option value="${customer.id}">
+                                    ${customer.customer_name}
+                                </option>
+                            `;
+                        });
+
+                        $('#customer_id').html(options);
+                        $('#effective_customer_div').removeClass('d-none');
+
+                    } else {
+                        $('#customer_id').html('');
+                        $('#effective_customer_div').addClass('d-none');
+                    }
                 }
-            }
-        });
+            });
 
-    });
+
+            /*------------Load Router IP------------*/
+            $.ajax({
+                url: 'http://103.112.206.139/include/pop_branch_server.php?get_pop_branch_ping_ip=true',
+                type: 'GET',
+                data: { pop_id: pop_id },
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success) {
+                        $('#show_pop_branch_ip_div').removeClass('d-none');
+                        $('#show_pop_branch_ip').val(response.router_ip);
+                    } else {
+                        $('#show_pop_branch_ip').val('');
+                    }
+                }
+            });
+
+        });
         $(document).on('change', '#category_id', function () {
             let category_id = $(this).val();
 
@@ -183,7 +183,7 @@
                 $('#sub_category_id').html('<option value="">---select---</option>');
                 return;
             }
-            if(category_id =='112'){
+            if(category_id =='12'){
                 $('#show_pop_branch_div').removeClass('d-none');
                  $('#show_upstream_div').addClass('d-none');
             }else{

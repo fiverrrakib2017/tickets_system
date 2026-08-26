@@ -198,11 +198,11 @@ require 'Head.php';
                                                             $status_class = 'bg-secondary';
 
                                                             switch ($row['status']) {
-                                                                case 'open':
+                                                                case 'Active':
                                                                     $status_class = 'bg-danger';
                                                                     break;
 
-                                                                case 'in_progress':
+                                                                case 'Pending':
                                                                     $status_class = 'bg-primary';
                                                                     break;
 
@@ -214,7 +214,7 @@ require 'Head.php';
                                                                     $status_class = 'bg-info';
                                                                     break;
 
-                                                                case 'closed':
+                                                                case 'Complete':
                                                                     $status_class = 'bg-success';
                                                                     break;
                                                             }
@@ -383,11 +383,9 @@ require 'Head.php';
 
                     <select id="ticket_status_select" class="form-select">
                         <option value="">---Select---</option>
-                        <option value="open">Open</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="pending_vendor">Pending Vendor</option>
-                        <option value="resolved">Resolved</option>
-                        <option value="closed">Closed</option>
+                        <option value="Active">Active</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Complete">Completed</option>
                     </select>
                     <div class="mb-3" id="rca_box" style="display:none;">
                         <label class="form-label">RCA Note (Required for Close)</label>
@@ -413,7 +411,15 @@ require 'Head.php';
     <script>
         $(document).ready(function() {
            
-            $('#tickets_table').DataTable();
+            $('#tickets_table').DataTable({
+                "order": [
+                    [0, "desc"]
+                ],
+                "columnDefs": [{
+                    "targets": [2],
+                    "orderable": false,
+                }],
+            });
             /** Delete Script **/
             $(document).on('click', "button[name='delete_button']", function() {
                 var id = $(this).data('id');

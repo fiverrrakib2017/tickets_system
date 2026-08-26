@@ -131,6 +131,7 @@ if ($result && $result->num_rows > 0) {
             </a>
             <ul class="sub-menu" aria-expanded="false">
                 <li><a href="tickets.php">All Tickets</a></li>
+                <li><a href="ticket_create.php">Create Ticket </a></li>
                 <li><a href="ticketsTopic.php">Ticket Topics</a></li>
                 <li><a href="ticket_notes.php">NOC Note</a></li>
                 <li><a href="internal_tickets.php">NOC & Backbone</a></li>

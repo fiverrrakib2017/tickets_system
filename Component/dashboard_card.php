@@ -121,7 +121,7 @@ $internal_tickets = $internal_tickets_row->fetch_assoc();
 <div class="row">
 
     <!-- Total & Today Tickets -->
-    <div class="col-xl-4 col-md-6">
+    <div class="col-xl-3 col-md-6">
         <div class="card stat-card">
             <div class="card-body">
                 <div class="d-flex align-items-center">
@@ -141,14 +141,38 @@ $internal_tickets = $internal_tickets_row->fetch_assoc();
             </div>
         </div>
     </div>
-
-    <!-- NOC & Backbone -->
-    <div class="col-xl-4 col-md-6">
+    <!-- NOC & Incident -->
+    <div class="col-xl-3 col-md-6">
         <div class="card stat-card">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="flex-grow-1">
-                        <p class="stat-title">NOC & Backbone</p>
+                        <p class="stat-title">NOC Incident</p>
+                        <h3 class="stat-value">
+                            <!-- <a href="internal_tickets.php?department=noc_backbone&filter=today">
+                                <?= $internal_tickets['today_noc'] ?>
+                            </a> -->
+                            0/0
+                            <!-- <a href="internal_tickets.php?department=noc_backbone">
+                                <?= $internal_tickets['total_noc'] ?>
+                            </a> -->
+                        </h3>
+                        <small class="text-muted">Today / Total</small>
+                    </div>
+                    <div class="stat-icon bg-warning">
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Backbone Main Link -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="flex-grow-1">
+                        <p class="stat-title"> Backbone Main Link</p>
                         <h3 class="stat-value">
                             <a href="internal_tickets.php?department=noc_backbone&filter=today">
                                 <?= $internal_tickets['today_noc'] ?>
@@ -167,9 +191,8 @@ $internal_tickets = $internal_tickets_row->fetch_assoc();
             </div>
         </div>
     </div>
-
     <!-- Upstream -->
-    <div class="col-xl-4 col-md-6">
+    <div class="col-xl-3 col-md-6">
         <div class="card stat-card">
             <div class="card-body">
                 <div class="d-flex align-items-center">

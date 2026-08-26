@@ -135,6 +135,7 @@ if ($result && $result->num_rows > 0) {
                 <li><a href="ticketsTopic.php">Ticket Topics</a></li>
                 <li><a href="ticket_notes.php">NOC Note</a></li>
                 <li><a href="internal_tickets.php">NOC & Backbone</a></li>
+                <li><a href="noc_incident.php">NOC INCIDENT</a></li>
                 <li><a href="upstream.php">Upstream</a></li>
                 <li><a href="tickets_category.php">Tickets Category</a></li>
                 <li><a href="tickets_sub_category.php">Tickets Sub Category</a></li>

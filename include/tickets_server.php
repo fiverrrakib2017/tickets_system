@@ -1190,6 +1190,40 @@ if (isset($_GET['update_noc_incident_tickets_data']) && $_SERVER['REQUEST_METHOD
 
     exit();
 }
+/*----------- Delete NOC Incident Ticket Data ------------------*/
+if (isset($_GET['delete_noc_incident_tickets_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    $id = isset($_POST['id']) ? intval($_POST['id']) : 0;
+   
+    /* ---------- Validation ---------- */
+    if ($id <= 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid Incident Ticket ID.'
+        ]);
+        exit();
+    }
+
+    /* ---------- Delete NOC Incident Ticket ---------- */
+    $result = $con->query("DELETE FROM `noc_incident` WHERE id = $id LIMIT 1");
+
+    if ($result) {
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Incident Ticket Deleted successfully.'
+        ]);
+
+    } else {
+
+        echo json_encode([
+            'success' => false,
+            'message' => 'Database Error: ' . $con->error
+        ]);
+    }
+
+    exit();
+}
 /* -------Function to calculate actual work time */
 function acctual_work($startdate, $enddate)
 {

@@ -186,14 +186,10 @@ require 'Head.php';
 
                                                             </a>
 
-                                                            <a href="noc_incident_edit.php?id=<?= $row['id'] ?>"
-                                                            class="btn btn-sm btn-danger"
-                                                            title="Delete"
-                                                            onclick="return confirm('Are you sure?')">
-
+                                                             <button type="button" name="delete_button" data-id="<?php echo $row['id']; ?>"
+                                                                class="btn-sm btn btn-danger">
                                                                 <i class="fas fa-trash"></i>
-
-                                                            </a>
+                                                            </button>
 
                                                         </td>
 
@@ -254,39 +250,6 @@ require 'Head.php';
             </div>
         </div>
     </div>
-    <div class="modal fade" id="statusModal" tabindex="-1">
-        <div class="modal-dialog">
-            <div class="modal-content">
-
-                <div class="modal-header">
-                    <h5 class="modal-title">Update Status</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-
-                <div class="modal-body">
-                    <input type="hidden" id="status_ticket_id">
-
-                    <select id="ticket_status_select" class="form-select">
-                        <option value="">---Select---</option>
-                        <option value="Active">Active</option>
-                        <option value="Pending">Pending</option>
-                        <option value="Complete">Completed</option>
-                    </select>
-                    <div class="mb-3" id="rca_box" style="display:none;">
-                        <label class="form-label">RCA Note (Required for Close)</label>
-                        <textarea id="rca_note" class="form-control" placeholder="Write root cause analysis..."></textarea>
-                    </div>
-                </div>
-
-                <div class="modal-footer">
-                    <button class="btn btn-primary" id="saveStatus">
-                        Update
-                    </button>
-                </div>
-
-            </div>
-        </div>
-    </div>
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
     <?php include 'script.php'; ?>
@@ -304,7 +267,7 @@ require 'Head.php';
                     "orderable": false,
                 }],
             });
-            /** Delete Script **/
+            /*--------- Delete Script ------*/
             $(document).on('click', "button[name='delete_button']", function() {
                 var id = $(this).data('id');
                 $('#DeleteId').text(id);
@@ -312,7 +275,7 @@ require 'Head.php';
 
                 $('#DeleteConfirm').off('click').on('click', function() {
                     $.ajax({
-                        url: "include/customer_server.php?delete_customer_data=true",
+                        url: "include/tickets_server.php?delete_noc_incident_tickets_data=true",
                         type: "POST",
                         data: {
                             id: id
@@ -330,7 +293,7 @@ require 'Head.php';
                             }
                         },
                         error: function(xhr, status, error) {
-                            toastr.error("Error deleting NAS: " + xhr.responseText);
+                            toastr.error("Error deleting : " + xhr.responseText);
                         }
                     });
                 });

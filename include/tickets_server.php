@@ -874,7 +874,7 @@ if (isset($_GET['add_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] == '
             '$pop_id',
             '$upstream_id',
             '$severity',
-            '$status',
+            'Active',
             '$subject',
             '$description',
             '$attachment',

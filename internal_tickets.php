@@ -177,7 +177,7 @@ require 'Head.php';
                                                                 ? ucfirst(str_replace('_', ' ', $row['assigned_team'])) 
                                                                 : '---' ?>
 
-                                                            <?php if ($row['status'] != 'closed' && $row['status'] != 'resolved'): ?>
+                                                            <?php if ($row['status'] != 'Complete' && empty($row['assigned_team'])): ?>
 
                                                                 <button 
                                                                     type="button"
@@ -224,7 +224,7 @@ require 'Head.php';
                                                             <?= ucfirst(str_replace('_', ' ', $row['status'])) ?>
                                                         </span>
 
-                                                        <?php if ($row['status'] === 'closed' && !empty($row['downtime_minutes'])): ?>
+                                                        <?php if ($row['status'] === 'Complete' && !empty($row['downtime_minutes'])): ?>
                                                             <?php
                                                                 $minutes = (int)$row['downtime_minutes'];
                                                                 $hours = floor($minutes / 60);
@@ -237,7 +237,7 @@ require 'Head.php';
                                                             </div>
                                                         <?php endif; ?>
 
-                                                        <?php if ($row['status'] !== 'closed' && $row['status'] !== 'resolved'): ?>
+                                                        <?php if ($row['status'] !== 'Complete'): ?>
                                                             <button
                                                                 type="button"
                                                                 class="btn btn-sm btn-primary ms-1"
@@ -501,12 +501,10 @@ require 'Head.php';
                     },
                     dataType: 'json',
                     success: function (response) {
-
-                        toastr.success(response.message);
-
                         if (response.success) {
                             $('#assignTeamModal').modal('hide');
-                            location.reload();
+                            toastr.success(response.message);
+                            //location.reload();
                         }
                     },
                     error: function () {
@@ -543,7 +541,7 @@ require 'Head.php';
 
                         if (response.success) {
                             $('#statusModal').modal('hide');
-                            location.reload();
+                            //location.reload();
                         }
                     },
                     error: function () {

@@ -951,7 +951,7 @@ if (isset($_GET['update_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] =
     /* ---------- Close time & downtime calculation ---------- */
     $extra_status_sql = '';
 
-    if ($status == 'closed') {
+    if ($status == 'Complete') {
         $extra_status_sql = ",
             closed_at = NOW(),
             downtime_minutes = TIMESTAMPDIFF(MINUTE, opened_at, NOW())
@@ -989,7 +989,7 @@ if (isset($_GET['update_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] =
 
     exit;
 }
-
+/*---------Update Internal Tickets Assign Team------------*/
 if(isset($_GET['update_assigned_team']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
 
     $ticket_id      = (int) $_POST['ticket_id'];
@@ -1009,6 +1009,7 @@ if(isset($_GET['update_assigned_team']) && $_SERVER['REQUEST_METHOD'] == 'POST')
     ]);
     exit;
 }
+/*---------Update Internal Tickets------------*/
 if (isset($_GET['update_ticket_status']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $ticket_id  = (int) $_POST['ticket_id'];
@@ -1018,7 +1019,7 @@ if (isset($_GET['update_ticket_status']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     $safe_rca_note = mysqli_real_escape_string($con, $rca_note);
     $extra_sql  = '';
 
-    if ($status == 'closed' && empty($rca_note)) {
+    if ($status == 'Complete' && empty($rca_note)) {
         echo json_encode([
             'success' => false,
             'message' => 'RCA note is required to close ticket'
@@ -1030,7 +1031,7 @@ if (isset($_GET['update_ticket_status']) && $_SERVER['REQUEST_METHOD'] == 'POST'
 
     try {
 
-        if ($status == 'closed') {
+        if ($status == 'Complete') {
 
             $ticket_data = $con->query("
                 SELECT pop_id 
@@ -1043,7 +1044,7 @@ if (isset($_GET['update_ticket_status']) && $_SERVER['REQUEST_METHOD'] == 'POST'
 
             $enddate = date('Y-m-d H:i:s');
 
-            /* linked customer tickets resolved */
+            /*----- linked customer tickets Complete -------*/
             $update_ticket = $con->query("
                 UPDATE ticket 
                 SET 

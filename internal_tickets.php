@@ -405,7 +405,6 @@ require 'Head.php';
     <!-- Right bar overlay-->
     <div class="rightbar-overlay"></div>
     <?php include 'script.php'; ?>
-    <script src="js/Ajax.js"></script>
     <!-- Include SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -474,7 +473,7 @@ require 'Head.php';
 
                     let status = $(this).val();
 
-                    if (status === 'closed') {
+                    if (status === 'Complete') {
                         $('#rca_box').show();
                     } else {
                         $('#rca_box').hide();
@@ -503,7 +502,7 @@ require 'Head.php';
                     dataType: 'json',
                     success: function (response) {
 
-                         toastr.success(response.message);
+                        toastr.success(response.message);
 
                         if (response.success) {
                             $('#assignTeamModal').modal('hide');
@@ -525,8 +524,8 @@ require 'Head.php';
                 let rca_note = $('#rca_note').val();
 
                 /*-------------Validation rule---------*/
-                if (status === 'closed' && rca_note.trim() === '') {
-                    alert('RCA Note is required when closing a ticket');
+                if (status === 'Complete' && rca_note.trim() === '') {
+                    toastr.error('RCA Note is required when closing a ticket');
                     return;
                 }
                 $.ajax({

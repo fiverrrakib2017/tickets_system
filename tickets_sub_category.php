@@ -61,7 +61,7 @@ require 'Head.php';
                                 </div>
                                 <div class="d-flex justify-content-between align-items-end flex-wrap">
                                     <button class="btn btn-primary mt-2 mt-xl-0 mdi mdi-account-plus mdi-18px"
-                                    data-bs-toggle="modal" data-bs-target="#addModal" style="margin-bottom: 12px;">&nbsp;&nbsp;&nbsp;New
+                                    data-bs-toggle="modal" data-bs-target="#addModal" style="margin-bottom: 12px;">&nbsp;&nbsp;&nbsp;New Sub
                                 Category</button>
                             </div>
                             </div>
@@ -85,10 +85,12 @@ require 'Head.php';
 
                                                     <?php 
 
-                                                       $sql = "SELECT s.*, c.name as category_name 
+                                                        $sql = "SELECT s.*, c.name as category_name 
                                                                 FROM ticket_subcategories s
-                                                                LEFT JOIN ticket_categories c ON s.category_id = c.id";
-                                                        $result=mysqli_query($con,$sql);
+                                                                LEFT JOIN ticket_categories c ON s.category_id = c.id
+                                                                ORDER BY s.id DESC";
+
+                                                        $result = mysqli_query($con, $sql);
 
                                                         while ($rows=mysqli_fetch_assoc($result)) {
 
@@ -176,7 +178,7 @@ require 'Head.php';
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="exampleModalLabel"><span
-                                class="mdi mdi-lan mdi-18px"></span> &nbsp;Update Cartegory</h5>
+                                class="mdi mdi-lan mdi-18px"></span> &nbsp;Update Sub Cartegory</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
@@ -243,7 +245,15 @@ require 'Head.php';
     <script type="text/javascript"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $("#category_table").DataTable();
+            $("#category_table").DataTable({
+                "order": [
+                    [0, "desc"]
+                ],
+                "columnDefs": [{
+                    "targets": [2],
+                    "orderable": false,
+                }],
+            });
 
             $('#addModal form').submit(function(e) {
                 e.preventDefault();
@@ -292,26 +302,31 @@ require 'Head.php';
                     }
                 });
             });
-             /** Edit Area Script **/
+             /** Edit  Script **/
             $(document).on('click', "button[name='edit_button']", function() {
                 var id = $(this).data('id');
-                
                 /** Use Ajax to send the request **/
                 $.ajax({
                     url: "include/category_server.php?get_subcategory_data=true",
                     type: "GET",
-                    data: {
-                        id: id
-                    },
+                    data: { id: id },
                     dataType: 'json',
                     success: function(response) {
-                        if (response.success) {
+                         if (response.success && response.data.length > 0) {
+                            var data = response.data[0];
+
                             $('#editModal').modal('show');
-                            $('#editModal input[name="id"]').val(response.data.id);
-                            $('#editModal select[name="category_id"]').val(response.data.category_id);
-                            $('#editModal input[name="sub_category_name"]').val(response.data.name);
+
+                            $('#editModal input[name="id"]').val(data.id);
+
+                            $('#editModal select[name="category_id"]').val(data.category_id);
+
+                            $('#editModal input[name="sub_category_name"]').val(data.name);
+
                         } else {
-                            toastr.error("Error fetching data for edit: " + response.message);
+
+                            toastr.error("Subcategory data not found.");
+
                         }
                     },
                     error: function(xhr, status, error) {

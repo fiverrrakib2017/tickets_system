@@ -145,13 +145,12 @@ if (isset($_GET['add_subcategory_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
 /*----------- Get SubCategory -----------*/
 if (isset($_GET['get_subcategory_data'])) {
 
-    $category_id = intval($_GET['id']);
+    $id = intval($_GET['id']);
 
     $result = $con->query("
-        SELECT id, name 
+        SELECT *
         FROM ticket_subcategories 
-        WHERE category_id = $category_id
-        ORDER BY name ASC
+        WHERE id = $id
     ");
 
     $data = [];

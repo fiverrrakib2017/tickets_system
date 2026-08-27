@@ -743,6 +743,7 @@ if (isset($_GET['delete_noc_note_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
         exit();
     }
 }
+
 /*----------- Add Internal Ticket Data------------------*/
 if (isset($_GET['add_internal_tickets_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     
@@ -1094,6 +1095,41 @@ if (isset($_GET['update_ticket_status']) && $_SERVER['REQUEST_METHOD'] == 'POST'
         echo json_encode([
             'success' => false,
             'message' => $e->getMessage()
+        ]);
+    }
+
+    exit;
+}
+/*----------- Add NOC Incident Ticket Data------------------*/
+if (isset($_GET['add_noc_incident_tickets_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    
+    $incident_summary          = isset($_POST['incident_summary']) ? trim($_POST['incident_summary']) : '';
+    $status                     = isset($_POST['status']) ? trim($_POST['status']) : '';
+    
+    if(empty($status)){
+        $status = 'Active';
+    }
+    /* ---------- Validation ---------- */
+    if (empty($incident_summary)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Incident Summary is required.'
+        ]);
+        exit();
+    }
+
+    /* ---------- Insert NOC Incident Ticket ---------- */
+    $result = $con->query(" INSERT INTO noc_incident(incident_summary,status,create_date)  VALUES ('$incident_summary','Active',NOW())");
+
+    if ($result) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Incident Ticket Created successfully.'
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Database Error: ' . $con->error
         ]);
     }
 

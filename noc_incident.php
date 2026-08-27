@@ -77,27 +77,29 @@ require 'Head.php';
 
                                 <div class="card-body">
                                     <div class="table-responsive ">
-                                        <table id="tickets_table" class="table table-bordered dt-responsive nowrap"style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                       <table id="tickets_table" 
+                                            class="table table-bordered dt-responsive nowrap"
+                                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
 
                                             <thead>
                                                 <tr>
-                                                    <th>ID</th>
-                                                    <th>incident_summary</th>
-                                                    <th>Status</th>
-                                                    <th>Create Date</th>
-                                                    <th>Action</th>
+                                                    <th style="width: 60px;">ID</th>
+                                                    <th>Incident Summary</th>
+                                                    <th style="width: 100px;">Status</th>
+                                                    <th style="width: 180px;">Create Date</th>
+                                                    <th style="width: 100px;">Action</th>
                                                 </tr>
                                             </thead>
 
                                             <tbody id="tickets-list">
-                                                <?php
-                                                $where = [];
 
-                                                
+                                                <?php
+
+                                                $where = [];
 
                                                 if (isset($_GET['filter']) && $_GET['filter'] == 'today') {
                                                     $todayDate = date('Y-m-d');
-                                                    $where[] = "DATE(t.create_date) = '$todayDate'";
+                                                    $where[] = "DATE(create_date) = '$todayDate'";
                                                 }
 
                                                 $whereSql = '';
@@ -105,29 +107,48 @@ require 'Head.php';
                                                 if (!empty($where)) {
                                                     $whereSql = 'WHERE ' . implode(' AND ', $where);
                                                 }
-                                                $result = $con->query("
-                                                        SELECT 
-                                                            *
 
-                                                        FROM noc_incident 
-                                                            $whereSql
-                                                        ORDER BY id DESC
-                                                    ");
+                                                $result = $con->query("
+                                                    SELECT *
+                                                    FROM noc_incident
+                                                    $whereSql
+                                                    ORDER BY id DESC
+                                                ");
 
                                                 if ($result && $result->num_rows > 0):
+
                                                     while ($row = $result->fetch_assoc()):
                                                 ?>
+
                                                     <tr>
-                                                        <td><?= htmlspecialchars($row['id']) ?></td>
 
-                                                        <td><?= htmlspecialchars($row['incident_summary'] ?? '---') ?></td>
+                                                        <td>
+                                                            <?= htmlspecialchars($row['id']) ?>
+                                                        </td>
 
-                                                        
-                                                       <td>
-                                                        <?php
+                                                        <!-- Incident Summary -->
+                                                        <td style="max-width: 400px;">
+
+                                                            <div
+                                                                class="text-truncate"
+                                                                style="max-width: 400px;"
+                                                                title="<?= htmlspecialchars($row['incident_summary'] ?? '') ?>">
+
+                                                                <?= htmlspecialchars($row['incident_summary'] ?? '---') ?>
+
+                                                            </div>
+
+                                                        </td>
+
+                                                        <!-- Status -->
+                                                        <td>
+
+                                                            <?php
+
                                                             $status_class = 'bg-secondary';
 
                                                             switch ($row['status']) {
+
                                                                 case 'Active':
                                                                     $status_class = 'bg-danger';
                                                                     break;
@@ -140,43 +161,60 @@ require 'Head.php';
                                                                     $status_class = 'bg-success';
                                                                     break;
                                                             }
-                                                        ?>
 
-                                                        <span class="badge <?= $status_class ?>">
-                                                            <?= ucfirst(str_replace('_', ' ', $row['status'])) ?>
-                                                        </span>
-                                                    </td>
+                                                            ?>
 
-                                                     
+                                                            <span class="badge <?= $status_class ?>">
+                                                                <?= ucfirst(str_replace('_', ' ', $row['status'])) ?>
+                                                            </span>
 
-                                                      
-
-                                                        <td><?= date('d M Y h:i A', strtotime($row['create_date'])) ?></td>
-
-                                                        <td>
-                                                            <a href="internal_ticket_edit.php?id=<?= $row['id'] ?>"
-                                                            class="btn btn-sm btn-primary">
-                                                                <i class="fas fa-edit"></i>
-                                                            </a>
-
-                                                            <a href="internal_ticket_delete.php?id=<?= $row['id'] ?>"
-                                                            class="btn btn-sm btn-danger"
-                                                            onclick="return confirm('Are you sure?')">
-                                                                <i class="fas fa-trash"></i>
-                                                            </a>
                                                         </td>
+
+                                                        <!-- Create Date -->
+                                                        <td>
+                                                            <?= date('d M Y h:i A', strtotime($row['create_date'])) ?>
+                                                        </td>
+
+                                                        <!-- Action -->
+                                                        <td>
+
+                                                            <a href="noc_incident_edit.php?id=<?= $row['id'] ?>"
+                                                            class="btn btn-sm btn-primary"
+                                                            title="Edit">
+
+                                                                <i class="fas fa-edit"></i>
+
+                                                            </a>
+
+                                                            <a href="noc_incident_edit.php?id=<?= $row['id'] ?>"
+                                                            class="btn btn-sm btn-danger"
+                                                            title="Delete"
+                                                            onclick="return confirm('Are you sure?')">
+
+                                                                <i class="fas fa-trash"></i>
+
+                                                            </a>
+
+                                                        </td>
+
                                                     </tr>
+
                                                 <?php
                                                     endwhile;
+
                                                 else:
                                                 ?>
+
                                                     <tr>
-                                                        <td colspan="11" class="text-center">
+                                                        <td colspan="5" class="text-center">
                                                             No tickets found
                                                         </td>
                                                     </tr>
+
                                                 <?php endif; ?>
+
                                             </tbody>
+
                                         </table>
                                     </div>
                                 </div>

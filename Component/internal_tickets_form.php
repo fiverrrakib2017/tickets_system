@@ -194,7 +194,7 @@
             $.ajax({
                 url: 'include/category_server.php?get_subcategory_data=true',
                 type: 'GET',
-                data: { id: category_id },
+                data: { category_id: category_id },
                 dataType: 'json',
                 success: function (response) {
 

@@ -116,6 +116,23 @@ $internal_tickets_row = $con->query("
 ");
 
 $internal_tickets = $internal_tickets_row->fetch_assoc();
+
+/*------ NOC Incident -------*/
+$noc_incident_tickets = $con->query("
+    SELECT 
+        SUM(
+            CASE 
+                WHEN DATE(create_date) = '$today_date' THEN 1
+                ELSE 0
+            END
+        ) AS today_noc_incident_ticket,
+
+        COUNT(*) AS total_noc_incident_ticket
+
+    FROM noc_incident
+");
+
+$noc_incident_ticket = $noc_incident_tickets->fetch_assoc();
 ?>
 
 <div class="row">
@@ -149,13 +166,12 @@ $internal_tickets = $internal_tickets_row->fetch_assoc();
                     <div class="flex-grow-1">
                         <p class="stat-title">NOC Incident</p>
                         <h3 class="stat-value">
-                            <!-- <a href="internal_tickets.php?department=noc_backbone&filter=today">
-                                <?= $internal_tickets['today_noc'] ?>
-                            </a> -->
-                            0/0
-                            <!-- <a href="internal_tickets.php?department=noc_backbone">
-                                <?= $internal_tickets['total_noc'] ?>
-                            </a> -->
+                            <a href="noc_incident.php?filter=today">
+                                <?=  $noc_incident_ticket['today_noc_incident_ticket']; ?>
+                            </a>    /
+                            <a href="noc_incident.php">
+                                <?=  $noc_incident_ticket['total_noc_incident_ticket']; ?>
+                            </a>
                         </h3>
                         <small class="text-muted">Today / Total</small>
                     </div>

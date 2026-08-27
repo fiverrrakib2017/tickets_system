@@ -144,19 +144,39 @@ if (isset($_GET['add_subcategory_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
 
 /*----------- Get SubCategory -----------*/
 if (isset($_GET['get_subcategory_data'])) {
+    /*-------
+    Sub category id, , 
+    category id boath are filter now-
+    --------*/
+    $id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+    $category_id = isset($_GET['category_id']) ? intval($_GET['category_id']) : 0;
 
-    $id = intval($_GET['id']);
+    $where = [];
 
-    $result = $con->query("
-        SELECT *
-        FROM ticket_subcategories 
-        WHERE id = $id
-    ");
+    if ($id > 0) {
+        $where[] = "id = $id";
+    }
+
+    if ($category_id > 0) {
+        $where[] = "category_id = $category_id";
+    }
+
+    $sql = "SELECT * FROM ticket_subcategories";
+
+    if (!empty($where)) {
+        $sql .= " WHERE " . implode(" AND ", $where);
+    }
+
+    $sql .= " ORDER BY id DESC";
+
+    $result = $con->query($sql);
 
     $data = [];
 
-    while ($row = $result->fetch_assoc()) {
-        $data[] = $row;
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
     }
 
     echo json_encode([

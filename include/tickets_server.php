@@ -1135,6 +1135,61 @@ if (isset($_GET['add_noc_incident_tickets_data']) && $_SERVER['REQUEST_METHOD'] 
 
     exit;
 }
+/*----------- Update NOC Incident Ticket Data ------------------*/
+if (isset($_GET['update_noc_incident_tickets_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    $id                 = isset($_POST['ticket_id']) ? intval($_POST['ticket_id']) : 0;
+    $incident_summary   = isset($_POST['incident_summary']) ? trim($_POST['incident_summary']) : '';
+    $status             = isset($_POST['status']) ? trim($_POST['status']) : '';
+
+    if (empty($status)) {
+        $status = 'Active';
+    }
+
+    /* ---------- Validation ---------- */
+    if ($id <= 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid Incident Ticket ID.'
+        ]);
+        exit();
+    }
+
+    if (empty($incident_summary)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Incident Summary is required.'
+        ]);
+        exit();
+    }
+
+    /* ---------- Update NOC Incident Ticket ---------- */
+    $result = $con->query("
+        UPDATE noc_incident
+        SET 
+            incident_summary = '$incident_summary',
+            status = '$status'
+        WHERE id = $id
+        LIMIT 1
+    ");
+
+    if ($result) {
+
+        echo json_encode([
+            'success' => true,
+            'message' => 'Incident Ticket Updated successfully.'
+        ]);
+
+    } else {
+
+        echo json_encode([
+            'success' => false,
+            'message' => 'Database Error: ' . $con->error
+        ]);
+    }
+
+    exit();
+}
 /* -------Function to calculate actual work time */
 function acctual_work($startdate, $enddate)
 {

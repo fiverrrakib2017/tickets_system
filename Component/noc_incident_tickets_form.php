@@ -10,8 +10,17 @@
          value="<?= isset($ticket['id']) ? htmlspecialchars($ticket['id']) : '' ?>" >
  </div>
 <div class="col-md-6 mb-3">
-    <label for="name">Incident Summary <span class="text-danger">*</span></label>
-    <textarea  type="text" id="incident_summary" name="incident_summary"  class="form-control"  placeholder="Enter Incident Summary"  value="<?= isset($ticket['incident_summary']) ? htmlspecialchars($ticket['incident_summary']) : '' ?>"  required></textarea>
+    <label for="incident_summary">
+        Incident Summary <span class="text-danger">*</span>
+    </label>
+
+    <textarea
+        id="incident_summary"
+        name="incident_summary"
+        class="form-control auto-resize"
+        placeholder="Enter Incident Summary"
+        required
+    ><?= isset($ticket['incident_summary']) ? htmlspecialchars($ticket['incident_summary']) : '' ?></textarea>
 </div>
 
 <div class="col-md-6 mb-3">

@@ -1224,6 +1224,127 @@ if (isset($_GET['delete_noc_incident_tickets_data']) && $_SERVER['REQUEST_METHOD
 
     exit();
 }
+
+if(isset($_GET['add_client_visit_tickets_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
+    $assign_user_id          = isset($_POST['assign_user_id']) ? trim($_POST['assign_user_id']) : '';
+    $title                   = isset($_POST['title']) ? trim($_POST['title']) : '';
+    $description             = isset($_POST['description']) ? trim($_POST['description']) : '';
+    $status                  = isset($_POST['status']) ? trim($_POST['status']) : '';
+    $create_date             = isset($_POST['create_date']) ? trim($_POST['create_date']) : '';
+    if(empty($status)){
+        $status = 'Active';
+    }
+    /* ---------- Validation ---------- */
+    if (empty($title)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Title is required.'
+        ]);
+        exit();
+    }
+
+    /* ---------- Client Visit Ticket ---------- */
+    $result = $con->query(" INSERT INTO client_visit(assign_user_id,title,description,status,create_date)  VALUES ('$assign_user_id','$title','$description','$status','$create_date')");
+
+    if ($result) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Client Visit Created successfully.'
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Database Error: ' . $con->error
+        ]);
+    }
+
+    exit;
+}
+if (isset($_GET['update_client_visit_tickets_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
+    $id               = isset($_POST['id']) ? intval($_POST['id']) : 0;
+    $assign_user_id   = isset($_POST['assign_user_id']) ? intval($_POST['assign_user_id']) : 0;
+    $title            = isset($_POST['title']) ? trim($_POST['title']) : '';
+    $description      = isset($_POST['description']) ? trim($_POST['description']) : '';
+    $status           = isset($_POST['status']) ? trim($_POST['status']) : 'Active';
+    $create_date      = isset($_POST['create_date']) ? trim($_POST['create_date']) : '';
+
+    /* ---------- Validation ---------- */
+    if ($id <= 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid Record ID.'
+        ]);
+        exit();
+    }
+
+    if (empty($title)) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Title is required.'
+        ]);
+        exit();
+    }
+
+    if (!empty($create_date)) {
+        $create_date = date('Y-m-d', strtotime($create_date));
+    } else {
+        $create_date = date('Y-m-d');
+    }
+
+    /* ---------- Prepared Statement Update Query ---------- */
+    $stmt = $con->prepare("UPDATE client_visit 
+                           SET assign_user_id = ?, title = ?, description = ?, status = ?, create_date = ? 
+                           WHERE id = ?");
+    
+    $stmt->bind_param("issssi", $assign_user_id, $title, $description, $status, $create_date, $id);
+
+    if ($stmt->execute()) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Client Visit updated successfully.'
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Database Error: ' . $stmt->error
+        ]);
+    }
+
+    $stmt->close();
+    exit();
+}
+/* ---------- Delete Client Visit Ticket Data ---------- */
+if (isset($_GET['delete_client_visit_tickets_data']) && ($_SERVER['REQUEST_METHOD'] == 'POST')) {
+    $id = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
+
+    /* ---------- Validation ---------- */
+    if ($id <= 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid Record ID.'
+        ]);
+        exit();
+    }
+
+    /* ---------- Prepared Statement Delete Query ---------- */
+    $stmt = $con->prepare("DELETE FROM client_visit WHERE id = ?");
+    $stmt->bind_param("i", $id);
+
+    if ($stmt->execute()) {
+        echo json_encode([
+            'success' => true,
+            'message' => 'Client Visit deleted successfully.'
+        ]);
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Database Error: ' . $stmt->error
+        ]);
+    }
+
+    $stmt->close();
+    exit();
+}
 /* -------Function to calculate actual work time */
 function acctual_work($startdate, $enddate)
 {

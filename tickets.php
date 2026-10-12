@@ -68,12 +68,38 @@ require 'Head.php';
                     <div class="row">
                         <div class="col-md-12 stretch-card">
                             <div class="card">
-                               <div class="card-header customer_card_header border-bottom d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3" style="background-color: white;">
-                                <!-- Add Ticket Button -->
-                                <a href="ticket_create.php" class="btn btn-success">
-                                    <i class="fas fa-ticket-alt me-1"></i> Add New Ticket
-                                </a>
-                            </div>
+                               <!-- Card Header with Add Button and Date Filter -->
+                                <div class="card-header customer_card_header border-bottom d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3" style="background-color: white;">
+                                    
+                                    <!-- Add Ticket Button -->
+                                    <a href="ticket_create.php" class="btn btn-success">
+                                        <i class="fas fa-ticket-alt me-1"></i> Add New Ticket
+                                    </a>
+
+                                    <!-- Date Range Filter Form inside Header -->
+                                    <form method="GET" action="" class="d-flex flex-wrap align-items-end gap-2 mb-0">
+                                        <?php if (!empty($_GET['status'])): ?>
+                                            <input type="hidden" name="status" value="<?php echo htmlspecialchars($_GET['status']); ?>">
+                                        <?php endif; ?>
+                                        <?php if (!empty($_GET['user_id'])): ?>
+                                            <input type="hidden" name="user_id" value="<?php echo htmlspecialchars($_GET['user_id']); ?>">
+                                        <?php endif; ?>
+
+                                        <div>
+                                            <label for="date_from" class="form-label mb-1">Start Date:</label>
+                                            <input type="date" id="date_from" name="date_from" class="form-control form-control-sm" value="<?php echo htmlspecialchars($_GET['date_from'] ?? date('Y-m-01')); ?>">
+                                        </div>
+                                        <div>
+                                            <label for="date_to" class="form-label mb-1">End Date:</label>
+                                            <input type="date" id="date_to" name="date_to" class="form-control form-control-sm" value="<?php echo htmlspecialchars($_GET['date_to'] ?? date('Y-m-t')); ?>">
+                                        </div>
+                                        <div>
+                                            <button type="submit" class="btn btn-primary btn-sm"><i class="fa fa-filter"></i> Filter</button>
+                                            <a href="?" class="btn btn-danger btn-sm"><i class="fa fa-refresh"></i> Reset</a>
+                                        </div>
+                                    </form>
+
+                                </div>
 
                                 <div class="card-body">
                                     <div class="table-responsive ">
@@ -99,6 +125,13 @@ require 'Head.php';
                                                 /*------------- Performance Filter -------------------*/
                                                 if (!empty($_GET['performance'])) {
                                                     $options['performance'] = trim($_GET['performance']);
+                                                }
+                                                /*------------- Date Range Filter -------------------*/
+                                                if (!empty($_GET['date_from'])) {
+                                                    $options['date_from'] = trim($_GET['date_from']);
+                                                }
+                                                if (!empty($_GET['date_to'])) {
+                                                    $options['date_to'] = trim($_GET['date_to']);
                                                 }
 
                                                

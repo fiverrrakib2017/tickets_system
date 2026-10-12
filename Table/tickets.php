@@ -29,7 +29,10 @@ while ($row = $tickets->fetch_assoc()):
         ?>
     </td>
 
-    <td><?= time_ago($row['create_date']); ?></td>
+    <td>
+        <div class="bg-success text-white"><?= date('d M Y, h:i A', strtotime($row['create_date'])); ?></div>
+        <small class="text-muted">(<?= time_ago($row['create_date']); ?>)</small>
+    </td>
 
     <td>
         <span class="badge bg-info">

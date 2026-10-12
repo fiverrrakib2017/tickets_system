@@ -428,25 +428,43 @@ require 'Head.php';
                                                         <div class="tab-content">
                                                             <div class="tab-pane active" id="tickets" role="tabpanel">
                                                                 <div class="table-responsive">
-                                                                   <table id="tickets_table" class="table table-bordered dt-responsive nowrap"
+                                                                    
+                                                                    <form method="GET" action="customer_profile.php" class="row align-items-end g-3 mb-4">
+                                                                        <input type="hidden" name="clid" value="<?php echo htmlspecialchars($customer['id'] ?? ''); ?>">
+                                                                        <div class="col-xxl-3 col-xl-3 col-lg-4 col-md-4">
+                                                                            <label for="date_from" class="form-label font-weight-bold">Start Date:</label>
+                                                                            <input type="date" id="date_from" name="date_from" class="form-control" value="<?php echo htmlspecialchars($_GET['date_from'] ?? ''); ?>">
+                                                                        </div>
+                                                                        <div class="col-xxl-3 col-xl-3 col-lg-4 col-md-4">
+                                                                            <label for="date_to" class="form-label font-weight-bold">End Date: </label>
+                                                                            <input type="date" id="date_to" name="date_to" class="form-control" value="<?php echo htmlspecialchars($_GET['date_to'] ?? ''); ?>">
+                                                                        </div>
+                                                                        <div class="col-xxl-4 col-xl-4 col-lg-4 col-md-4">
+                                                                            <button type="submit" class="btn btn-primary me-2"><i class="fa fa-filter"></i> Filter</button>
+                                                                            <a href="customer_profile.php?clid=<?php echo htmlspecialchars($customer['id'] ?? ''); ?>" class="btn btn-danger"><i class="fa fa-refresh"></i> Reset</a>
+                                                                        </div>
+                                                                    </form>
+
+                                                                    <!-- tickets table -->
+                                                                    <table id="tickets_table" class="table table-bordered dt-responsive nowrap"
                                                                         style="border-collapse: collapse; border-spacing: 0; width: 100%;">
                                                                         <thead>
                                                                             <?php include 'Table/tickets_head.php';?>
                                                                         </thead>
-                                                                    <tbody id="tickets-list">
-                                                                    <?php     
-                                                                        $tickets = get_tickets($con, [
-                                                                            'customer_id' => $customer['id']
-                                                                        ]);
-                                                                        include 'Table/tickets.php';
-                                                                    ?>
-
-                                                                    </tbody>
-
+                                                                        <tbody id="tickets-list">
+                                                                            <?php    
+                                                                                $tickets = get_tickets($con, [
+                                                                                    'customer_id' => $customer['id'],
+                                                                                    'date_from'   => $_GET['date_from'] ?? null,
+                                                                                    'date_to'     => $_GET['date_to'] ?? null
+                                                                                ]);
+                                                                                include 'Table/tickets.php';
+                                                                            ?>
+                                                                        </tbody>
                                                                     </table>
+
                                                                 </div>
                                                             </div>
-                                                           
                                                         </div>
                                                     </div>
                                                 </div>

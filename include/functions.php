@@ -462,6 +462,21 @@ if (!function_exists('get_tickets')) {
         
             $where[] = "t.create_date >= '{$start}' AND t.create_date < '{$end}'";
         }
+        /*---- Date Range Filter (Start Date & End Date) ----*/
+        if (!empty($options['date_from']) && !empty($options['date_to'])) {
+            $date_from = date('Y-m-d', strtotime($options['date_from'])) . ' 00:00:00';
+            $date_to   = date('Y-m-d', strtotime($options['date_to'])) . ' 23:59:59';
+            
+            $where[] = "t.create_date >= '{$date_from}' AND t.create_date <= '{$date_to}'";
+        } elseif (!empty($options['date_from'])) {
+            /*--------if only start date is set---------*/ 
+            $date_from = date('Y-m-d', strtotime($options['date_from'])) . ' 00:00:00';
+            $where[] = "t.create_date >= '{$date_from}'";
+        } elseif (!empty($options['date_to'])) {
+            /*--------if only end date is set---------*/ 
+            $date_to = date('Y-m-d', strtotime($options['date_to'])) . ' 23:59:59';
+            $where[] = "t.create_date <= '{$date_to}'";
+        }
         /*---- Performance Filter ----*/
         if (!empty($options['performance'])) {
 

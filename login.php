@@ -14,7 +14,7 @@ if (isset($_POST["login"])) {
 
     if (!empty($username) && !empty($password)) {
         /* Fetch user securely using prepared statement*/
-        $stmt = $con->prepare("SELECT id, username, fullname, role, status , password FROM users WHERE username = ? AND password = ? LIMIT 1");
+        $stmt = $con->prepare("SELECT `id`, `username`, `fullname`, `status` , `password` FROM users WHERE username = ? AND password = ? LIMIT 1");
         $stmt->bind_param("ss", $username,$password);
         $stmt->execute();
         $result = $stmt->get_result();

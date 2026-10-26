@@ -629,6 +629,31 @@ if(!function_exists('is_unique_column')){
         exit; 
     }
 }
+/*--------Get Role Name Func-------------*/
+if(!function_exists('get_role_name')) {
+    function get_role_name($con, int $role_id) {
+        $role_id = (int) $role_id;
+        if ($role_id <= 0) {
+            return '';
+        }
+
+        $stmt = $con->prepare("SELECT `name` FROM `roles` WHERE id = ? LIMIT 1");
+
+        if (!$stmt) {
+            return '';
+        }
+
+        $stmt->bind_param("i", $role_id);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $role = $result->fetch_assoc();
+
+        $stmt->close();
+
+        return trim($role['name'] ?? '');
+    }
+}
 
 
 

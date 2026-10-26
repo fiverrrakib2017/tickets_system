@@ -1,0 +1,26 @@
+<?php
+
+define('BASE_PATH', __DIR__);
+
+require BASE_PATH . '/App/Support/Console.php';
+
+$command = $argv[1] ?? null;
+
+$commands = [
+
+    // 'app:sync_onu_data' => BASE_PATH . '/app/commands/sync_onu_data.php',
+    'app:sync_permission' => BASE_PATH . '/App/Commands/Sync_permission.php',
+
+];
+
+if (!$command) {
+    echo "Please provide a command.\n";
+    exit;
+}
+
+if (!isset($commands[$command])) {
+    echo "Command not found: {$command}\n";
+    exit;
+}
+
+require $commands[$command];

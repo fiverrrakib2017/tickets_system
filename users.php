@@ -69,11 +69,9 @@ error_reporting(E_ALL);
 
                                 </div>
                                 <div class="d-flex justify-content-between align-items-end flex-wrap">
-                                   <?php if (isset($_SESSION['details']['role']) && $_SESSION['details']['role'] === 'Super Admin') { ?>
-                                    <button class="btn btn-primary mt-2 mt-xl-0 mdi mdi-account-plus mdi-18px"
+                                   <button class="btn btn-primary mt-2 mt-xl-0 mdi mdi-account-plus mdi-18px"
                                         data-bs-toggle="modal" data-bs-target="#addModal"
                                         style="margin-bottom: 12px;">&nbsp;&nbsp;New User</button>
-                                    <?php } ?> 
                                   
                                 </div>
                             </div>
@@ -116,6 +114,7 @@ error_reporting(E_ALL);
                                                     <th>User Name</th>
                                                     <th>Mobile no.</th>
                                                     <th>Email</th>
+                                                    <th>Department</th>
                                                     <th>Role</th>
                                                     <th>Last Login</th>
                                                     <th>Action</th>
@@ -141,7 +140,7 @@ error_reporting(E_ALL);
 
                                                         <td> 
                                                             <?php 
-                                                                if($row['role']=='Super Admin'){
+                                                                if($row['role_id']=='1'){
                                                                 echo ' <span class="badge bg-success">Super Admin</span>'; 
                                                                 }else{
                                                                     echo ' <span class="badge bg-info">Normal User</span>';

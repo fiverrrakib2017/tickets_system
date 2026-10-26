@@ -17,7 +17,8 @@ if (isset($_GET['add_user']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = trim($_POST['password'] ?? '');
     $mobile   = trim($_POST['mobile'] ?? '');
     $email    = trim($_POST['email'] ?? '');
-    $role     = trim($_POST['role'] ?? '');
+    //$role     = trim($_POST['role'] ?? '');
+    $role     = '1';
 
     /* -------- Validation -------- */
     if ($fullname === '') {

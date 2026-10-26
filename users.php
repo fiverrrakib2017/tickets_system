@@ -154,6 +154,7 @@ error_reporting(E_ALL);
                                                                     . '</span>';
                                                             ?>
                                                         </td>
+                                                        
                                                         <td>
                                                             <?php
                                                                 $role_id = (int) ($row['role_id'] ?? 0);
@@ -162,11 +163,23 @@ error_reporting(E_ALL);
                                                                     ? get_role_name($con, $role_id)
                                                                     : '';
 
-                                                                echo '<span class="badge bg-info">'
-                                                                    . htmlspecialchars($role_name ?: '---', ENT_QUOTES, 'UTF-8')
+                                                                $role_name = trim($role_name ?? '');
+
+                                                                if ($role_name === 'Super Admin') {
+                                                                    $badge_class = 'bg-success';
+                                                                } elseif ($role_name !== '') {
+                                                                    $badge_class = 'bg-info';
+                                                                } else {
+                                                                    $badge_class = 'bg-secondary';
+                                                                    $role_name = '---';
+                                                                }
+
+                                                                echo '<span class="badge ' . $badge_class . '">'
+                                                                    . htmlspecialchars($role_name, ENT_QUOTES, 'UTF-8')
                                                                     . '</span>';
                                                             ?>
                                                         </td>
+
 
 
                                                         <td>
@@ -238,20 +251,28 @@ error_reporting(E_ALL);
                             <!-- Left Column -->
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
-                                    <label for="fullname">Full Name</label>
+                                    <label for="fullname">Full Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="fullname" name="fullname"
                                         placeholder="Enter Your Fullname" />
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="username">User Name</label>
+                                    <label for="username">User Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="username" name="username"
                                         placeholder="Enter Your Username" />
 
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="password">Password</label>
+                                    <label for="password">Password <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="password" name="password"
                                         placeholder="Enter Your Password" />
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="password">Status</label>
+                                    <select type="text" class="form-control" id="user_status" name="user_status">
+                                        <option value="">---Select----</option>
+                                        <option value="1">Active</option>
+                                        <option value="1">Inactive</option>
+                                    </select>
                                 </div>
 
                             </div>
@@ -259,22 +280,40 @@ error_reporting(E_ALL);
                             <!-- Right Column -->
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
-                                    <label for="mobile">Mobile no.</label>
+                                    <label for="mobile">Mobile no. <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="mobile" name="mobile"
                                         placeholder="Enter Your Mobile Number" />
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="email">Email</label>
+                                    <label for="email">Email <span class="text-danger">*</span></label>
                                     <input type="email" class="form-control" id="email" name="email"
                                         placeholder="Enter Your Email" />
 
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="role">Role</label>
-                                    <select class="form-select" id="role" name="role">
-                                        <option value="">Select</option>
-                                        <option value="Super Admin">Super Admin</option>
-                                        <option value="Normal User">Normal User</option>
+                                    <label for="role">Role <span class="text-danger">*</span></label>
+                                    <select class="form-select" name="role">
+                                        <option>---Select---</option>
+                                        <?php 
+                                        if($all_role = $con->query("SELECT * FROM `roles`")){
+                                            while($rows = $all_role->fetch_assoc()){
+                                                echo '<option value="'.$rows['id'].'">'.$rows['name'].'</option>';
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="Department">Department <span class="text-danger">*</span></label>
+                                    <select class="form-select" name="department_id">
+                                        <option>---Select---</option>
+                                        <?php 
+                                        if($all_department_name = $con->query("SELECT * FROM `department`")){
+                                            while($rows = $all_department_name->fetch_assoc()){
+                                                echo '<option value="'.$rows['id'].'">'.$rows['department_name'].'</option>';
+                                            }
+                                        }
+                                        ?>
                                     </select>
                                 </div>
 
@@ -314,20 +353,28 @@ error_reporting(E_ALL);
                                     <input type="text" id="id" name="id" />
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="fullname">Full Name</label>
+                                    <label for="fullname">Full Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="fullname" name="fullname"
                                         placeholder="Enter Your Fullname" />
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="username">User Name</label>
+                                    <label for="username">User Name <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="username" name="username"
                                         placeholder="Enter Your Username" />
 
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="password">Password</label>
+                                    <label for="password">Password <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="password" name="password"
                                         placeholder="Enter Your Password" />
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="password">Status</label>
+                                    <select type="text" class="form-control" id="user_status" name="user_status">
+                                        <option value="">---Select----</option>
+                                        <option value="1">Active</option>
+                                        <option value="1">Inactive</option>
+                                    </select>
                                 </div>
 
                             </div>
@@ -335,23 +382,40 @@ error_reporting(E_ALL);
                             <!-- Right Column -->
                             <div class="col-md-6">
                                 <div class="form-group mb-3">
-                                    <label for="mobile">Mobile no.</label>
+                                    <label for="mobile">Mobile no. <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" id="mobile" name="mobile"
                                         placeholder="Enter Your Mobile Number" />
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="email">Email</label>
+                                    <label for="email">Email <span class="text-danger">*</span></label>
                                     <input type="email" class="form-control" id="email" name="email"
                                         placeholder="Enter Your Email" />
 
                                 </div>
                                 <div class="form-group mb-3">
-                                    <label for="role">Role</label>
-                                    <select class="form-select" id="role" name="role">
-                                        <option value="">Select</option>
-                                        <option value="Super Admin">Super Admin</option>
-                                        <option value="Normal User">Normal User</option>
-                                       
+                                    <label for="role">Role <span class="text-danger">*</span></label>
+                                    <select class="form-select" name="role">
+                                        <option>Select</option>
+                                        <?php 
+                                        if($all_role = $con->query("SELECT * FROM `roles`")){
+                                            while($rows = $all_role->fetch_assoc()){
+                                                echo '<option value="'.$rows['id'].'">'.$rows['name'].'</option>';
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
+                                <div class="form-group mb-3">
+                                    <label for="Department">Department <span class="text-danger">*</span></label>
+                                    <select class="form-select" name="department_id">
+                                        <option>---Select---</option>
+                                        <?php 
+                                        if($all_department_name = $con->query("SELECT * FROM `department`")){
+                                            while($rows = $all_department_name->fetch_assoc()){
+                                                echo '<option value="'.$rows['id'].'">'.$rows['department_name'].'</option>';
+                                            }
+                                        }
+                                        ?>
                                     </select>
                                 </div>
 
@@ -438,7 +502,8 @@ error_reporting(E_ALL);
                         $('#editModal input[name="password"]').val(response.data.password);
                         $('#editModal input[name="mobile"]').val(response.data.mobile);
                         $('#editModal input[name="email"]').val(response.data.email);
-                        $('#editModal select[name="role"]').val(response.data.role);
+                        $('#editModal select[name="role"]').val(response.data.role_id).trigger('change');
+                        $('#editModal select[name="department_id"]').val(response.data.department_id).trigger('change');
                         } else {
                             toastr.error("Error fetching data for edit: " + response.message);
                         }

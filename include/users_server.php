@@ -2,6 +2,9 @@
 if (!isset($_SESSION)) {
     session_start();
 }
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 if (!isset($_SERVER['DOCUMENT_ROOT']) || $_SERVER['DOCUMENT_ROOT'] == '') {
     $_SERVER['DOCUMENT_ROOT'] = dirname(__DIR__); 
 }
@@ -17,8 +20,9 @@ if (isset($_GET['add_user']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = trim($_POST['password'] ?? '');
     $mobile   = trim($_POST['mobile'] ?? '');
     $email    = trim($_POST['email'] ?? '');
-    //$role     = trim($_POST['role'] ?? '');
-    $role     = '1';
+    $role     = trim($_POST['role'] ?? '');
+    $department_id     = trim($_POST['department_id'] ?? '');
+    
 
     /* -------- Validation -------- */
     if ($fullname === '') {
@@ -45,6 +49,10 @@ if (isset($_GET['add_user']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
         exit(json_encode(['success'=>false,'message'=>'Role is required']));
     }
 
+    if ($department_id === '') {
+        exit(json_encode(['success'=>false,'message'=>'Department Name Must be required']));
+    }
+
     /* -------- Check username exists -------- */
     if (is_unique_column($con, 'users', 'username', $username) === true) {
         exit(json_encode(['success'=>false,'message'=>'Username already exists']));
@@ -64,20 +72,21 @@ if (isset($_GET['add_user']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     /* -------- Insert Query -------- */
     $sql = "
         INSERT INTO users 
-        (user_type, fullname, username, password, mobile, email, role, lastlogin)
-        VALUES (?, ?, ?, ?, ?, ?, ?, NOW())
+        (user_type, fullname, username, password, mobile, email, role_id, department_id, lastlogin)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
     ";
 
     $stmt = $con->prepare($sql);
     $stmt->bind_param(
-        "issssss",
+        "isssssii",
         $user_type,
         $fullname,
         $username,
         $password,
         $mobile,
         $email,
-        $role
+        $role,
+        $department_id
     );
 
     if ($stmt->execute()) {
@@ -141,6 +150,7 @@ if (isset($_GET['update_user']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $mobile   = trim($_POST['mobile'] ?? '');
     $email    = trim($_POST['email'] ?? '');
     $role     = trim($_POST['role'] ?? '');
+    $department_id     = trim($_POST['department_id'] ?? '');
 
     /* -------- Validation -------- */
     if ($user_id <= 0) {
@@ -154,6 +164,9 @@ if (isset($_GET['update_user']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($username === '') {
         exit(json_encode(['success'=>false,'message'=>'Username is required']));
     }
+    if ($password === '') {
+        exit(json_encode(['success'=>false,'message'=>'Password is required']));
+    }
 
     if ($email === '' || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         exit(json_encode(['success'=>false,'message'=>'Valid email is required']));
@@ -165,6 +178,9 @@ if (isset($_GET['update_user']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if ($role === '') {
         exit(json_encode(['success'=>false,'message'=>'Role is required']));
+    }
+    if ($department_id === '') {
+        exit(json_encode(['success'=>false,'message'=>'Department is required']));
     }
 
     /* -------- Check Existing User -------- */
@@ -195,35 +211,33 @@ if (isset($_GET['update_user']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_type = ($role === 'Super Admin') ? 1 : 2;
 
     /* -------- Password Handling -------- */
-    if ($password !== '') {
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-        $sql = "
-            UPDATE users SET
-                user_type = ?,
-                fullname  = ?,
-                username  = ?,
-                password  = ?,
-                mobile    = ?,
-                email     = ?,
-                role      = ?
-            WHERE id = ?
-        ";
+    $sql = "
+        UPDATE users SET
+            user_type = ?,
+            fullname  = ?,
+            username  = ?,
+            password  = ?,
+            mobile    = ?,
+            email     = ?,
+            role_id   = ?,
+            department_id   = ?
+        WHERE id = ?
+    ";
 
-        $stmt = $con->prepare($sql);
-        $stmt->bind_param(
-            "issssssi",
-            $user_type,
-            $fullname,
-            $username,
-            $password,
-            $mobile,
-            $email,
-            $role,
-            $user_id
-        );
-
-    } 
+    $stmt = $con->prepare($sql);
+    $stmt->bind_param(
+        "isssssiii",
+        $user_type,
+        $fullname,
+        $username,
+        $password,
+        $mobile,
+        $email,
+        $role,
+        $department_id,
+        $user_id
+    ); 
 
     /* -------- Execute -------- */
     if ($stmt->execute()) {

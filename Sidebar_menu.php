@@ -115,15 +115,7 @@ if ($result && $result->num_rows > 0) {
             </a>
         </li>
 
-        <!-- Tickets Management (Dropdown with Role Check) -->
-        <?php if (
-            isset($_SESSION['details']['role']) &&
-            (
-                $_SESSION['details']['role'] == 'Super Admin' ||
-                $_SESSION['details']['role'] == 'Staff' ||
-                $_SESSION['details']['role'] == 'Supports'
-            )
-        ): ?>
+       
         <li>
             <a href="javascript: void(0);" class="has-arrow waves-effect">
                 <i class="fas fa-ticket-alt"></i>
@@ -144,7 +136,6 @@ if ($result && $result->num_rows > 0) {
                 <li><a href="department.php">Department</a></li>
             </ul>
         </li>
-        <?php endif; ?>
 
         <!-- System & Others -->
         <li class="menu-title">System Management</li>

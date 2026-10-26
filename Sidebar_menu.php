@@ -141,6 +141,7 @@ if ($result && $result->num_rows > 0) {
                 <li><a href="tickets_category.php">Tickets Category</a></li>
                 <li><a href="tickets_sub_category.php">Tickets Sub Category</a></li>
                 <li><a href="ticket_reports.php">Ticket Reports</a></li>
+                <li><a href="department.php">Department</a></li>
             </ul>
         </li>
         <?php endif; ?>

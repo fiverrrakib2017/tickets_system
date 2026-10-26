@@ -327,15 +327,12 @@ WHERE ticket_type='Complete'
 
             <div class="page-content">
                 <div class="container-fluid">
-                  <div class="container-fluid py-4">
-
-                       <div class="row mb-3">
-                            <div class="col-12">
-                                <h4 class="fw-muted">Dashboard Overview 👋</h4>
-                                <p class="text-muted">Welcome back! Here’s what’s happening today.</p>
-                            </div>
-                        </div>
-
+                  <div class="container-fluid py-4" id="all_content">
+                        <!-- Fullscreen Toggle Button -->
+                       
+                        <button onclick="toggle_full_screen()" class="btn btn-success nb-2">
+                            <i class="bi bi-fullscreen"></i> ⛶ 
+                        </button>
                        <div class="row g-3 mb-2 d-flex">
                             <!-- Current Ticket -->
                             <div class="col-md-6 col-xl-3">
@@ -378,7 +375,7 @@ WHERE ticket_type='Complete'
                                     <div class="stat-card stat-success">
 
                                         <div class="stat-card-icon">
-                                            <i class="mdi mdi-check-decagram-outline"></i>
+                                            <i class="mdi mdi-check-decagram"></i>
                                         </div>
 
                                         <div class="stat-card-body">
@@ -822,6 +819,35 @@ WHERE ticket_type='Complete'
         $('select').select2({
             width: '100%'
         });
+        window.addEventListener('load', function() {
+            var elem = document.documentElement; // Poora page ya 'all_content' div
+            
+            // Page par pehli click ya auto-trigger
+            function toggle_full_screen() {
+                if (!document.fullscreenElement) {
+                    elem.requestFullscreen().catch(err => {
+                        console.log("Fullscreen blocked until user interaction: ", err.message);
+                    });
+                }
+            }
+
+            // Auto trigger on load
+            toggle_full_screen();
+
+            // Agar browser block karde, toh page par kahin bhi pehli click hote hi fullscreen ho jayega
+            document.body.addEventListener('click', function() {
+                toggle_full_screen();
+            }, { once: true });
+        });
+
+        // 2. Har 2 minute (120,000 ms) me background me session active rakhne ke liye request/refresh
+        setInterval(function() {
+            // Yahan aap apna background AJAX request ya data fetch daal sakte hain
+            // Isse poora page reload nahi hoga, isliye screen fullscreen hi rahegi aur logout nahi hoga.
+            fetch(window.location.href)
+                .then(response => console.log("Session keep-alive ping sent."))
+                .catch(err => console.log("Ping error"));
+        }, 120000);
 
        
     </script>

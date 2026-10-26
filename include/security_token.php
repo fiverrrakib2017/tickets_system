@@ -33,5 +33,5 @@ if($_SESSION['uid']!=='0' && !empty($_SESSION['uid'])){
 	}
 }
 /*---------- Close the database connection-------*/
-$con->close();
+// $con->close();
 ?>

@@ -655,6 +655,29 @@ if(!function_exists('get_role_name')) {
     }
 }
 
+if(!function_exists('get_department_name')) {
+    function get_department_name($con, int $department_id) {
+        $department_id = (int) $department_id;
+        if ($department_id <= 0) {
+            return '';
+        }
 
+        $stmt = $con->prepare("SELECT `department_name` FROM `department` WHERE id = ? LIMIT 1");
+
+        if (!$stmt) {
+            return '';
+        }
+
+        $stmt->bind_param("i", $department_id);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $role = $result->fetch_assoc();
+
+        $stmt->close();
+
+        return trim($role['department_name'] ?? '');
+    }
+}
 
 ?>

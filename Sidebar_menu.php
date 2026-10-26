@@ -149,14 +149,39 @@ if ($result && $result->num_rows > 0) {
         <!-- System & Others -->
         <li class="menu-title">System Management</li>
 
-        <?php if (isset($_SESSION['details']['role']) && $_SESSION['details']['role'] === 'Super Admin') { ?>
+        
         <li>
-            <a href="users.php" class="waves-effect">
-                <i class="mdi mdi-account-multiple-outline"></i>
+            <a href="javascript: void(0);" class="has-arrow waves-effect">
+                <i class="fas fa-user-friends"></i>
                 <span>User Management</span>
             </a>
+
+            <ul class="sub-menu" aria-expanded="false">
+
+                <li>
+                    <a href="users.php"> Users Management</a>
+                </li>
+
+                <li>
+                    <a href="role_management.php">
+                        Role Management
+                    </a>
+                </li>
+
+                <li>
+                    <a href="permission_management.php">
+                        Permission Management
+                    </a>
+                </li>
+
+                <li>
+                    <a href="users_log.php">
+                        User Logs
+                    </a>
+                </li>
+
+            </ul>
         </li>
-        <?php } ?>
 
         <li>
             <a href="value_add_service.php" class="waves-effect">

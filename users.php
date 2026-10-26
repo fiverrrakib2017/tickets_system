@@ -1,6 +1,7 @@
 <?php
 include 'include/security_token.php';
 include 'include/db_connect.php';
+include 'include/functions.php';
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -138,17 +139,35 @@ error_reporting(E_ALL);
 
                                                         <td><?= htmlspecialchars($row['email'] ?? '-'); ?></td>
 
-                                                        <td> 
-                                                            <?php 
-                                                                if($row['role_id']=='1'){
-                                                                echo ' <span class="badge bg-success">Super Admin</span>'; 
-                                                                }else{
-                                                                    echo ' <span class="badge bg-info">Normal User</span>';
-                                                                }
-                                                                
-                                                                ?>
-                                                        
+                                                       
+                                                       
+                                                        <td>
+                                                            <?php
+                                                                $department_id = (int) ($row['department_id'] ?? 0);
+
+                                                                $department_name = ($department_id > 0)
+                                                                    ? get_department_name($con, $department_id)
+                                                                    : '';
+
+                                                                echo '<span class="badge bg-info">'
+                                                                    . htmlspecialchars($department_name ?: '---', ENT_QUOTES, 'UTF-8')
+                                                                    . '</span>';
+                                                            ?>
                                                         </td>
+                                                        <td>
+                                                            <?php
+                                                                $role_id = (int) ($row['role_id'] ?? 0);
+
+                                                                $role_name = ($role_id > 0)
+                                                                    ? get_role_name($con, $role_id)
+                                                                    : '';
+
+                                                                echo '<span class="badge bg-info">'
+                                                                    . htmlspecialchars($role_name ?: '---', ENT_QUOTES, 'UTF-8')
+                                                                    . '</span>';
+                                                            ?>
+                                                        </td>
+
 
                                                         <td>
                                                             <?= $row['lastlogin'] 
@@ -158,7 +177,6 @@ error_reporting(E_ALL);
                                                         </td>
 
                                                         <td class="text-center">
-                                                            <?php if (isset($_SESSION['details']['role']) && $_SESSION['details']['role'] === 'Super Admin') { ?>
                                                             <button type="button" name="edit_button" class="btn-sm btn btn-info" data-id="<?= (int)$row['id']; ?>"><i class="fas fa-edit"></i></button>
 
                                                             <a href="user_delete.php?id=<?= (int)$row['id']; ?>" 
@@ -170,7 +188,6 @@ error_reporting(E_ALL);
                                                             class="btn btn-sm btn-success">
                                                                 <i class="fas fa-eye"></i>
                                                             </a>
-                                                        <?php } ?>
                                                         
                                                         </td>
                                                     </tr>

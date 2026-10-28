@@ -426,6 +426,9 @@ if (!function_exists('get_tickets')) {
         $limit = '';
         $order = 'ORDER BY t.id DESC';
 
+       /*------ Default: Non-Management Tickets Only ------*/
+        $where[] = "(t.is_management_ticket IS NULL OR t.is_management_ticket = 0)";
+
         /*---- Customer Filter ----*/
         if (!empty($options['customer_id'])) {
             $where[] = "t.customer_id = " . (int)$options['customer_id'];
@@ -543,6 +546,271 @@ if (!function_exists('get_tickets')) {
         return $con->query($sql);
     }
 }
+
+/*---------------- Get Management Tickets -----------------------*/
+if (!function_exists('get_management_tickets')) {
+
+    function get_management_tickets(mysqli $con, array $options = [])
+    {
+        $where = [];
+        $params = [];
+        $types = '';
+
+        $order = 'ORDER BY t.id DESC';
+        $limit = '';
+
+        /*------ Default: Management Tickets Only ------*/
+        $where[] = "t.is_management_ticket = 1";
+
+        /*------ User Filter ------*/
+        if (isset($options['user_id']) && $options['user_id'] !== '') {
+            $where[] = "t.assign_user_id = ?";
+            $params[] = (int) $options['user_id'];
+            $types .= 'i';
+        }
+
+        /*------ Status Filter ------*/
+        if (!empty($options['status'])) {
+
+            switch (strtolower(trim($options['status']))) {
+
+                case 'open':
+                    $where[] = "t.ticket_type = ?";
+                    $params[] = 'Active';
+                    $types .= 's';
+                    break;
+
+                case 'pending':
+                    $where[] = "t.ticket_type = ?";
+                    $params[] = 'Pending';
+                    $types .= 's';
+                    break;
+
+                case 'resolved':
+                    $where[] = "t.ticket_type = ?";
+                    $params[] = 'Complete';
+                    $types .= 's';
+                    break;
+            }
+        }
+
+        /*------ Date Filter ------*/
+        $ticketDate = $options['ticket_date'] ?? '';
+
+        if ($ticketDate !== '') {
+
+            $date = DateTime::createFromFormat('!Y-m-d', $ticketDate);
+
+            if ($date && $date->format('Y-m-d') === $ticketDate) {
+
+                $start = $date->format('Y-m-d 00:00:00');
+                $end = (clone $date)
+                    ->modify('+1 day')
+                    ->format('Y-m-d 00:00:00');
+
+                $where[] = "t.create_date >= ? AND t.create_date < ?";
+                $params[] = $start;
+                $params[] = $end;
+                $types .= 'ss';
+            }
+        }
+
+        /*------ Date Range Filter ------*/
+        $dateFrom = $options['date_from'] ?? '';
+        $dateTo   = $options['date_to'] ?? '';
+
+        /*
+         * Date Range is applied only when ticket_date
+         * is not supplied.
+         */
+        if ($ticketDate === '') {
+
+            $fromDate = null;
+            $toDate = null;
+
+            if ($dateFrom !== '') {
+                $parsedFrom = DateTime::createFromFormat('!Y-m-d', $dateFrom);
+
+                if ($parsedFrom &&
+                    $parsedFrom->format('Y-m-d') === $dateFrom) {
+                    $fromDate = $parsedFrom;
+                }
+            }
+
+            if ($dateTo !== '') {
+                $parsedTo = DateTime::createFromFormat('!Y-m-d', $dateTo);
+
+                if ($parsedTo &&
+                    $parsedTo->format('Y-m-d') === $dateTo) {
+                    $toDate = $parsedTo;
+                }
+            }
+
+            if ($fromDate !== null && $toDate !== null) {
+
+                if ($fromDate <= $toDate) {
+
+                    $start = $fromDate->format('Y-m-d 00:00:00');
+                    $end = (clone $toDate)
+                        ->modify('+1 day')
+                        ->format('Y-m-d 00:00:00');
+
+                    $where[] = "t.create_date >= ? AND t.create_date < ?";
+                    $params[] = $start;
+                    $params[] = $end;
+                    $types .= 'ss';
+                }
+
+            } elseif ($fromDate !== null) {
+
+                $start = $fromDate->format('Y-m-d 00:00:00');
+
+                $where[] = "t.create_date >= ?";
+                $params[] = $start;
+                $types .= 's';
+
+            } elseif ($toDate !== null) {
+
+                $end = (clone $toDate)
+                    ->modify('+1 day')
+                    ->format('Y-m-d 00:00:00');
+
+                $where[] = "t.create_date < ?";
+                $params[] = $end;
+                $types .= 's';
+            }
+        }
+
+        /*------ Performance Filter ------*/
+        if (!empty($options['performance'])) {
+
+            switch (strtolower(trim($options['performance']))) {
+
+                case 'daily':
+
+                    $where[] = "t.create_date >= CURDATE()
+                                AND t.create_date < CURDATE() + INTERVAL 1 DAY";
+                    break;
+
+                case 'weekly':
+
+                    $where[] = "t.create_date >= DATE_SUB(
+                                    CURDATE(),
+                                    INTERVAL WEEKDAY(CURDATE()) DAY
+                                )
+                                AND t.create_date < DATE_ADD(
+                                    DATE_SUB(
+                                        CURDATE(),
+                                        INTERVAL WEEKDAY(CURDATE()) DAY
+                                    ),
+                                    INTERVAL 7 DAY
+                                )";
+                    break;
+
+                case 'monthly':
+
+                    $where[] = "t.create_date >= DATE_FORMAT(CURDATE(), '%Y-%m-01')
+                                AND t.create_date < DATE_FORMAT(
+                                    CURDATE() + INTERVAL 1 MONTH,
+                                    '%Y-%m-01'
+                                )";
+                    break;
+
+                case 'yearly':
+
+                    $where[] = "t.create_date >= MAKEDATE(YEAR(CURDATE()), 1)
+                                AND t.create_date < MAKEDATE(YEAR(CURDATE()) + 1, 1)";
+                    break;
+            }
+        }
+
+        /*------ Assigned User Filter ------*/
+        if (
+            isset($options['assign_user_id']) &&
+            $options['assign_user_id'] !== ''
+        ) {
+            $where[] = "t.assign_user_id = ?";
+            $params[] = (int) $options['assign_user_id'];
+            $types .= 'i';
+        }
+
+        /*------ Today Filter ------*/
+        if (!empty($options['today'])) {
+
+            $where[] = "t.create_date >= CURDATE()
+                        AND t.create_date < CURDATE() + INTERVAL 1 DAY";
+        }
+
+        /*------ WHERE Clause ------*/
+        $whereSql = 'WHERE ' . implode(' AND ', $where);
+
+        /*------ Limit ------*/
+        if (
+            isset($options['limit']) &&
+            filter_var($options['limit'], FILTER_VALIDATE_INT) !== false &&
+            (int) $options['limit'] > 0
+        ) {
+            $limit = 'LIMIT ' . (int) $options['limit'];
+        }
+
+        /*------ SQL Query ------*/
+        $sql = "
+            SELECT
+                t.*,
+                tu.fullname AS assigned_name,
+                tt.topic_name AS issue_name
+            FROM ticket AS t
+            LEFT JOIN users AS tu
+                ON t.assign_user_id = tu.id
+            LEFT JOIN ticket_topic AS tt
+                ON t.complain_type = tt.id
+            $whereSql
+            $order
+            $limit
+        ";
+
+        /*------ Prepare Statement ------*/
+        $stmt = $con->prepare($sql);
+
+        if (!$stmt) {
+            error_log(
+                'get_management_tickets prepare error: ' . $con->error
+            );
+            return false;
+        }
+
+        /*------ Bind Parameters ------*/
+        if (!empty($params)) {
+            $stmt->bind_param($types, ...$params);
+        }
+
+        /*------ Execute Query ------*/
+        if (!$stmt->execute()) {
+            error_log(
+                'get_management_tickets execute error: ' . $stmt->error
+            );
+            $stmt->close();
+            return false;
+        }
+
+        /*------ Return Result ------*/
+        $result = $stmt->get_result();
+
+        if ($result === false) {
+            $stmt->close();
+            return false;
+        }
+
+        /*
+         * Keep the statement alive while the result is being used.
+         * Store the statement reference on the result object.
+         */
+        $result->management_ticket_stmt = $stmt;
+
+        return $result;
+    }
+}
+
 
 /*-----------Function to ping IP and get statistics-----------*/ 
 if(!function_exists('customer_ping_status')){

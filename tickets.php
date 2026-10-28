@@ -75,6 +75,10 @@ require 'Head.php';
                                     <a href="ticket_create.php" class="btn btn-success">
                                         <i class="fas fa-ticket-alt me-1"></i> Add New Ticket
                                     </a>
+                                    <!-- Others Ticket Button -->
+                                    <a href="ticket_create.php" class="btn btn-success">
+                                        <i class="fas fa-ticket-alt me-1"></i> Add New Ticket
+                                    </a>
 
                                     <!-- Date Range Filter Form inside Header -->
                                     <form method="GET" action="" class="d-flex flex-wrap align-items-end gap-2 mb-0">

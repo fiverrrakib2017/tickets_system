@@ -88,7 +88,7 @@ while ($row = $tickets->fetch_assoc()):
     <td class="text-end">
         <?php if(!isset($_SESSION['customer']['id'])): ?>
             <?php if (in_array($row['ticket_type'], ['Pending', 'Active'])): ?>
-                <a href="ticket_edit.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-info">
+                <a href="management_ticket_edit.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-info">
                     <i class="fas fa-edit"></i>
                 </a>
             <?php endif; ?>

@@ -443,19 +443,59 @@ WHERE ticket_type='Complete'
                                         </thead>
                                         <tbody>
                                             <?php 
+                                            // $sql = "
+                                            //     SELECT
+                                            //         tu.id,
+                                            //         t.is_management_ticket as is_management,
+                                            //         tu.fullname as name,
+                                            //         tu.lastlogin,
+                                            //         SUM(CASE WHEN t.ticket_type='Active' THEN 1 ELSE 0 END) AS current_task,
+                                            //         SUM(CASE WHEN t.ticket_type='Pending' THEN 1 ELSE 0 END) AS pending_task,
+                                            //         SUM(CASE WHEN t.ticket_type='Complete' THEN 1 ELSE 0 END) AS closed_task
+                                            //     FROM users tu
+                                            //     LEFT JOIN ticket t ON t.assign_user_id = tu.id
+                                            //     GROUP BY tu.id, tu.fullname
+                                            //     ORDER BY closed_task DESC
+                                            // ";
                                             $sql = "
                                                 SELECT
-                                                    tu.id,
-                                                    tu.fullname as name,
-                                                    tu.lastlogin,
-                                                    SUM(CASE WHEN t.ticket_type='Active' THEN 1 ELSE 0 END) AS current_task,
-                                                    SUM(CASE WHEN t.ticket_type='Pending' THEN 1 ELSE 0 END) AS pending_task,
-                                                    SUM(CASE WHEN t.ticket_type='Complete' THEN 1 ELSE 0 END) AS closed_task
-                                                FROM users tu
-                                                LEFT JOIN ticket t ON t.assign_user_id = tu.id
-                                                GROUP BY tu.id, tu.fullname
-                                                ORDER BY closed_task DESC
-                                            ";
+                                                tu.id,
+                                                tu.fullname AS name,
+                                                tu.lastlogin,
+                                                tu.department_id,
+                                                d.department_name,
+
+                                                MAX(COALESCE(t.is_management_ticket, 0)) AS is_management,
+
+                                                COUNT(
+                                                    CASE WHEN t.ticket_type = 'Active' THEN 1 END
+                                                ) AS current_task,
+
+                                                COUNT(
+                                                    CASE WHEN t.ticket_type = 'Pending' THEN 1 END
+                                                ) AS pending_task,
+
+                                                COUNT(
+                                                    CASE WHEN t.ticket_type = 'Complete' THEN 1 END
+                                                ) AS closed_task
+
+                                            FROM users AS tu
+
+                                            LEFT JOIN department AS d
+                                                ON d.id = tu.department_id
+
+                                            LEFT JOIN ticket AS t
+                                                ON t.assign_user_id = tu.id
+
+                                            GROUP BY
+                                                tu.id,
+                                                tu.fullname,
+                                                tu.lastlogin,
+                                                tu.department_id,
+                                                d.department_name
+
+                                           ORDER BY
+                                            COUNT(CASE WHEN t.ticket_type = 'Active' THEN 1 END) DESC";
 
                                             $engineers = $con->query($sql);
                                             ?>
@@ -502,9 +542,13 @@ WHERE ticket_type='Complete'
                                                             </div>
 
                                                             <div>
-                                                                <a href="user_profile.php?clid=<?= $row['id']; ?>">
+                                                               <a href="user_profile.php?clid=<?= (int) $row['id']; ?>">
                                                                     <h6 class="mb-0 font-weight-bold text-dark">
-                                                                        <?= htmlspecialchars($row['name']); ?>
+                                                                        <?= htmlspecialchars($row['name'] ?? '', ENT_QUOTES, 'UTF-8'); ?>
+                                                                       --
+                                                                        <i class="text-muted">
+                                                                            <?= htmlspecialchars($row['department_name'] ?? 'N/A', ENT_QUOTES, 'UTF-8'); ?>
+                                                                        </i>
                                                                     </h6>
                                                                 </a>
                                                                
@@ -518,24 +562,56 @@ WHERE ticket_type='Complete'
                                                     </td>
 
                                                     <!-- Current Task -->
+                                                    <?php
+                                                        $isManagement = (int) ($row['is_management'] ?? 0);
+
+                                                        $ticketPage = ($isManagement === 1)
+                                                            ? 'management_tickets.php'
+                                                            : 'tickets.php';
+
+                                                        $userId = (int) $row['id'];
+                                                        $currentTask = (int) ($row['current_task'] ?? 0);
+                                                    ?>
+
                                                     <td class="text-center">
-                                                          <a href="tickets.php?status=open&user_id=<?= $row['id'] ?>">
-                                                            <span class="badge bg-primary"><?= $row['current_task']; ?></span>
-                                                          </a>
-                                                        
+                                                        <a href="<?= $ticketPage ?>?status=open&user_id=<?= $userId ?>">
+                                                            <span class="badge bg-primary">
+                                                                <?= $currentTask ?>
+                                                            </span>
+                                                        </a>
                                                     </td>
+                                                   
 
                                                     <!-- Pending Task -->
+                                                    <?php
+                                                        $isManagement = (int) ($row['is_management'] ?? 0);
+
+                                                        $ticketPage = ($isManagement === 1)
+                                                            ? 'management_tickets.php'
+                                                            : 'tickets.php';
+
+                                                        $userId = (int) $row['id'];
+                                                        $pendingTask = (int) ($row['pending_task'] ?? 0);
+                                                    ?>
+
                                                     <td class="text-center">
-                                                        <a href="tickets.php?status=pending&user_id=<?= $row['id'] ?>">
-                                                            <span class="badge bg-dark"><?= $row['pending_task']; ?></span>
+                                                        <a href="<?= $ticketPage ?>?status=pending&user_id=<?= $userId ?>">
+                                                            <span class="badge bg-dark">
+                                                                <?= $pendingTask ?>
+                                                            </span>
                                                         </a>
                                                     </td>
 
                                                     <!-- Closed Task -->
+                                                    <?php
+                                                        $closedTask = (int) ($row['closed_task'] ?? 0);
+                                                    ?>
+
                                                     <td class="text-center">
-                                                        <a href="tickets.php?status=resolved&user_id=<?= $row['id'] ?>">
-                                                            <span class="badge bg-success"><?= $row['closed_task']; ?></span>
+                                                        <a href="<?= $ticketPage ?>?status=resolved&user_id=<?= $userId ?>">
+                                                            <span class="badge bg-success">
+                                                                <?= $closedTask ?>
+                                                            </span>
                                                         </a>
                                                     </td>
 
@@ -574,10 +650,15 @@ WHERE ticket_type='Complete'
                        <?php
                         /*---------Today Top-----*/
                         $sql_today = "
-                            SELECT tu.id, tu.fullname, COUNT(t.id) AS total_complete
+                             SELECT
+                                tu.id,
+                                tu.fullname,
+                                MAX(COALESCE(t.is_management_ticket, 0)) AS is_management,
+                                COUNT(t.id) AS total_complete
                             FROM users tu
                             JOIN ticket t ON t.assign_user_id = tu.id
-                            WHERE t.ticket_type = 'Complete' AND DATE(t.enddate) = CURDATE()
+                            WHERE t.ticket_type = 'Complete'
+                            AND DATE(t.enddate) = CURDATE()
                             GROUP BY tu.id, tu.fullname
                             ORDER BY total_complete DESC
                             LIMIT 3
@@ -586,20 +667,23 @@ WHERE ticket_type='Complete'
 
                         /*----------This Week Top-------*/
                         $sql_week = "
-                            SELECT tu.id, tu.fullname, COUNT(t.id) AS total_complete
-                            FROM users tu
-                            JOIN ticket t ON t.assign_user_id = tu.id
+                            SELECT tu.id, tu.fullname, 
+                            MAX(COALESCE(t.is_management_ticket, 0)) AS is_management, 
+                            COUNT(t.id) AS total_complete 
+                            FROM users AS tu JOIN ticket AS t ON t.assign_user_id = tu.id 
                             WHERE t.ticket_type = 'Complete' 
-                            AND YEARWEEK(t.enddate, 1) = YEARWEEK(CURDATE(), 1)
-                            GROUP BY tu.id, tu.fullname
-                            ORDER BY total_complete DESC
-                            LIMIT 3
+                            AND YEARWEEK(t.enddate, 1) = YEARWEEK(CURDATE(), 1) 
+                            GROUP BY tu.id, tu.fullname 
+                            ORDER BY total_complete 
+                            DESC LIMIT 3
                         ";
                         $week_performers = $con->query($sql_week);
 
                         /*----------This Month Top---------*/
                         $sql_month = "
-                            SELECT tu.id, tu.fullname, COUNT(t.id) AS total_complete
+                            SELECT tu.id, tu.fullname, 
+                            MAX(COALESCE(t.is_management_ticket, 0)) AS is_management,
+                            COUNT(t.id) AS total_complete
                             FROM users tu
                             JOIN ticket t ON t.assign_user_id = tu.id
                             WHERE t.ticket_type = 'Complete' 
@@ -613,7 +697,9 @@ WHERE ticket_type='Complete'
 
                         /*-----------This Year Top-------*/ 
                         $sql_year = "
-                            SELECT tu.id,tu.fullname, COUNT(t.id) AS total_complete
+                            SELECT tu.id,tu.fullname, 
+                            MAX(COALESCE(t.is_management_ticket, 0)) AS is_management,
+                            COUNT(t.id) AS total_complete
                             FROM users tu
                             JOIN ticket t ON t.assign_user_id = tu.id
                             WHERE t.ticket_type = 'Complete' 
@@ -643,7 +729,10 @@ WHERE ticket_type='Complete'
                                             if($today_performers && $today_performers->num_rows > 0):
                                                 while($row = $today_performers->fetch_assoc()): 
                                                     $is_top = ($rank == 1);
-                                            ?>
+                                                    $ticketPage = ((int) ($row['is_management'] ?? 0) === 1)
+                                                        ? 'management_tickets.php'
+                                                        : 'tickets.php';
+                                                ?>
                                                 <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-3 py-2 <?= $is_top ? 'bg-soft-warning-light' : ''; ?>">
                                                     <div class="d-flex align-items-center">
                                                         
@@ -651,7 +740,7 @@ WHERE ticket_type='Complete'
                                                             <?= htmlspecialchars($row['fullname']); ?>
                                                         </span>
                                                     </div>
-                                                    <a href="tickets.php?status=resolved&user_id=<?= $row['id'] ?>&performance=daily">
+                                                   <a href="<?= $ticketPage ?>?status=resolved&user_id=<?= (int) $row['id'] ?>&performance=daily">
                                                         <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
                                                             <?= number_format($row['total_complete']); ?>
                                                         </span>
@@ -685,7 +774,10 @@ WHERE ticket_type='Complete'
                                             if($week_performers && $week_performers->num_rows > 0):
                                                 while($row = $week_performers->fetch_assoc()): 
                                                     $is_top = ($rank == 1);
-                                            ?>
+                                                    $ticketPage = ((int) ($row['is_management'] ?? 0) === 1)
+                                                        ? 'management_tickets.php'
+                                                        : 'tickets.php';                                            
+                                                ?>
                                                 <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-3 py-2 <?= $is_top ? 'bg-soft-warning-light' : ''; ?>">
                                                     <div class="d-flex align-items-center">
                                                         
@@ -694,7 +786,7 @@ WHERE ticket_type='Complete'
                                                         </span>
                                                     </div>
 
-                                                    <a href="tickets.php?status=resolved&user_id=<?= $row['id'] ?>&performance=weekly">
+                                                    <a href="<?= $ticketPage ?>?status=resolved&user_id=<?= $row['id'] ?>&performance=weekly">
                                                         <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
                                                             <?= number_format($row['total_complete']); ?>
                                                         </span>
@@ -729,7 +821,10 @@ WHERE ticket_type='Complete'
                                             if($month_performers && $month_performers->num_rows > 0):
                                                 while($row = $month_performers->fetch_assoc()): 
                                                     $is_top = ($rank == 1);
-                                            ?>
+                                                    $ticketPage = ((int) ($row['is_management'] ?? 0) === 1)
+                                                        ? 'management_tickets.php'
+                                                        : 'tickets.php';
+                                                ?>
                                                 <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-3 py-2 <?= $is_top ? 'bg-soft-warning-light' : ''; ?>">
                                                     <div class="d-flex align-items-center">
                                                        
@@ -737,7 +832,7 @@ WHERE ticket_type='Complete'
                                                             <?= htmlspecialchars($row['fullname']); ?>
                                                         </span>
                                                     </div>
-                                                     <a href="tickets.php?status=resolved&user_id=<?= $row['id']; ?>&performance=monthly">
+                                                     <a href="<?= $ticketPage ?>?status=resolved&user_id=<?= $row['id']; ?>&performance=monthly">
                                                         <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
                                                             <?= number_format($row['total_complete']); ?>
                                                         </span>
@@ -772,7 +867,10 @@ WHERE ticket_type='Complete'
                                             if($year_performers && $year_performers->num_rows > 0):
                                                 while($row = $year_performers->fetch_assoc()): 
                                                     $is_top = ($rank == 1);
-                                            ?>
+                                                    $ticketPage = ((int) ($row['is_management'] ?? 0) === 1)
+                                                        ? 'management_tickets.php'
+                                                        : 'tickets.php';
+                                                ?>
                                                 <li class="list-group-item d-flex justify-content-between align-items-center border-0 px-3 py-2 <?= $is_top ? 'bg-soft-warning-light' : ''; ?>">
                                                     <div class="d-flex align-items-center">
                                                         
@@ -780,7 +878,7 @@ WHERE ticket_type='Complete'
                                                             <?= htmlspecialchars($row['fullname']); ?>
                                                         </span>
                                                     </div>
-                                                    <a href="tickets.php?status=resolved&user_id=<?= $row['id'] ?>&performance=yearly">
+                                                    <a href="<?= $ticketPage ?>?status=resolved&user_id=<?= $row['id'] ?>&performance=yearly">
                                                         <span class="custom-count-badge <?= $is_top ? 'bg-warning text-dark' : 'bg-light text-dark'; ?> fw-bold">
                                                             <?= number_format($row['total_complete']); ?>
                                                         </span>
@@ -819,35 +917,7 @@ WHERE ticket_type='Complete'
         $('select').select2({
             width: '100%'
         });
-        window.addEventListener('load', function() {
-            var elem = document.documentElement; // Poora page ya 'all_content' div
-            
-            // Page par pehli click ya auto-trigger
-            function toggle_full_screen() {
-                if (!document.fullscreenElement) {
-                    elem.requestFullscreen().catch(err => {
-                        console.log("Fullscreen blocked until user interaction: ", err.message);
-                    });
-                }
-            }
-
-            // Auto trigger on load
-            toggle_full_screen();
-
-            // Agar browser block karde, toh page par kahin bhi pehli click hote hi fullscreen ho jayega
-            document.body.addEventListener('click', function() {
-                toggle_full_screen();
-            }, { once: true });
-        });
-
-        // 2. Har 2 minute (120,000 ms) me background me session active rakhne ke liye request/refresh
-        setInterval(function() {
-            // Yahan aap apna background AJAX request ya data fetch daal sakte hain
-            // Isse poora page reload nahi hoga, isliye screen fullscreen hi rahegi aur logout nahi hoga.
-            fetch(window.location.href)
-                .then(response => console.log("Session keep-alive ping sent."))
-                .catch(err => console.log("Ping error"));
-        }, 120000);
+       
 
        
     </script>

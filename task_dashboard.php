@@ -10,36 +10,40 @@ error_reporting(E_ALL);
 ?>
 
 <?php
-
-// Current Active Ticket
-$current_ticket = $con->query("
-SELECT COUNT(*) total
-FROM ticket
-WHERE ticket_type='Active'
+// ==================== MANAGEMENT TICKETS ====================
+$mgmt_current_ticket = $con->query("
+SELECT COUNT(*) total FROM ticket WHERE ticket_type='Active' AND is_management_ticket = 1
 ")->fetch_assoc()['total'];
 
-// Pending Ticket
-$pending_ticket = $con->query("
-SELECT COUNT(*) total
-FROM ticket
-WHERE ticket_type='Pending'
+$mgmt_pending_ticket = $con->query("
+SELECT COUNT(*) total FROM ticket WHERE ticket_type='Pending' AND is_management_ticket = 1
 ")->fetch_assoc()['total'];
 
-// Today Closed Ticket
-$today_closed = $con->query("
-SELECT COUNT(*) total
-FROM ticket
-WHERE ticket_type='Complete'
-AND DATE(create_date)=CURDATE()
+$mgmt_today_closed = $con->query("
+SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND DATE(create_date)=CURDATE() AND is_management_ticket = 1
 ")->fetch_assoc()['total'];
 
-// Total Closed Ticket
-$total_closed = $con->query("
-SELECT COUNT(*) total
-FROM ticket
-WHERE ticket_type='Complete'
+$mgmt_total_closed = $con->query("
+SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND is_management_ticket = 1
 ")->fetch_assoc()['total'];
 
+
+// ==================== NOC TICKETS ====================
+$noc_current_ticket = $con->query("
+SELECT COUNT(*) total FROM ticket WHERE ticket_type='Active' AND (is_management_ticket = 0 OR is_management_ticket IS NULL)
+")->fetch_assoc()['total'];
+
+$noc_pending_ticket = $con->query("
+SELECT COUNT(*) total FROM ticket WHERE ticket_type='Pending' AND (is_management_ticket = 0 OR is_management_ticket IS NULL)
+")->fetch_assoc()['total'];
+
+$noc_today_closed = $con->query("
+SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND DATE(create_date)=CURDATE() AND (is_management_ticket = 0 OR is_management_ticket IS NULL)
+")->fetch_assoc()['total'];
+
+$noc_total_closed = $con->query("
+SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND (is_management_ticket = 0 OR is_management_ticket IS NULL)
+")->fetch_assoc()['total'];
 ?>
 <!doctype html>
 <html lang="en">
@@ -329,24 +333,25 @@ WHERE ticket_type='Complete'
                 <div class="container-fluid">
                   <div class="container-fluid py-4" id="all_content">
                         <!-- Fullscreen Toggle Button -->
-                       
-                        <button onclick="toggle_full_screen()" class="btn btn-success nb-2">
-                            <i class="bi bi-fullscreen"></i> ⛶ 
-                        </button>
-                       <div class="row g-3 mb-2 d-flex">
+                        <div class="text-end mb-2">
+                            <a href="task_dashboard_card_full_screen.php" class="btn btn-sm btn-outline-success">
+                                <i class="mdi mdi-fullscreen"></i> Fullscreen View
+                            </a>
+                        </div>
+                        <!----------- MANAGEMENT SECTION --------------->
+                        <h4 class="mb-3 text-secondary font-weight-bold">Management Tickets</h4>
+                        <div class="row g-3 mb-4 d-flex">
                             <!-- Current Ticket -->
                             <div class="col-md-6 col-xl-3">
-                                <a href="tickets.php?status=open">
+                                <a href="management_tickets.php?status=open">
                                     <div class="stat-card stat-primary">
-
                                         <div class="stat-card-icon">
                                             <i class="mdi mdi-ticket-confirmation-outline"></i>
                                         </div>
-
                                         <div class="stat-card-body">
                                             <span class="stat-label">Current Ticket</span>
                                             <h3 class="stat-value mb-0">
-                                                <?= number_format($current_ticket) ?>
+                                                <?= number_format($mgmt_current_ticket) ?>
                                             </h3>
                                         </div>
                                     </div>
@@ -354,16 +359,15 @@ WHERE ticket_type='Complete'
                             </div>
                             <!-- Pending Task -->
                             <div class="col-md-6 col-xl-3">
-                                <a href="tickets.php?status=pending">
+                                <a href="management_tickets.php?status=pending">
                                     <div class="stat-card stat-warning">
                                         <div class="stat-card-icon">
                                             <i class="mdi mdi-progress-clock"></i>
                                         </div>
-
                                         <div class="stat-card-body">
                                             <span class="stat-label">Pending Task</span>
                                             <h3 class="stat-value mb-0">
-                                                <?= number_format($pending_ticket) ?>
+                                                <?= number_format($mgmt_pending_ticket) ?>
                                             </h3>
                                         </div>
                                     </div>
@@ -371,17 +375,15 @@ WHERE ticket_type='Complete'
                             </div>
                             <!-- Today Closed -->
                             <div class="col-md-6 col-xl-3">
-                                <a href="tickets.php?status=resolved&ticket_date=today">
+                                <a href="management_tickets.php?status=resolved&ticket_date=today">
                                     <div class="stat-card stat-success">
-
                                         <div class="stat-card-icon">
                                             <i class="mdi mdi-check-decagram"></i>
                                         </div>
-
                                         <div class="stat-card-body">
                                             <span class="stat-label">Today Closed</span>
                                             <h3 class="stat-value mb-0">
-                                                <?= number_format($today_closed) ?>
+                                                <?= number_format($mgmt_today_closed) ?>
                                             </h3>
                                         </div>
                                     </div>
@@ -389,16 +391,85 @@ WHERE ticket_type='Complete'
                             </div>
                             <!-- Total Closed -->
                             <div class="col-md-6 col-xl-3">
-                                <a href="tickets.php?status=resolved"> 
+                                <a href="tickets.php?status=resolved&is_management=1"> 
                                     <div class="stat-card stat-info">
-
                                         <div class="stat-card-icon">
                                             <i class="mdi mdi-clipboard-check-multiple-outline"></i>
                                         </div>
                                         <div class="stat-card-body">
                                             <span class="stat-label">Total Closed</span>
                                             <h3 class="stat-value mb-0">
-                                                <?= number_format($total_closed) ?>
+                                                <?= number_format($mgmt_total_closed) ?>
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+
+
+                        <!--------- NOC SECTION ------------>
+                        <h4 class="mb-3 text-secondary font-weight-bold">NOC Tickets</h4>
+                        <div class="row g-3 mb-2 d-flex">
+                            <!-- Current Ticket -->
+                            <div class="col-md-6 col-xl-3">
+                                <a href="tickets.php?status=open&is_management=0">
+                                    <div class="stat-card stat-primary">
+                                        <div class="stat-card-icon">
+                                            <i class="mdi mdi-ticket-confirmation-outline"></i>
+                                        </div>
+                                        <div class="stat-card-body">
+                                            <span class="stat-label">Current Ticket</span>
+                                            <h3 class="stat-value mb-0">
+                                                <?= number_format($noc_current_ticket) ?>
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <!-- Pending Task -->
+                            <div class="col-md-6 col-xl-3">
+                                <a href="tickets.php?status=pending&is_management=0">
+                                    <div class="stat-card stat-warning">
+                                        <div class="stat-card-icon">
+                                            <i class="mdi mdi-progress-clock"></i>
+                                        </div>
+                                        <div class="stat-card-body">
+                                            <span class="stat-label">Pending Task</span>
+                                            <h3 class="stat-value mb-0">
+                                                <?= number_format($noc_pending_ticket) ?>
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <!-- Today Closed -->
+                            <div class="col-md-6 col-xl-3">
+                                <a href="tickets.php?status=resolved&ticket_date=today&is_management=0">
+                                    <div class="stat-card stat-success">
+                                        <div class="stat-card-icon">
+                                            <i class="mdi mdi-check-decagram"></i>
+                                        </div>
+                                        <div class="stat-card-body">
+                                            <span class="stat-label">Today Closed</span>
+                                            <h3 class="stat-value mb-0">
+                                                <?= number_format($noc_today_closed) ?>
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <!-- Total Closed -->
+                            <div class="col-md-6 col-xl-3">
+                                <a href="tickets.php?status=resolved&is_management=0"> 
+                                    <div class="stat-card stat-info">
+                                        <div class="stat-card-icon">
+                                            <i class="mdi mdi-clipboard-check-multiple-outline"></i>
+                                        </div>
+                                        <div class="stat-card-body">
+                                            <span class="stat-label">Total Closed</span>
+                                            <h3 class="stat-value mb-0">
+                                                <?= number_format($noc_total_closed) ?>
                                             </h3>
                                         </div>
                                     </div>

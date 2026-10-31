@@ -42,9 +42,15 @@ while ($row = $tickets->fetch_assoc()):
 
 
     <td style="max-width: 200px; white-space: normal; overflow-wrap: anywhere;">
-        <span title="<?= htmlspecialchars($row['issue_name'] ?? '---', ENT_QUOTES, 'UTF-8'); ?>"
+        <span title="<?= htmlspecialchars($row['subject'] ?? '---', ENT_QUOTES, 'UTF-8'); ?>"
             style="display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
-            <?= htmlspecialchars($row['issue_name'] ?? '---', ENT_QUOTES, 'UTF-8'); ?>
+            <?= htmlspecialchars($row['subject'] ?? '---', ENT_QUOTES, 'UTF-8'); ?>
+        </span>
+    </td>
+    <td style="max-width: 200px; white-space: normal; overflow-wrap: anywhere;">
+        <span title="<?= htmlspecialchars($row['description'] ?? '---', ENT_QUOTES, 'UTF-8'); ?>"
+            style="display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+            <?= htmlspecialchars($row['description'] ?? '---', ENT_QUOTES, 'UTF-8'); ?>
         </span>
     </td>
 

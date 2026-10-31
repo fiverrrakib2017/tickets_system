@@ -191,8 +191,8 @@ if(isset($_GET['add_ticket_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'){
 
 /*----------- Add Management Ticket Data------------------*/
 if (isset($_GET['add_management_ticket_data']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-    $ticket_for             = isset($_POST['ticket_for']) ? trim($_POST['ticket_for']) : '';
-    $complain_type          = isset($_POST['complain_type']) ? trim($_POST['complain_type']) : '';
+    $ticket_for             = 'Mac Client';
+    $complain_type          = null;
     $assign_user_id         = isset($_POST['assign_user_id']) ? trim($_POST['assign_user_id']) : '';
     $note                   = isset($_POST['notes']) ? trim($_POST['notes']) : '';
     $priority               = isset($_POST['ticket_priority']) ? trim($_POST['ticket_priority']) : '';
@@ -209,21 +209,19 @@ if (isset($_GET['add_management_ticket_data']) && $_SERVER['REQUEST_METHOD'] ===
         ]);
         exit();
     }
-    if(!isset($_SESSION['customer']['id'])){
-        if(empty($complain_type)) {
-            echo json_encode([
-                'success' => false,
-                'message'  =>  'Complain Type is required.'
-            ]);
-            exit();
-        }
-        if(empty($assign_user_id)) {
-            echo json_encode([
-                'success' => false,
-                'message'  =>  'Assign To is required.'
-            ]);
-            exit();
-        }
+   if(empty($customer_subject)) {
+        echo json_encode([
+            'success' => false,
+            'message'  =>  'Subject is required.'
+        ]);
+        exit();
+    }
+    if(empty($assign_user_id)) {
+        echo json_encode([
+            'success' => false,
+            'message'  =>  'Assign To is required.'
+        ]);
+        exit();
     }
     
     if(empty($priority)) {
@@ -299,11 +297,11 @@ if (isset($_GET['add_management_ticket_data']) && $_SERVER['REQUEST_METHOD'] ===
 
 /*----------- Update Management Ticket Data------------------*/
 if (isset($_GET['update_management_ticket_data']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-     
+    
     $ticket_id              = (int)($_POST['ticket_id'] ?? 0);
     $ticket_for             = trim($_POST['ticket_for'] ?? '');
     $complain_type          = (int)($_POST['complain_type'] ?? 0);
-    $assign_to              = (int)($_POST['assign_to'] ?? 0);
+    $assign_to              = (int)($_POST['assign_user_id'] ?? 0);
     $priority               = (int)($_POST['ticket_priority'] ?? 0);
     $customer_note          = trim($_POST['customer_note'] ?? '');
     $noc_note               = trim($_POST['noc_note'] ?? '');
@@ -376,7 +374,7 @@ if (isset($_GET['update_ticket_data']) && $_SERVER['REQUEST_METHOD'] === 'POST')
     $customer_id            = (int)($_POST['customer_id'] ?? 0);
     $ticket_for             = trim($_POST['ticket_for'] ?? '');
     $complain_type          = (int)($_POST['complain_type'] ?? 0);
-    $assign_to              = (int)($_POST['assign_to'] ?? 0);
+    $assign_to              = (int)($_POST['assign_user_id'] ?? 0);
     $pop_branch             = (int)($_POST['pop_branch'] ?? 0);
     $priority               = (int)($_POST['ticket_priority'] ?? 0);
     $customer_note          = trim($_POST['customer_note'] ?? '');

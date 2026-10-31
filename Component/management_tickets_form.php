@@ -34,31 +34,6 @@
     </select>
 </div>
 
-
-
-
-<div class="col-md-6 mb-3 ">
-    <label class="form-label">Ticket For</label>
-    <select id="ticket_for" name="ticket_for" class="form-select" required>
-        <option value="">--- Select ---</option>
-
-        <option value="Mac Client"
-            <?= (isset($ticket['ticketfor']) && $ticket['ticketfor'] === 'Mac Client') ? 'selected' : ''; ?> <?= (isset($service_customer_type) && $service_customer_type == '2') ? 'selected' : '' ?>>
-            Mac Client
-        </option>
-
-        <option value="Bandwidth Client"
-            <?= (isset($ticket['ticketfor']) && $ticket['ticketfor'] === 'Bandwidth Client') ? 'selected' : ''; ?>  <?= (isset($service_customer_type) && $service_customer_type == '1') ? 'selected' : '' ?>
-            >
-            Bandwidth Client
-        </option>
-
-        <option value="Corporate Client"
-            <?= (isset($ticket['ticketfor']) && $ticket['ticketfor'] === 'Corporate Client') ? 'selected' : ''; ?>>
-            Corporate Client
-        </option>
-    </select>
-</div>
 <div class="col-md-6 mb-3 ">
     <label class="form-label">Ticket Priority</label>
     <select id="ticket_priority" name="ticket_priority" class="form-select" required>
@@ -89,19 +64,7 @@
         </option>
     </select>
 </div>
-<div class="col-md-6 mb-3">
-    <label class="form-label">Complain Type</label>
-    <select name="complain_type" class="form-select">
-       <option value="">---select---</option>
-        <?php
-        $complain_type = $con->query('SELECT * FROM ticket_topic');
-        while ($row = $complain_type->fetch_assoc()) {
-            $selected = $row['id'] == $ticket['complain_type'] ? 'selected' : '';
-            echo "<option value='{$row['id']}' $selected>{$row['topic_name']}</option>";
-        }
-        ?>
-    </select>
-</div>
+
 
 <div class="col-md-6 mb-3">
     <label  class="form-label">Customer Note</label>

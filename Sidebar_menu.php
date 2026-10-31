@@ -124,6 +124,7 @@ if ($result && $result->num_rows > 0) {
             <ul class="sub-menu" aria-expanded="false">
                <li><a href="tickets.php?date_from=<?php echo date('Y-m-01'); ?>&date_to=<?php echo date('Y-m-t'); ?>">All Tickets</a></li>
                <li><a href="management_tickets.php">Management Tickets</a></li>
+               <li><a href="fiber_team_tickets.php">Fiber Team Tickets</a></li>
                 <li><a href="ticket_create.php">Create Ticket </a></li>
                 <li><a href="ticketsTopic.php">Ticket Topics</a></li>
                 <li><a href="ticket_notes.php">NOC Note</a></li>

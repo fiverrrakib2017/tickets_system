@@ -111,7 +111,8 @@ require 'Head.php';
                                                 <th>Status</th>
                                                 <th>Created</th>
                                                 <th>Priority</th>
-                                                <th>Issues</th>
+                                                <th>Subject</th>
+                                                <th>Description</th>
                                                 <th>Assigned</th>
                                                 <th>Acctual Work</th>
                                                 <th>Completed</th>

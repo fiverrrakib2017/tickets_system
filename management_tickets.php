@@ -127,6 +127,7 @@ require 'Head.php';
                                             <?php
 
                                                 $options = [];
+                                                $options['is_management_ticket'] = 1;
                                                 /*------------- Status Filter -------------------*/
                                                 if (!empty($_GET['status'])) {
                                                     $options['status'] = strtolower(trim($_GET['status']));
@@ -148,7 +149,7 @@ require 'Head.php';
                                                 if (!empty($_GET['date_to'])) {
                                                     $options['date_to'] = trim($_GET['date_to']);
                                                 }
-
+                                              
                                                
 
                                                 /*------------- Final Query --------------------*/

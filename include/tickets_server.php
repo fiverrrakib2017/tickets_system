@@ -200,7 +200,15 @@ if (isset($_GET['add_management_ticket_data']) && $_SERVER['REQUEST_METHOD'] ===
     $noc_note               = isset($_POST['noc_note']) ? trim($_POST['noc_note']) : '';
     $customer_subject       = isset($_POST['customer_subject']) ? trim($_POST['customer_subject']) : '';
     $customer_description   = isset($_POST['customer_description']) ? trim($_POST['customer_description']) : '';
-
+    
+    /*---------- Check Management or Fiber Ticket ----------*/
+    $is_management_ticket = 0; 
+    
+    if (isset($_GET['fiber_team_ticket'])) {
+        $is_management_ticket = 2;
+    } else {
+        $is_management_ticket = 1;
+    }
     
     if(empty($ticket_for)) {
        echo json_encode([
@@ -258,7 +266,7 @@ if (isset($_GET['add_management_ticket_data']) && $_SERVER['REQUEST_METHOD'] ===
             create_date
         )
         VALUES (
-            '1','Active', ?,  ?, ?, ?, NULL, '0%', ?, ?, ?, ?, ?, ?, ?
+            ?,'Active', ?,  ?, ?, ?, NULL, '0%', ?, ?, ?, ?, ?, ?, ?
         )
     ");
 
@@ -266,7 +274,8 @@ if (isset($_GET['add_management_ticket_data']) && $_SERVER['REQUEST_METHOD'] ===
     $startDate = date('Y-m-d H:i:s');
 
     $insert->bind_param(
-        'issssssssss',
+        'iissssssssss',
+        $is_management_ticket,
         $assign_user_id,
         $ticket_for,
         $complain_type,

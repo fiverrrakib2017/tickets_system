@@ -560,8 +560,16 @@ if (!function_exists('get_management_tickets')) {
         $limit = '';
 
         /*------ Default: Management Tickets Only ------*/
-        $where[] = "t.is_management_ticket = 1";
+       // $where[] = "t.is_management_ticket = 1";
 
+        /*------ Management  Ticket Filter ------*/
+        if (isset($options['is_management_ticket']) && $options['is_management_ticket'] == '1') {
+            $where[] = "t.is_management_ticket = 1";
+        }
+        /*------ Fiber Team  Ticket Filter ------*/
+        if (isset($options['is_management_ticket']) && $options['is_management_ticket'] == '2') {
+            $where[] = "t.is_management_ticket = 2";
+        }
         /*------ User Filter ------*/
         if (isset($options['user_id']) && $options['user_id'] !== '') {
             $where[] = "t.assign_user_id = ?";

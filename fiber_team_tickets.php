@@ -72,7 +72,7 @@ require 'Head.php';
                                 <div class="card-header customer_card_header border-bottom d-flex flex-column flex-lg-row justify-content-between align-items-start align-items-lg-center gap-3" style="background-color: white;">
                                     
                                     <!-- Add Ticket Button -->
-                                    <a href="fiber_team_ticket_create.php" class="btn btn-success">
+                                    <a href="fiber_team_tickets_create.php" class="btn btn-success">
                                         <i class="fas fa-ticket-alt me-1"></i> Add Fiber Team Ticket
                                     </a>
 
@@ -111,7 +111,8 @@ require 'Head.php';
                                                 <th>Status</th>
                                                 <th>Created</th>
                                                 <th>Priority</th>
-                                                <th>Issues</th>
+                                                <th>Subject</th>
+                                                <th>Description</th>
                                                 <th>Assigned</th>
                                                 <th>Acctual Work</th>
                                                 <th>Completed</th>
@@ -126,6 +127,7 @@ require 'Head.php';
                                             <?php
 
                                                 $options = [];
+                                                $options['is_management_ticket'] = 2;
                                                 /*------------- Status Filter -------------------*/
                                                 if (!empty($_GET['status'])) {
                                                     $options['status'] = strtolower(trim($_GET['status']));
@@ -147,12 +149,12 @@ require 'Head.php';
                                                 if (!empty($_GET['date_to'])) {
                                                     $options['date_to'] = trim($_GET['date_to']);
                                                 }
-
+                                              
                                                
 
                                                 /*------------- Final Query --------------------*/
                                                 $tickets = get_management_tickets($con, $options);
-                                                include 'Table/management_tickets.php';
+                                                include 'Table/fiber_team_tickets.php';
 
                                             ?>
 

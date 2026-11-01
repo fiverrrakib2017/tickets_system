@@ -145,7 +145,7 @@ $noc_incident_ticket = $noc_incident_tickets->fetch_assoc();
                     <div class="flex-grow-1">
                         <p class="stat-title">Tickets</p>
                         <h3 class="stat-value">
-                            <a href="tickets.php?status=total"><?= $todayStats['total']; ?></a>
+                            <a href="tickets.php?status=total&date_from=<?= date('Y-m-d'); ?>&date_to=<?= date('Y-m-d'); ?>"><?= $todayStats['total']; ?></a>
                             /
                             <a href="tickets.php"><?= $total_tickets; ?></a>
                         </h3>

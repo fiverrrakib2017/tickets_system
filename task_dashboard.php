@@ -27,6 +27,23 @@ $mgmt_total_closed = $con->query("
 SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND is_management_ticket = 1
 ")->fetch_assoc()['total'];
 
+// ==================== Fiber Team TICKETS ====================
+$fiber_team_current_ticket = $con->query("
+SELECT COUNT(*) total FROM ticket WHERE ticket_type='Active' AND is_management_ticket = 2
+")->fetch_assoc()['total'];
+
+$fiber_team_pending_ticket = $con->query("
+SELECT COUNT(*) total FROM ticket WHERE ticket_type='Pending' AND is_management_ticket = 2
+")->fetch_assoc()['total'];
+
+$fiber_team_today_closed = $con->query("
+SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND DATE(create_date)=CURDATE() AND is_management_ticket = 2
+")->fetch_assoc()['total'];
+
+$fiber_team_total_closed = $con->query("
+SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND is_management_ticket = 2
+")->fetch_assoc()['total'];
+
 
 // ==================== NOC TICKETS ====================
 $noc_current_ticket = $con->query("
@@ -375,7 +392,7 @@ SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND (is_managemen
                             </div>
                             <!-- Today Closed -->
                             <div class="col-md-6 col-xl-3">
-                                <a href="management_tickets.php?status=resolved&ticket_date=today">
+                                <a href="management_tickets.php?status=resolved&ticket_date=today&date_from=<?= date('Y-m-d'); ?>&date_to=<?= date('Y-m-d'); ?>">
                                     <div class="stat-card stat-success">
                                         <div class="stat-card-icon">
                                             <i class="mdi mdi-check-decagram"></i>
@@ -406,6 +423,74 @@ SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND (is_managemen
                                 </a>
                             </div>
                         </div>
+                        <!----------- Fiber SECTION --------------->
+                        <h4 class="mb-3 text-secondary font-weight-bold">Fiber Tickets</h4>
+                        <div class="row g-3 mb-4 d-flex">
+                            <!-- Current Ticket -->
+                            <div class="col-md-6 col-xl-3">
+                                <a href="management_tickets.php?status=open">
+                                    <div class="stat-card stat-primary">
+                                        <div class="stat-card-icon">
+                                            <i class="mdi mdi-ticket-confirmation-outline"></i>
+                                        </div>
+                                        <div class="stat-card-body">
+                                            <span class="stat-label">Current Ticket</span>
+                                            <h3 class="stat-value mb-0">
+                                                <?= number_format($fiber_team_current_ticket) ?>
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <!-- Pending Task -->
+                            <div class="col-md-6 col-xl-3">
+                                <a href="management_tickets.php?status=pending">
+                                    <div class="stat-card stat-warning">
+                                        <div class="stat-card-icon">
+                                            <i class="mdi mdi-progress-clock"></i>
+                                        </div>
+                                        <div class="stat-card-body">
+                                            <span class="stat-label">Pending Task</span>
+                                            <h3 class="stat-value mb-0">
+                                                <?= number_format($fiber_team_pending_ticket) ?>
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <!-- Today Closed -->
+                            <div class="col-md-6 col-xl-3">
+                                <a href="management_tickets.php?status=resolved&ticket_date=today&date_from=<?= date('Y-m-d'); ?>&date_to=<?= date('Y-m-d'); ?>">
+                                    <div class="stat-card stat-success">
+                                        <div class="stat-card-icon">
+                                            <i class="mdi mdi-check-decagram"></i>
+                                        </div>
+                                        <div class="stat-card-body">
+                                            <span class="stat-label">Today Closed</span>
+                                            <h3 class="stat-value mb-0">
+                                                <?= number_format($fiber_team_today_closed) ?>
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <!-- Total Closed -->
+                            <div class="col-md-6 col-xl-3">
+                                <a href="tickets.php?status=resolved"> 
+                                    <div class="stat-card stat-info">
+                                        <div class="stat-card-icon">
+                                            <i class="mdi mdi-clipboard-check-multiple-outline"></i>
+                                        </div>
+                                        <div class="stat-card-body">
+                                            <span class="stat-label">Total Closed</span>
+                                            <h3 class="stat-value mb-0">
+                                                <?= number_format($fiber_team_total_closed) ?>
+                                            </h3>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
 
 
                         <!--------- NOC SECTION ------------>
@@ -413,6 +498,7 @@ SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND (is_managemen
                         <div class="row g-3 mb-2 d-flex">
                             <!-- Current Ticket -->
                             <div class="col-md-6 col-xl-3">
+                              
                                 <a href="tickets.php?status=open&is_management=0">
                                     <div class="stat-card stat-primary">
                                         <div class="stat-card-icon">
@@ -429,7 +515,7 @@ SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND (is_managemen
                             </div>
                             <!-- Pending Task -->
                             <div class="col-md-6 col-xl-3">
-                                <a href="tickets.php?status=pending&is_management=0">
+                                <a href="tickets.php?status=pending">
                                     <div class="stat-card stat-warning">
                                         <div class="stat-card-icon">
                                             <i class="mdi mdi-progress-clock"></i>
@@ -445,7 +531,7 @@ SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND (is_managemen
                             </div>
                             <!-- Today Closed -->
                             <div class="col-md-6 col-xl-3">
-                                <a href="tickets.php?status=resolved&ticket_date=today&is_management=0">
+                                <a href="tickets.php?status=resolved&date_from=<?= date('Y-m-d'); ?>&date_to=<?= date('Y-m-d'); ?>">
                                     <div class="stat-card stat-success">
                                         <div class="stat-card-icon">
                                             <i class="mdi mdi-check-decagram"></i>
@@ -461,7 +547,7 @@ SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND (is_managemen
                             </div>
                             <!-- Total Closed -->
                             <div class="col-md-6 col-xl-3">
-                                <a href="tickets.php?status=resolved&is_management=0"> 
+                                <a href="tickets.php?status=resolved"> 
                                     <div class="stat-card stat-info">
                                         <div class="stat-card-icon">
                                             <i class="mdi mdi-clipboard-check-multiple-outline"></i>
@@ -719,67 +805,77 @@ SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND (is_managemen
 
                        <!--------TOP PERFORMERS LEADERBOARD--------->
                        <?php
-                        /*---------Today Top-----*/
-                        $sql_today = "
-                             SELECT
-                                tu.id,
-                                tu.fullname,
-                                MAX(COALESCE(t.is_management_ticket, 0)) AS is_management,
-                                COUNT(t.id) AS total_complete
-                            FROM users tu
-                            JOIN ticket t ON t.assign_user_id = tu.id
-                            WHERE t.ticket_type = 'Complete'
-                            AND DATE(t.enddate) = CURDATE()
-                            GROUP BY tu.id, tu.fullname
-                            ORDER BY total_complete DESC
-                            LIMIT 3
-                        ";
-                        $today_performers = $con->query($sql_today);
+                            $current_year = date('Y');
+                            $current_month = date('m');
 
-                        /*----------This Week Top-------*/
-                        $sql_week = "
-                            SELECT tu.id, tu.fullname, 
-                            MAX(COALESCE(t.is_management_ticket, 0)) AS is_management, 
-                            COUNT(t.id) AS total_complete 
-                            FROM users AS tu JOIN ticket AS t ON t.assign_user_id = tu.id 
-                            WHERE t.ticket_type = 'Complete' 
-                            AND YEARWEEK(t.enddate, 1) = YEARWEEK(CURDATE(), 1) 
-                            GROUP BY tu.id, tu.fullname 
-                            ORDER BY total_complete 
-                            DESC LIMIT 3
-                        ";
-                        $week_performers = $con->query($sql_week);
+                            /*--------- Today Top Performers -----*/
+                            $sql_today = "
+                                SELECT 
+                                    tu.id, 
+                                    tu.fullname, 
+                                    MAX(COALESCE(t.is_management_ticket, 0)) AS is_management,
+                                    COUNT(t.id) AS total_complete 
+                                FROM users tu
+                                JOIN ticket t ON t.assign_user_id = tu.id
+                                WHERE t.ticket_type = 'Complete' 
+                                AND DATE(COALESCE(t.enddate, t.create_date)) = CURDATE()
+                                GROUP BY tu.id, tu.fullname
+                                ORDER BY total_complete DESC
+                                LIMIT 3
+                            ";
+                            $today_performers = $con->query($sql_today);
 
-                        /*----------This Month Top---------*/
-                        $sql_month = "
-                            SELECT tu.id, tu.fullname, 
-                            MAX(COALESCE(t.is_management_ticket, 0)) AS is_management,
-                            COUNT(t.id) AS total_complete
-                            FROM users tu
-                            JOIN ticket t ON t.assign_user_id = tu.id
-                            WHERE t.ticket_type = 'Complete' 
-                            AND MONTH(t.enddate) = MONTH(CURDATE()) 
-                            AND YEAR(t.enddate) = YEAR(CURDATE())
-                            GROUP BY tu.id, tu.fullname
-                            ORDER BY total_complete DESC
-                            LIMIT 3
-                        ";
-                        $month_performers = $con->query($sql_month);
+                            /*---------- This Week Top Performers-------*/
+                            $sql_week = "
+                                SELECT 
+                                    tu.id, 
+                                    tu.fullname, 
+                                    MAX(COALESCE(t.is_management_ticket, 0)) AS is_management, 
+                                    COUNT(t.id) AS total_complete 
+                                FROM users tu 
+                                JOIN ticket t ON t.assign_user_id = tu.id 
+                                WHERE t.ticket_type = 'Complete' 
+                                AND YEARWEEK(COALESCE(t.enddate, t.create_date), 1) = YEARWEEK(CURDATE(), 1) 
+                                GROUP BY tu.id, tu.fullname 
+                                ORDER BY total_complete DESC 
+                                LIMIT 3
+                            ";
+                            $week_performers = $con->query($sql_week);
 
-                        /*-----------This Year Top-------*/ 
-                        $sql_year = "
-                            SELECT tu.id,tu.fullname, 
-                            MAX(COALESCE(t.is_management_ticket, 0)) AS is_management,
-                            COUNT(t.id) AS total_complete
-                            FROM users tu
-                            JOIN ticket t ON t.assign_user_id = tu.id
-                            WHERE t.ticket_type = 'Complete' 
-                            AND YEAR(t.enddate) = YEAR(CURDATE())
-                            GROUP BY tu.id, tu.fullname
-                            ORDER BY total_complete DESC
-                            LIMIT 3
-                        ";
-                        $year_performers = $con->query($sql_year);
+                            /*---------- This Month Top Performers---------*/
+                            $sql_month = "
+                                SELECT 
+                                    tu.id, 
+                                    tu.fullname, 
+                                    MAX(COALESCE(t.is_management_ticket, 0)) AS is_management,
+                                    COUNT(t.id) AS total_complete
+                                FROM users tu
+                                JOIN ticket t ON t.assign_user_id = tu.id
+                                WHERE t.ticket_type = 'Complete' 
+                                AND MONTH(COALESCE(t.enddate, t.create_date)) = '$current_month' 
+                                AND YEAR(COALESCE(t.enddate, t.create_date)) = '$current_year'
+                                GROUP BY tu.id, tu.fullname
+                                ORDER BY total_complete DESC
+                                LIMIT 3
+                            ";
+                            $month_performers = $con->query($sql_month);
+
+                            /*----------- This Year Top Performers-------*/ 
+                            $sql_year = "
+                                SELECT 
+                                    tu.id, 
+                                    tu.fullname, 
+                                    MAX(COALESCE(t.is_management_ticket, 0)) AS is_management,
+                                    COUNT(t.id) AS total_complete
+                                FROM users tu
+                                JOIN ticket t ON t.assign_user_id = tu.id
+                                WHERE t.ticket_type = 'Complete' 
+                                AND YEAR(COALESCE(t.enddate, t.create_date)) = '$current_year'
+                                GROUP BY tu.id, tu.fullname
+                                ORDER BY total_complete DESC
+                                LIMIT 3
+                            ";
+                            $year_performers = $con->query($sql_year);
                         ?>
                        <!---------- TOP PERFORMERS LEADERBOARD ------->
                         <div class="row">

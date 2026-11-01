@@ -12,7 +12,7 @@
                     <tbody id="tickets-list">
                         <?php
                         $tickets = get_tickets($con, [
-                            'limti' => 10,
+                            'limit' => 10,
                         ]);
                         include 'Table/tickets.php';
                         ?>

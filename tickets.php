@@ -134,6 +134,9 @@ require 'Head.php';
                                                 if (!empty($_GET['date_to'])) {
                                                     $options['date_to'] = trim($_GET['date_to']);
                                                 }
+                                                // if(isset($_GET['ticket_date']) && !empty($_GET['ticket_date'])){
+                                                //     $options['ticket_date'] = ""
+                                                // }
 
                                                
 

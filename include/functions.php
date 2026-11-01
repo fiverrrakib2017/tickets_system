@@ -482,24 +482,22 @@ if (!function_exists('get_tickets')) {
         }
         /*---- Performance Filter ----*/
         if (!empty($options['performance'])) {
-
             switch ($options['performance']) {
-
                 case 'monthly':
-                    $where[] = "MONTH(t.create_date) = MONTH(CURDATE()) 
-                                AND YEAR(t.create_date) = YEAR(CURDATE())";
+                    $where[] = "MONTH(COALESCE(t.enddate, t.create_date)) = MONTH(CURDATE()) 
+                                AND YEAR(COALESCE(t.enddate, t.create_date)) = YEAR(CURDATE())";
                     break;
 
                 case 'weekly':
-                    $where[] = "YEARWEEK(t.create_date, 1) = YEARWEEK(CURDATE(), 1)";
+                    $where[] = "YEARWEEK(COALESCE(t.enddate, t.create_date), 1) = YEARWEEK(CURDATE(), 1)";
                     break;
 
                 case 'daily':
-                    $where[] = "DATE(t.create_date) = CURDATE()";
+                    $where[] = "DATE(COALESCE(t.enddate, t.create_date)) = CURDATE()";
                     break;
 
                 case 'yearly':
-                    $where[] = "YEAR(t.create_date) = YEAR(CURDATE())";
+                    $where[] = "YEAR(COALESCE(t.enddate, t.create_date)) = YEAR(CURDATE())";
                     break;
             }
         }

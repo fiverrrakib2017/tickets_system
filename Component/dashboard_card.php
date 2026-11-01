@@ -43,14 +43,18 @@ $todayStats = [
     'resolved' => 0,
 ];
 
-$sql = "
-    SELECT 
+$today_start = date('Y-m-d 00:00:00');
+$tomorrow_start = date('Y-m-d 00:00:00', strtotime('+1 day'));
+$today_date = date('Y-m-d');
+
+$sql = "SELECT 
         COUNT(*) AS total,
-        SUM(ticket_type = 'Active')   AS open_ticket,
-        SUM(ticket_type = 'Pending')  AS pending_ticket,
-        SUM(ticket_type = 'Complete') AS resolved_ticket
-    FROM ticket
-    WHERE DATE(create_date) = CURDATE()
+        SUM(CASE WHEN ticket_type = 'Active' THEN 1 ELSE 0 END) AS open_ticket,
+        SUM(CASE WHEN ticket_type = 'Pending' THEN 1 ELSE 0 END) AS pending_ticket,
+        SUM(CASE WHEN ticket_type = 'Complete' AND COALESCE(enddate, create_date) >= '$today_start' AND COALESCE(enddate, create_date) < '$tomorrow_start' THEN 1 ELSE 0 END) AS resolved_ticket
+    FROM ticket 
+    WHERE (is_management_ticket = 0 OR is_management_ticket IS NULL)
+      AND create_date >= '$today_start' AND create_date < '$tomorrow_start'
 ";
 
 $result = $con->query($sql);
@@ -67,15 +71,15 @@ $userTicketStats = [];
 $sqlUserStats = "
     SELECT 
         tu.id,
-        tu.fullname as name,
-        SUM(t.ticket_type = 'Active')   AS open_ticket,
-        SUM(t.ticket_type = 'Pending')  AS pending_ticket,
-        SUM(t.ticket_type = 'Complete') AS resolved_ticket
+        tu.fullname AS name,
+        SUM(CASE WHEN t.ticket_type = 'Active' THEN 1 ELSE 0 END) AS open_ticket,
+        SUM(CASE WHEN t.ticket_type = 'Pending' THEN 1 ELSE 0 END) AS pending_ticket,
+        SUM(CASE WHEN t.ticket_type = 'Complete' THEN 1 ELSE 0 END) AS resolved_ticket
     FROM ticket t
-    LEFT JOIN users tu ON t.assign_user_id = tu.id
-    WHERE t.create_date >= CURDATE()
-      AND t.create_date < CURDATE() + INTERVAL 1 DAY
-    GROUP BY t.assign_user_id
+    INNER JOIN users tu ON t.assign_user_id = tu.id
+    WHERE t.create_date >= '$today_start' 
+      AND t.create_date < '$tomorrow_start'
+    GROUP BY tu.id, tu.fullname
 ";
 
 $resultUserStats = $con->query($sqlUserStats);
@@ -83,16 +87,17 @@ $resultUserStats = $con->query($sqlUserStats);
 while ($row = $resultUserStats->fetch_assoc()) {
     $userTicketStats[] = $row;
 }
-$total_tickets = (int) ($con->query("SELECT COUNT(*) AS total_tickets FROM ticket")
-                ->fetch_assoc()['total_tickets'] ?? 0);
 
-$today_date= date('Y-m-d');
+$total_tickets = (int) ($con->query("SELECT COUNT(*) AS total_tickets FROM ticket")
+                        ->fetch_assoc()['total_tickets'] ?? 0);
+
 
 $internal_tickets_row = $con->query("
     SELECT
         SUM(CASE 
             WHEN pop_id != 0 
-            AND DATE(created_at) = '$today_date' 
+            AND created_at >= '$today_start' 
+            AND created_at < '$tomorrow_start' 
             THEN 1 ELSE 0 
         END) AS today_noc,
 
@@ -103,7 +108,8 @@ $internal_tickets_row = $con->query("
 
         SUM(CASE 
             WHEN upstream_id != 0 
-            AND DATE(created_at) = '$today_date' 
+            AND created_at >= '$today_start' 
+            AND created_at < '$tomorrow_start' 
             THEN 1 ELSE 0 
         END) AS today_upstream,
 
@@ -122,7 +128,7 @@ $noc_incident_tickets = $con->query("
     SELECT 
         SUM(
             CASE 
-                WHEN DATE(create_date) = '$today_date' THEN 1
+                WHEN create_date >= '$today_start' AND create_date < '$tomorrow_start' THEN 1
                 ELSE 0
             END
         ) AS today_noc_incident_ticket,
@@ -134,7 +140,6 @@ $noc_incident_tickets = $con->query("
 
 $noc_incident_ticket = $noc_incident_tickets->fetch_assoc();
 ?>
-
 <div class="row">
 
     <!-- Total & Today Tickets -->
@@ -297,7 +302,7 @@ $noc_incident_ticket = $noc_incident_tickets->fetch_assoc();
 
     <!-- Resolved Tickets -->
     <div class="col-xl-4 col-md-6">
-        <a href="tickets.php?status=resolved">
+        <a href="tickets.php?status=resolved&date_from=<?= date('Y-m-d'); ?>&date_to=<?= date('Y-m-d'); ?>">
         <div class="card stat-card">
             <div class="card-body">
                 <div class="d-flex align-items-center">

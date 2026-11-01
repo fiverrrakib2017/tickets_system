@@ -8,6 +8,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
+$ticket =null; 
 if (isset($_GET['id'])) {
 
     $ticket_id = (int)$_GET['id'];
@@ -145,7 +146,7 @@ require 'Head.php';
                                                             $result = $stmt->get_result();
 
                                                             if ($row = $result->fetch_assoc()) {
-                                                               echo  $customer_name = $row['customer_name'];
+                                                               echo  $customer_name = $row['customer_name'] ?? '---';
                                                             }
 
                                                             $stmt->close();
@@ -200,7 +201,7 @@ require 'Head.php';
                                                 <p class="mb-0"><i class="ion ion-md-paper text-info"></i> Ticket For:
                                                 </p>
                                                 <a href="#" class="text-dark fw-bold">
-                                                    <?= htmlspecialchars($ticket['ticketfor']); ?>
+                                                    <?= htmlspecialchars($ticket['ticketfor']?? '---'); ?>
                                                 </a>
                                             </div>
 
@@ -220,7 +221,7 @@ require 'Head.php';
                                                           $result = $stmt->get_result();
      
                                                           if ($row = $result->fetch_assoc()) {
-                                                              echo  $complain_type_name = $row['topic_name'];
+                                                              echo  $complain_type_name = $row['topic_name'] ?? '---';
                                                           }
      
                                                           $stmt->close();
@@ -454,23 +455,22 @@ require 'Head.php';
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table id="tickets_table" class="table table-bordered dt-responsive nowrap"
-                                            style="border-collapse: collapse; border-spacing: 0; width: 100%;">
-                                            <thead>
-                                                <?php include 'Table/tickets_head.php';?>
-                                            </thead>
-                                          <tbody id="tickets-list">
-                                                <?php 
-                                                
+                                    style="border-collapse: collapse; border-spacing: 0; width: 100%;">
+                                    <thead>
+                                        <?php include 'Table/tickets_head.php';?>
+                                    </thead>
+                                    <tbody id="tickets-list">
+                                        <?php if (!empty($ticket['customer_id'])): ?>
+                                            <?php 
                                                 $tickets = get_tickets($con, [
                                                     'customer_id' => $ticket['customer_id'],
                                                 ]);
-                                                include 'Table/tickets.php';
-                                                
-                                                ?>
+                                                include 'Table/tickets.php'; 
+                                            ?>
+                                        <?php endif; ?>
+                                    </tbody>
 
-                                            </tbody>
-
-                                        </table>
+                                </table>
                             </div>
                         </div>
                     </div>

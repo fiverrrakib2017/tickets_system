@@ -70,9 +70,9 @@ require 'Head.php';
                                     </div>
 
                                     <div class="card-footer text-end">
-                                        <a href="tickets.php" class="btn btn-danger">
+                                        <button type="button" onclick="history.back();" class="btn btn-danger">
                                             <i class="fas fa-arrow-left"></i> Back
-                                        </a>
+                                        </button>
                                         <button type="submit" class="btn btn-success">
                                             <i class="fas fa-save"></i> Create Ticket
                                         </button>

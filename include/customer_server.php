@@ -85,6 +85,40 @@ if(isset($_GET['update_mikrotik_info']) && $_SERVER['REQUEST_METHOD']==='POST'){
    
 }
 
+/*-----GET Customer POP ID-----*/
+if(isset($_GET['get_customer_pop_id']) && $_SERVER['REQUEST_METHOD']==='GET'){
+    $customer_id = isset($_GET['customer_id']) ? (int)$_GET['customer_id'] : 0;
+
+    if($customer_id <= 0) {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Invalid Customer ID.'
+        ]);
+        exit();
+    }
+
+    $stmt = $con->prepare("SELECT `pop_id` FROM customers WHERE id = ?");
+    $stmt->bind_param('i', $customer_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if($result && $row = $result->fetch_assoc()) {
+        echo json_encode([
+            'success' => true,
+            'pop_id' => $row['pop_id']
+        ]);
+        exit; 
+    } else {
+        echo json_encode([
+            'success' => false,
+            'message' => 'Database error: '.$stmt->error
+        ]);
+        exit; 
+    }
+
+    exit;
+}
+
 /*-----GET Customer Ping IP-----*/
 if(isset($_GET['get_customer_ping_ip']) && $_SERVER['REQUEST_METHOD']==='GET'){
     $customer_id = isset($_GET['customer_id']) ? (int)$_GET['customer_id'] : 0;

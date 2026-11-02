@@ -202,7 +202,6 @@
     <input type="file" name="customer_attachments" class="form-control" value="<?= isset($ticket['attachments']) ? $ticket['attachments'] : '' ?>">
 </div>
 
-
 <script src="http://103.112.206.139/assets/libs/jquery/jquery.min.js"></script>
 <?php if($_is_customer_portal==false):?>
 <script type="text/javascript">
@@ -213,27 +212,92 @@
                 $('#show_customer_ip').val('');
                 return;
             }
-
+            /*------------Get Customer Pop ID--------------*/
+            // $.ajax({
+            //     url: 'http://103.112.206.139/include/customer_server.php?get_customer_pop_id=true',
+            //     type: 'GET',
+            //     data: { customer_id: customer_id },
+            //     dataType: 'json',
+            //     success: function (response) {
+            //         if (response.success) {
+                       
+            //         }
+            //     }
+            // });
+            /*------------Get Customer Data For Apply Pop , Customer Ip and Customer Type--------------*/
             $.ajax({
-                url: 'http://103.112.206.139/include/customer_server.php?get_customer_ping_ip=true',
+                url: 'http://103.112.206.139/include/customer_server.php?get_customer_data=true',
                 type: 'GET',
                 data: { customer_id: customer_id },
                 dataType: 'json',
                 success: function (response) {
-                    if (response.success) {
-                        if(response.ping_ip.length > 0){
-                            $("#show_customer_ip_div").removeClass('d-none');
-                             $('#show_customer_ip').val(response.ping_ip);
-                        } 
-                       
-                    } else {
-                        $('#show_customer_ip').val('');
+                    if (response.success && response.data) {
+                        let customer = response.data.find(item => item.id == customer_id);
+
+                        if (customer) {
+                            if (customer.service_customer_type == 1) {
+                                $('select[name="ticket_for"]')
+                                    .val("Bandwidth Client")
+                                    .trigger('change');
+                            } else if (customer.service_customer_type == 2) {
+                                $('select[name="ticket_for"]')
+                                    .val("Mac Client")
+                                    .trigger('change');
+                            }
+
+                            if (customer.ping_ip && customer.ping_ip.length > 0) {
+                                $("#show_customer_ip_div").removeClass('d-none').hide().fadeIn(400); 
+                                $('#show_customer_ip').val(customer.ping_ip);
+                                $('#show_customer_ip').prop('readonly', true);
+                            } else {
+                                $('#show_customer_ip').val('');
+                                $('#show_customer_ip').prop('readonly', false);
+                                $("#show_customer_ip_div").fadeOut(300, function() {
+                                    $(this).addClass('d-none');
+                                });
+                            }
+                            /*----------Apply Customer Pop Id----------*/
+                            $('select[name="pop_branch"]')
+                            .val(customer.pop_id)
+                            .trigger('change');
+                            _get_pop_info(customer.pop_id);
+
+                            /*----------Apply Ticket Priority----------*/
+                            $('select[name="ticket_priority"]').val(3).trigger('change');
+                        }
                     }
                 }
             });
+            /*------------Get Customer Ping Ip--------------*/
+            // $.ajax({
+            //     url: 'http://103.112.206.139/include/customer_server.php?get_customer_ping_ip=true',
+            //     type: 'GET',
+            //     data: { customer_id: customer_id },
+            //     dataType: 'json',
+            //     success: function (response) {
+            //         if (response.success) {
+            //             if(response.ping_ip.length > 0){
+            //                 $("#show_customer_ip_div").removeClass('d-none');
+            //                 $('#show_customer_ip').val(response.ping_ip);
+            //                $('#show_customer_ip').prop('readonly', true);
+            //             } 
+                       
+            //         } else {
+            //             $('#show_customer_ip').val('');
+            //             $('#show_customer_ip').prop('readonly', false);
+            //         }
+            //     }
+            // });
         }); 
        $(document).on('change', 'select[name="pop_branch"]', function () {
             let pop_id = $(this).val();
+            _get_pop_info(pop_id);
+        }); 
+        $(document).on('change','select[name="noc_note_select"]',function(){
+            const noc_note_value = $(this).val();    
+            $('input[name="noc_note"]').val(noc_note_value);
+        });
+        function _get_pop_info(pop_id){
             if (pop_id === '') {
                 $('#show_pop_branch_ip').val('');
                 return;
@@ -245,19 +309,20 @@
                 data: { pop_id: pop_id },
                 dataType: 'json',
                 success: function (response) {
-                    if (response.success) {
-                        $("#show_pop_branch_ip_div").removeClass('d-none');
+                    if (response.success && response.router_ip && response.router_ip.length > 0) {
+                        $("#show_pop_branch_ip_div").removeClass('d-none').hide().fadeIn(400);
                         $('#show_pop_branch_ip').val(response.router_ip);
+                        $('#show_pop_branch_ip').prop('readonly', true);
                     } else {
                         $('#show_pop_branch_ip').val('');
+                        $('#show_pop_branch_ip').prop('readonly', false);
+                        $("#show_pop_branch_ip_div").fadeOut(300, function() {
+                            $(this).addClass('d-none');
+                        });
                     }
                 }
             });
-        }); 
-        $(document).on('change','select[name="noc_note_select"]',function(){
-            const noc_note_value = $(this).val();    
-            $('input[name="noc_note"]').val(noc_note_value);
-        });
+        }
     });
     
 </script>

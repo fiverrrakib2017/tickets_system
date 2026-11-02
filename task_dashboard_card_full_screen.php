@@ -348,7 +348,7 @@ SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND (is_managemen
                             <div class="row g-3 mb-4 d-flex">
                                 <!-- Current Ticket -->
                                 <div class="col-md-6 col-xl-3">
-                                    <a href="tickets.php?status=open&is_management=1">
+                                    <a href="management_tickets.php?status=open&is_management=1">
                                         <div class="stat-card stat-primary">
                                             <div class="stat-card-icon">
                                                 <i class="mdi mdi-ticket-confirmation-outline"></i>
@@ -364,7 +364,7 @@ SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND (is_managemen
                                 </div>
                                 <!-- Pending Task -->
                                 <div class="col-md-6 col-xl-3">
-                                    <a href="tickets.php?status=pending&is_management=1">
+                                    <a href="management_tickets.php?status=pending&is_management=1">
                                         <div class="stat-card stat-warning">
                                             <div class="stat-card-icon">
                                                 <i class="mdi mdi-progress-clock"></i>
@@ -380,7 +380,7 @@ SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND (is_managemen
                                 </div>
                                 <!-- Today Closed -->
                                 <div class="col-md-6 col-xl-3">
-                                    <a href="tickets.php?status=resolved&ticket_date=today&is_management=1">
+                                    <a href="management_tickets.php?status=resolved&ticket_date=today&is_management=1">
                                         <div class="stat-card stat-success">
                                             <div class="stat-card-icon">
                                                 <i class="mdi mdi-check-decagram"></i>
@@ -396,7 +396,7 @@ SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND (is_managemen
                                 </div>
                                 <!-- Total Closed -->
                                 <div class="col-md-6 col-xl-3">
-                                    <a href="tickets.php?status=resolved&is_management=1"> 
+                                    <a href="management_tickets.php?status=resolved&is_management=1"> 
                                         <div class="stat-card stat-info">
                                             <div class="stat-card-icon">
                                                 <i class="mdi mdi-clipboard-check-multiple-outline"></i>

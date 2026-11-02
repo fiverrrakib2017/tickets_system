@@ -722,9 +722,7 @@ SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND (is_managemen
                                                     <?php
                                                         $isManagement = (int) ($row['is_management'] ?? 0);
 
-                                                        $ticketPage = ($isManagement === 1)
-                                                            ? 'management_tickets.php'
-                                                            : 'tickets.php';
+                                                        $ticketPage = ($isManagement === 1 || $isManagement===2)? 'management_tickets.php' : 'tickets.php';
 
                                                         $userId = (int) $row['id'];
                                                         $currentTask = (int) ($row['current_task'] ?? 0);
@@ -743,9 +741,7 @@ SELECT COUNT(*) total FROM ticket WHERE ticket_type='Complete' AND (is_managemen
                                                     <?php
                                                         $isManagement = (int) ($row['is_management'] ?? 0);
 
-                                                        $ticketPage = ($isManagement === 1)
-                                                            ? 'management_tickets.php'
-                                                            : 'tickets.php';
+                                                       $ticketPage = ($isManagement === 1 || $isManagement===2)? 'management_tickets.php' : 'tickets.php';
 
                                                         $userId = (int) $row['id'];
                                                         $pendingTask = (int) ($row['pending_task'] ?? 0);

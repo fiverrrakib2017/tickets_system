@@ -191,12 +191,12 @@ error_reporting(E_ALL);
 
                                                         <td class="text-center">
                                                             <button type="button" name="edit_button" class="btn-sm btn btn-info" data-id="<?= (int)$row['id']; ?>"><i class="fas fa-edit"></i></button>
-
+<!-- 
                                                             <a href="user_delete.php?id=<?= (int)$row['id']; ?>" 
                                                             class="btn btn-sm btn-danger"
                                                             onclick="return confirm('Are you sure?')">
                                                                 <i class="fas fa-trash"></i>
-                                                            </a>
+                                                            </a> -->
                                                             <a href="user_profile.php?clid=<?= (int)$row['id']; ?>" 
                                                             class="btn btn-sm btn-success">
                                                                 <i class="fas fa-eye"></i>

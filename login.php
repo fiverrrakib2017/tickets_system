@@ -31,6 +31,7 @@ if (isset($_POST["login"])) {
                 $_SESSION["username"] = $row["username"];
                 $_SESSION["fullname"] = $row["fullname"];
                 $_SESSION["csrf_token"] = bin2hex(random_bytes(32));
+              
 
                 /*Log user's IP*/ 
                 $loggeIP = $_SERVER['REMOTE_ADDR'];

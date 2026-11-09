@@ -90,6 +90,13 @@ if (isset($_GET['add_user']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
     );
 
     if ($stmt->execute()) {
+        $user_id = $stmt->insert_id;
+        $stmt->close();
+        /*----------- Log User Activity -----------*/
+        $log_desc = "Added new user: '$username' (Full Name: '$fullname', Role: $role, ID: $user_id)";
+        if (function_exists('system_log')) {
+            system_log($con, 'INSERT', $log_desc);
+        }
         echo json_encode([
             'success' => true,
             'message' => 'User added successfully'
@@ -139,8 +146,6 @@ if (isset($_GET['get_user']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
 
 /* ---------- Update User Script ---------- */
 if (isset($_GET['update_user']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    require 'functions.php';
 
     /* -------- Sanitize -------- */
     $user_id  = (int)($_POST['id'] ?? 0);
@@ -241,6 +246,11 @@ if (isset($_GET['update_user']) && $_SERVER['REQUEST_METHOD'] === 'POST') {
 
     /* -------- Execute -------- */
     if ($stmt->execute()) {
+        /*----------- Log User Activity -----------*/
+        $log_desc = "Update user: '$username' (Full Name: '$fullname', Role: $role, ID: $user_id)";
+        if (function_exists('system_log')) {
+            system_log($con, 'INSERT', $log_desc);
+        }
         echo json_encode([
             'success' => true,
             'message' => 'User updated successfully'

@@ -1,5 +1,12 @@
 <?php 
-include 'db_connect.php';
+if (!isset($_SESSION)) {
+    session_start();
+}
+if (!isset($_SERVER['DOCUMENT_ROOT']) || $_SERVER['DOCUMENT_ROOT'] == '') {
+    $_SERVER['DOCUMENT_ROOT'] = dirname(__DIR__); 
+}
+include $_SERVER['DOCUMENT_ROOT'] . '/include/db_connect.php';
+include $_SERVER['DOCUMENT_ROOT'] . '/include/functions.php';
 /*---------------- Add POP Branch Script ----------------*/
 if (isset($_GET['add_pop_branch_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $pop_branch                 = trim($_POST['pop_branch_name']);

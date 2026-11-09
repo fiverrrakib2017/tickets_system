@@ -322,6 +322,11 @@ if (isset($_GET['add_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if ($result) {
+        /*----------- Log User Activity -----------*/
+        $log_desc = "Added new customer: '$customer_name' (Username: $customer_username, ID: $get_customer_id)";
+        if (function_exists('system_log')) {
+            system_log($con, 'INSERT', $log_desc);
+        }
         echo json_encode([
             'success' => true,
             'message' => 'Added successfully!',
@@ -346,44 +351,35 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     $customer_pop_branch    = trim($_POST['customer_pop_branch']);
     $customer_vlan          = trim($_POST['customer_vlan']);
     $private_customer_ip    = trim($_POST['private_customer_ip']);
-    $service_type           = isset($_POST['service_type'])? trim($_POST['service_type']): null; 
+    $service_type           = isset($_POST['service_type']) ? trim($_POST['service_type']) : null; 
     $customer_status        = trim($_POST['customer_status']);
     $service_customer_type  = trim($_POST['service_customer_type']);
 
-    /*-------- Validate Customer Name ---------*/
+    /*-------- Validate Inputs ---------*/
     __validate_input($customer_name, 'Customer Name');
-    /*-------- Validate Username Name ---------*/
     __validate_input($customer_username, 'Customer Username');
-    /*-------- Validate Password Name ---------*/
     __validate_input($customer_password, 'Customer Password');
     
     /* -------- Check Existing User -------- */
-    $old = $con->prepare("SELECT username FROM customers WHERE id=?");
+    $old = $con->prepare("SELECT * FROM customers WHERE id = ? LIMIT 1");
     $old->bind_param("i", $customer_id);
     $old->execute();
     $oldUser = $old->get_result()->fetch_assoc();
 
     if (!$oldUser) {
-        exit(json_encode(['success'=>false,'message'=>'User not found']));
+        exit(json_encode(['success' => false, 'message' => 'User not found']));
     }
 
     /* -------- Duplicate Username Check -------- */
-    if ($customer_username !== $oldUser['username']) {
+    if ($customer_username !== ($oldUser['username'] ?? '')) {
         if (is_unique_column($con, 'customers', 'username', $customer_username)) {
-            exit(json_encode(['success'=>false,'message'=>'Username already exists']));
+            exit(json_encode(['success' => false, 'message' => 'Username already exists']));
         }
     }
     
-
     /* ---------- Get old attachment ---------- */
-    $old_nid_File = '';
-    $old_service_agreement_file = '';
-    $old_attachments_query = $con->query("SELECT nid_file, service_agreement_file FROM customers WHERE id='$customer_id'");
-    if ($old_attachments_query && $old_attachments_query->num_rows > 0) {
-        $old_attachments = $old_attachments_query->fetch_assoc();
-        $old_nid_File = $old_attachments['nid_file'];
-        $old_service_agreement_file = $old_attachments['service_agreement_file'];
-    }
+    $old_nid_File = $oldUser['nid_file'] ?? '';
+    $old_service_agreement_file = $oldUser['service_agreement_file'] ?? '';
     
     /* ---------- Upload file ---------- */
     if (isset($_FILES['nid_file']) && $_FILES['nid_file']['error'] === 0) {
@@ -391,43 +387,102 @@ if (isset($_GET['update_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     } else {
         $nid_file = $old_nid_File;
     }
+
     if (isset($_FILES['service_agreement_file']) && $_FILES['service_agreement_file']['error'] === 0) {
         $service_agreement_file = __upload_file($_FILES['service_agreement_file'], $old_service_agreement_file);
     } else {
         $service_agreement_file = $old_service_agreement_file;
     }
-    /* get  customer total */
+
+    /* get customer total */
     $total_limit = 0;
-    if(isset($_POST['limit']) && is_array($_POST['limit'])){
-        foreach($_POST['limit'] as $lim){
+    if (isset($_POST['limit']) && is_array($_POST['limit'])) {
+        foreach ($_POST['limit'] as $lim) {
             $total_limit += (int)$lim;
         }
     }
 
-    /* Update  table */
+    /* Update table */
     $result = $con->query("UPDATE customers SET `customer_name`='$customer_name',`customer_email`='$customer_email',`username`='$customer_username',`password`='$customer_password',`pop_id`='$customer_pop_branch',`customer_type_id`='$customer_type',`customer_vlan`='$customer_vlan',`private_customer_ip`='$private_customer_ip',`service_type`='$service_type',`status`='$customer_status',`total`='$total_limit', service_customer_type='$service_customer_type', `nid_file`='$nid_file', `service_agreement_file`='$service_agreement_file' WHERE id='$customer_id'");
+    
     /*------------- Bandwidth Service------------- */
-    if($_POST['service_customer_type'] == 1){
-        if(!save_bandwidth_service( $con,  $customer_id, $_POST['service_id'] ?? [],$_POST['limit'] ?? [])){
+    if ($_POST['service_customer_type'] == 1) {
+        if (!save_bandwidth_service($con, $customer_id, $_POST['service_id'] ?? [], $_POST['limit'] ?? [])) {
             rollback_customer($con, $customer_id, 'Service mismatch');
         }
     }
    
     /*------------- Mac Reseller Service------------- */
-    if($_POST['service_customer_type'] == 2){
-        if(!save_mac_reseller_service( $con, $customer_id, $_POST['service_mac_reseller_package'], $_POST['service_mac_reseller_customer_count'])){
+    if ($_POST['service_customer_type'] == 2) {
+        if (!save_mac_reseller_service($con, $customer_id, $_POST['service_mac_reseller_package'] ?? [], $_POST['service_mac_reseller_customer_count'] ?? [])) {
             rollback_customer($con, $customer_id, 'Mac reseller mismatch');
         }
     }
+
     /*-------------Update Phone Numbers-------------*/
-    if(isset($_POST['customer_phones']) && is_array($_POST['customer_phones'])){
+    if (isset($_POST['customer_phones']) && is_array($_POST['customer_phones'])) {
         save_customer_phones($con, $customer_id, $_POST['customer_phones']);
     }
-    if(isset($_POST['customer_public_ip']) && is_array($_POST['customer_public_ip'])){
+    if (isset($_POST['customer_public_ip']) && is_array($_POST['customer_public_ip'])) {
         save_customer_public_ip($con, $customer_id, $_POST['customer_public_ip']);
     }
 
     if ($result) {
+        /*----------- Safe Professional Old vs New Diff Activity Log -----------*/
+        $changes = [];
+        
+        $old_name = $oldUser['customer_name'] ?? '';
+        if ($old_name !== $customer_name) {
+            $changes[] = "Name: [Old: '$old_name' -> New: '$customer_name']";
+        }
+
+        $old_uname = $oldUser['username'] ?? '';
+        if ($old_uname !== $customer_username) {
+            $changes[] = "Username: [Old: '$old_uname' -> New: '$customer_username']";
+        }
+
+        $old_email = $oldUser['customer_email'] ?? '';
+        if ($old_email !== $customer_email) {
+            $changes[] = "Email: [Old: '$old_email' -> New: '$customer_email']";
+        }
+
+        $old_pop = $oldUser['pop_id'] ?? '';
+        if ($old_pop !== $customer_pop_branch) {
+            $changes[] = "POP Branch ID: [Old: '$old_pop' -> New: '$customer_pop_branch']";
+        }
+
+        $old_type = $oldUser['customer_type_id'] ?? '';
+        if ($old_type !== $customer_type) {
+            $changes[] = "Customer Type ID: [Old: '$old_type' -> New: '$customer_type']";
+        }
+
+        $old_vlan = $oldUser['customer_vlan'] ?? '';
+        if ($old_vlan !== $customer_vlan) {
+            $changes[] = "VLAN: [Old: '$old_vlan' -> New: '$customer_vlan']";
+        }
+
+        $old_ip = $oldUser['private_customer_ip'] ?? '';
+        if ($old_ip !== $private_customer_ip) {
+            $changes[] = "Private IP: [Old: '$old_ip' -> New: '$private_customer_ip']";
+        }
+
+        $old_status = $oldUser['status'] ?? '';
+        if ($old_status !== $customer_status) {
+            $changes[] = "Status: [Old: '$old_status' -> New: '$customer_status']";
+        }
+
+        $old_total = $oldUser['total'] ?? 0;
+        if ($old_total != $total_limit) {
+            $changes[] = "Total Limit: [Old: '$old_total' -> New: '$total_limit']";
+        }
+
+        $changes_summary = !empty($changes) ? implode(' | ', $changes) : "No major fields modified";
+        $log_desc = "Updated Customer ID: $customer_id ('$customer_name'). Changes -> { $changes_summary }";
+
+        if (function_exists('system_log')) {
+            system_log($con, 'UPDATE', $log_desc);
+        } 
+
         echo json_encode([
             'success' => true,
             'message' => 'Updated successfully!',
@@ -461,9 +516,10 @@ if (isset($_GET['get_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'GET') {
     ]);
     exit();
 }
-/*Delete customer Script*/
+/*-------------------- Delete customer Script --------------------*/
 if (isset($_GET['delete_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = trim($_POST['id']);
+    
     if (empty($id)) {
         echo json_encode([
             'success' => false,
@@ -471,9 +527,35 @@ if (isset($_GET['delete_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
         ]);
         exit();
     }
-    $result = $con->query("DELETE FROM customers WHERE id='$id'");
-    $con->close();
+
+    /*----------- Fetch customer details before delete for accurate logging -----------*/
+    $customer_name = "Unknown";
+    $customer_username = "";
+    $stmt_check = $con->prepare("SELECT customer_name, username FROM customers WHERE id = ? LIMIT 1");
+    $stmt_check->bind_param("i", $id);
+    $stmt_check->execute();
+    $res_check = $stmt_check->get_result();
+    if ($res_check->num_rows > 0) {
+        $row_check = $res_check->fetch_assoc();
+        $customer_name = $row_check['customer_name'];
+        $customer_username = $row_check['username'];
+    }
+    $stmt_check->close();
+
+    /*----------- Delete from customers table  -----------*/
+    $stmt = $con->prepare("DELETE FROM customers WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $result = $stmt->execute();
+    $stmt->close();
+
     if ($result) {
+        /*----------- Log User Activity -----------*/
+        $log_desc = "Deleted customer: '$customer_name' (Username: $customer_username, ID: $id)";
+        
+        if (function_exists('system_log')) {
+            system_log($con, 'DELETE', $log_desc);
+        }
+
         echo json_encode([
             'success' => true,
             'message' => 'Deleted successfully!',
@@ -482,12 +564,11 @@ if (isset($_GET['delete_customer_data']) && $_SERVER['REQUEST_METHOD'] == 'POST'
     } else {
         echo json_encode([
             'success' => false,
-            'message' => 'Failed to delete!',
+            'message' => 'Failed to delete customer!',
         ]);
         exit();
     }
 }
-
 
 /******** Add Customer Type Script ******************/
 if (isset($_GET['add_customer_type_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -496,52 +577,115 @@ if (isset($_GET['add_customer_type_data']) && $_SERVER['REQUEST_METHOD'] == 'POS
     /* Validate Customer Type */
     __validate_input($customer_type, 'Customer Type');
 
+    /* Check if customer type already exists */
+    $stmt_check = $con->prepare("SELECT id FROM customer_type WHERE name = ? LIMIT 1");
+    $stmt_check->bind_param("s", $customer_type);
+    $stmt_check->execute();
+    $stmt_check->store_result();
+
+    if ($stmt_check->num_rows > 0) {
+        $stmt_check->close();
+        echo json_encode([
+            'success' => false,
+            'message' => 'Customer Type already exists!',
+        ]);
+        exit();
+    }
+    $stmt_check->close();
+
+    /* Insert into table using Prepared Statement */
+    $stmt = $con->prepare("INSERT INTO customer_type (`name`) VALUES (?)");
+    $stmt->bind_param("s", $customer_type);
     
-    /* Insert into  table */
-    $result = $con->query("INSERT INTO customer_type(`name`) VALUES('$customer_type')");
-    if ($result) {
+    if ($stmt->execute()) {
+        $type_id = $stmt->insert_id;
+        $stmt->close();
+
+        /*----------- Log User Activity -----------*/
+        $log_desc = "Added new customer type: '$customer_type' (ID: $type_id)";
+        if (function_exists('logUserActivity')) {
+            logUserActivity($con, 'INSERT', $log_desc);
+        } elseif (function_exists('system_log')) {
+            system_log($con, 'INSERT', $log_desc);
+        }
+
         echo json_encode([
             'success' => true,
-            'message' => 'Added successfully!',
+            'message' => 'Customer Type added successfully!',
         ]);
         exit();
     } else {
+        $stmt->close();
         echo json_encode([
             'success' => false,
-            'message' => 'Failed to add Pool!',
+            'message' => 'Failed to add Customer Type!',
         ]);
         exit();
     }
 }
 
-/******** Update Customer Type Script ******************/
+/*-------Update Customer Type Script ----------*/
 if (isset($_GET['update_customer_type_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-
     $customer_type = trim($_POST['customer_type_name']);
     $id = trim($_POST['id']);
-    /* Validate Customer Type */
+
+    /* Validate Customer Type and ID */
+    __validate_input($id, 'Customer Type ID');
     __validate_input($customer_type, 'Customer Type');
-    /* Check if customer type already exists */
-    $check_customer_type = $con->query("SELECT * FROM customer_type WHERE name='$customer_type' AND id != '$id'");
-    if ($check_customer_type->num_rows > 0) {
+
+    /* Fetch old name for logging diff/changes */
+    $old_name = "";
+    $stmt_old = $con->prepare("SELECT name FROM customer_type WHERE id = ? LIMIT 1");
+    $stmt_old->bind_param("i", $id);
+    $stmt_old->execute();
+    $res_old = $stmt_old->get_result();
+    if ($res_old->num_rows > 0) {
+        $row_old = $res_old->fetch_assoc();
+        $old_name = $row_old['name'];
+    }
+    $stmt_old->close();
+
+    /* Check if customer type already exists (excluding current ID) */
+    $stmt_check = $con->prepare("SELECT id FROM customer_type WHERE name = ? AND id != ? LIMIT 1");
+    $stmt_check->bind_param("si", $customer_type, $id);
+    $stmt_check->execute();
+    $stmt_check->store_result();
+
+    if ($stmt_check->num_rows > 0) {
+        $stmt_check->close();
         echo json_encode([
             'success' => false,
-            'message' => 'Customer Type Already exists!',
+            'message' => 'Customer Type already exists!',
         ]);
         exit();
     }
-    /* Update the customer type in the database */
-    $result = $con->query("UPDATE customer_type SET name='$customer_type' WHERE id='$id'");
-    if ($result) {
+    $stmt_check->close();
+
+    /* Update the customer type in the database using Prepared Statement */
+    $stmt = $con->prepare("UPDATE customer_type SET name = ? WHERE id = ?");
+    $stmt->bind_param("si", $customer_type, $id);
+
+    if ($stmt->execute()) {
+        $stmt->close();
+
+        /*----------- Log User Activity with Changes -----------*/
+        $log_desc = "Updated customer type ID: $id (Name changed from '$old_name' to '$customer_type')";
+        if (function_exists('logUserActivity')) {
+            logUserActivity($con, 'UPDATE', $log_desc);
+        } elseif (function_exists('system_log')) {
+            system_log($con, 'UPDATE', $log_desc);
+        }
+
         echo json_encode([
             'success' => true,
-            'message' => 'Updated successfully!',
+            'message' => 'Customer Type updated successfully!',
         ]);
         exit();
     } else {
+        $stmt->close();
         echo json_encode([
             'success' => false,
-            'message' => 'Failed to update Topic!',
+            'message' => 'Failed to update Customer Type!',
         ]);
         exit();
     }

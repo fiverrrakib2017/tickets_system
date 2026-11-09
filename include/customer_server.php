@@ -737,59 +737,120 @@ if (isset($_GET['delete_customer_type_data']) && $_SERVER['REQUEST_METHOD'] == '
     }
 }
 
-/******** Add Customer services type Script ******************/
+/*--------- Add Customer services type Script--------------*/
 if (isset($_GET['add_customer_service_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $customer_service = trim($_POST['customer_service_name']);
 
     /* Validate Customer Service */
     __validate_input($customer_service, 'Customer Service');
 
+    /* Check if customer service already exists */
+    $stmt_check = $con->prepare("SELECT id FROM customer_service WHERE name = ? LIMIT 1");
+    $stmt_check->bind_param("s", $customer_service);
+    $stmt_check->execute();
+    $stmt_check->store_result();
+
+    if ($stmt_check->num_rows > 0) {
+        $stmt_check->close();
+        echo json_encode([
+            'success' => false,
+            'message' => 'Customer Service already exists!',
+        ]);
+        exit();
+    }
+    $stmt_check->close();
+
+    /* Insert into table using Prepared Statement */
+    $stmt = $con->prepare("INSERT INTO customer_service (`name`) VALUES (?)");
+    $stmt->bind_param("s", $customer_service);
     
-    /* Insert into  table */
-    $result = $con->query("INSERT INTO customer_service(`name`) VALUES('$customer_service')");
-    if ($result) {
+    if ($stmt->execute()) {
+        $service_id = $stmt->insert_id;
+        $stmt->close();
+
+        /*----------- Log User Activity -----------*/
+        $log_desc = "Added new customer service: '$customer_service' (ID: $service_id)";
+        if (function_exists('system_log')) {
+            system_log($con, 'INSERT', $log_desc);
+        } elseif (function_exists('logUserActivity')) {
+            logUserActivity($con, 'INSERT', $log_desc);
+        }
+
         echo json_encode([
             'success' => true,
-            'message' => 'Added successfully!',
+            'message' => 'Customer Service added successfully!',
         ]);
         exit();
     } else {
+        $stmt->close();
         echo json_encode([
             'success' => false,
-            'message' => 'Failed to add Pool!',
+            'message' => 'Failed to add Customer Service!',
         ]);
         exit();
     }
 }
 
-/******** Update Customer Service Script ******************/
+/*-------- Update Customer Service Script ----------*/
 if (isset($_GET['update_customer_service_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
-
     $customer_service = trim($_POST['customer_service_name']);
     $id = trim($_POST['id']);
-    /* Validate Customer Service */
+
+    /* Validate ID and Customer Service */
+    __validate_input($id, 'Customer Service ID');
     __validate_input($customer_service, 'Customer Service');
-    /* Check if customer service already exists */
-    $check_customer_service = $con->query("SELECT * FROM customer_service WHERE name='$customer_service' AND id != '$id'");
-    if ($check_customer_service->num_rows > 0) {
+
+    /* Fetch old name for logging diff/changes */
+    $old_name = "";
+    $stmt_old = $con->prepare("SELECT name FROM customer_service WHERE id = ? LIMIT 1");
+    $stmt_old->bind_param("i", $id);
+    $stmt_old->execute();
+    $res_old = $stmt_old->get_result();
+    if ($res_old->num_rows > 0) {
+        $row_old = $res_old->fetch_assoc();
+        $old_name = $row_old['name'] ?? '';
+    }
+    $stmt_old->close();
+
+    /*-------- Check if customer service already exists---------------*/
+    $stmt_check = $con->prepare("SELECT id FROM customer_service WHERE name = ? AND id != ? LIMIT 1");
+    $stmt_check->bind_param("si", $customer_service, $id);
+    $stmt_check->execute();
+    $stmt_check->store_result();
+
+    if ($stmt_check->num_rows > 0) {
+        $stmt_check->close();
         echo json_encode([
             'success' => false,
-            'message' => 'Customer Service Already exists!',
+            'message' => 'Customer Service already exists!',
         ]);
         exit();
     }
-    /* Update the customer service in the database */
-    $result = $con->query("UPDATE customer_service SET name='$customer_service' WHERE id='$id'");
-    if ($result) {
+    $stmt_check->close();
+
+    /*----------- Update the customer service in the database using Prepared Statement ---------*/
+    $stmt = $con->prepare("UPDATE customer_service SET name = ? WHERE id = ?");
+    $stmt->bind_param("si", $customer_service, $id);
+
+    if ($stmt->execute()) {
+        $stmt->close();
+
+        /*----------- Log User Activity with Changes -----------*/
+        $log_desc = "Updated customer service ID: $id (Name changed from '$old_name' to '$customer_service')";
+        if (function_exists('system_log')) {
+            system_log($con, 'UPDATE', $log_desc);
+        }
+
         echo json_encode([
             'success' => true,
-            'message' => 'Updated successfully!',
+            'message' => 'Customer Service updated successfully!',
         ]);
         exit();
     } else {
+        $stmt->close();
         echo json_encode([
             'success' => false,
-            'message' => 'Failed to update Topic!',
+            'message' => 'Failed to update Customer Service!',
         ]);
         exit();
     }
@@ -814,9 +875,12 @@ if (isset($_GET['get_customer_service_data']) && $_SERVER['REQUEST_METHOD'] == '
     ]);
     exit();
 }
-/*Delete customer service Script*/
+
+
+/*-------------------- Delete customer service Script --------------------*/
 if (isset($_GET['delete_customer_service_data']) && $_SERVER['REQUEST_METHOD'] == 'POST') {
     $id = trim($_POST['id']);
+    
     if (empty($id)) {
         echo json_encode([
             'success' => false,
@@ -824,9 +888,35 @@ if (isset($_GET['delete_customer_service_data']) && $_SERVER['REQUEST_METHOD'] =
         ]);
         exit();
     }
-    $result = $con->query("DELETE FROM customer_service WHERE id='$id'");
-    $con->close();
+
+    /*----------- Fetch service name before delete for accurate logging -----------*/
+    $service_name = "Unknown";
+    $stmt_check = $con->prepare("SELECT name FROM customer_service WHERE id = ? LIMIT 1");
+    $stmt_check->bind_param("i", $id);
+    $stmt_check->execute();
+    $res_check = $stmt_check->get_result();
+    if ($res_check->num_rows > 0) {
+        $row_check = $res_check->fetch_assoc();
+        $service_name = $row_check['name'] ?? 'Unknown';
+    }
+    $stmt_check->close();
+
+    /*----------- Delete from customer_service table (Prepared Statement) -----------*/
+    $stmt = $con->prepare("DELETE FROM customer_service WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $result = $stmt->execute();
+    $stmt->close();
+
     if ($result) {
+        /*----------- Log User Activity -----------*/
+        $log_desc = "Deleted customer service ID: $id (Name: '$service_name')";
+        
+        if (function_exists('system_log')) {
+            system_log($con, 'DELETE', $log_desc);
+        } elseif (function_exists('logUserActivity')) {
+            logUserActivity($con, 'DELETE', $log_desc);
+        }
+
         echo json_encode([
             'success' => true,
             'message' => 'Deleted successfully!',
@@ -835,7 +925,7 @@ if (isset($_GET['delete_customer_service_data']) && $_SERVER['REQUEST_METHOD'] =
     } else {
         echo json_encode([
             'success' => false,
-            'message' => 'Failed to delete!',
+            'message' => 'Failed to delete customer service!',
         ]);
         exit();
     }

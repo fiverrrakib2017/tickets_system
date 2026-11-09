@@ -954,4 +954,17 @@ if(!function_exists('get_department_name')) {
     }
 }
 
-?>
+if(!function_exists('system_log')){
+    function system_log($con, string $action_type, string $description) {
+        if (isset($_SESSION["uid"]) && isset($_SESSION["username"])) {
+            $user_id = $_SESSION["uid"];
+            $username = $_SESSION["username"];
+            $page_url = $_SERVER['REQUEST_URI'];
+            $ip_address = $_SERVER['REMOTE_ADDR'];
+
+            $stmt = $con->prepare("INSERT INTO user_activity_logs (user_id, username, action_type, description, page_url, ip_address) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("isssss", $user_id, $username, $action_type, $description, $page_url, $ip_address);
+            $stmt->execute();
+        }
+    }
+}
